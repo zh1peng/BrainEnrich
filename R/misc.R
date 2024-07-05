@@ -18,7 +18,7 @@ calculate_pvals <- function(statList.true, statList.null, method = c("standard",
 
   pvals <- map2(statList.true, statList.null, function(true_stat, null_stat) {
     if (method == "standard") {
-      sum(abs(null_stat) >= abs(true_stat)) / (length(null_stat) + 1)
+      (sum(abs(null_stat) >= abs(true_stat))+1) / (length(null_stat) + 1)
     } else if (method == "split_pos_neg") {
       if (true_stat >= 0) {
         (sum(null_stat >= true_stat) + 1) / (sum(null_stat >= 0) + 1)
