@@ -6,7 +6,7 @@ r:
 
 install:
   - Rscript -e 'install.packages("BiocManager")'
-  - Rscript -e 'BiocManager::install(c("DOSE", "clusterProfiler", "ReactomePA", "org.Hs.eg.db"))'
+  - Rscript -e 'BiocManager::install(c("DOSE", "clusterProfiler", "org.Hs.eg.db"))'
   - Rscript -e 'install.packages("devtools")'
   - Rscript -e 'devtools::install_github("zh1peng/BrainEnrich")'
 

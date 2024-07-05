@@ -24,7 +24,7 @@ devtools::install()
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install(c("DOSE", "clusterProfiler", "ReactomePA", "org.Hs.eg.db"))
+BiocManager::install(c("DOSE", "clusterProfiler", "org.Hs.eg.db"))
 
 
 # action on github uses pak to install the package
