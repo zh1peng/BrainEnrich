@@ -19,7 +19,7 @@ ensure_bioc_packages <- function() {
     install.packages("BiocManager")
   }
 
-  bioc_packages <- c("org.Hs.eg.db", "ReactomePA", "clusterProfiler", "DOSE")
+  bioc_packages <- c("org.Hs.eg.db", "clusterProfiler", "DOSE")
 
   for (pkg in bioc_packages) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
