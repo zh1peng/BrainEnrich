@@ -56,7 +56,10 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
   url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneExp/", atlas, "_", rdonor, ".csv.bz2")
   
   if (!file.exists(GeneExpCSV)) {
-      options(timeout = 300) 
+    message(sprintf("File not found locally. Downloading from GitHub... %s", url))
+    message("If the download is slow, download manually.")
+    message(sprintf("and save files as %s", GeneExpCSV))
+      options(timeout = 600) 
       download.file(url, GeneExpCSV,method='libcurl')
   }
 

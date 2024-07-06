@@ -56,7 +56,9 @@ get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021",
   url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneSets/", type, ".rds")
   
   if (!file.exists(GeneSetsRDS)) {
-    message("File not found locally. Downloading from GitHub...")
+    message(sprintf("File not found locally. Downloading from GitHub... %s", url))
+    message("If the download is slow, download manually.")
+    message(sprintf("and save files as %s", GeneSetsRDS))
     options(timeout = 600) 
     download.file(url, GeneSetsRDS, method = 'libcurl')
   }

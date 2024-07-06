@@ -67,8 +67,8 @@ compress_csv_bzip2 <- function(input_csv) {
 }
 
 # Decompress and load a CSV file using bzip2
-read.csv_bzip2 <- function(input_csv_bz) {
-  data <- read.csv(bzfile(input_csv_bz))
+read.csv_bzip2 <- function(input_csv_bz,...) {
+  data <- read.csv(bzfile(input_csv_bz),...)
   return(data)
 }
 
