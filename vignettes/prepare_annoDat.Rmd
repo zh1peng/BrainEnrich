@@ -35,11 +35,11 @@ build_Anno <- getFromNamespace("build_Anno", "DOSE")
 ```{r include=T, eval=F}
 get_GO_data <- getFromNamespace("get_GO_data", "clusterProfiler")
 annoData <- get_GO_data("org.Hs.eg.db", ont = 'BP', keytype = "SYMBOL")
-#saveRDS(annoData, file = "extdata/geneSets/GO_BP.rds")
+#saveRDS(annoData, file = "extdata/geneSets/GO_BP.rds", compress = "xz")
 annoData <- get_GO_data("org.Hs.eg.db", ont = 'MF', keytype = "SYMBOL")
-#saveRDS(annoData, file = "extdata/geneSets/GO_MF.rds")
+#saveRDS(annoData, file = "extdata/geneSets/GO_MF.rds", compress = "xz")
 annoData <- get_GO_data("org.Hs.eg.db", ont = 'CC', keytype = "SYMBOL")
-save(annoData, file = "extdata/geneSets/GO_CC.rds")
+save(annoData, file = "extdata/geneSets/GO_CC.rds", compress = "xz")
 # check version of org.Hs.eg.db
 packageVersion("clusterProfiler")
 packageVersion("org.Hs.eg.db")
@@ -49,7 +49,7 @@ packageVersion("org.Hs.eg.db")
 ```{r include=T, eval=F}
  get_DGN_data <- getFromNamespace("get_DGN_data", "DOSE")
  annoData <- get_DGN_data()
- save(annoData, file = "extdata/geneSets/DGN.rds")
+ save(annoData, file = "extdata/geneSets/DGN.rds", compress = "xz")
  packageVersion("DOSE")
 ```
 
@@ -57,7 +57,7 @@ packageVersion("org.Hs.eg.db")
 ```{r include=T, eval=F}
 prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
 annoData <- prepare_KEGG("hsa", "MKEGG", "kegg")
-#saveRDS(annoData, file = "extdata/geneSets/KEGG.rds")
+#saveRDS(annoData, file = "extdata/geneSets/KEGG.rds", compress = "xz")
 packageVersion("clusterProfiler")
 ```
 
@@ -69,7 +69,7 @@ TERM2GENE <- wpdata$WPID2GENE
 TERM2NAME <- wpdata$WPID2NAME
 build_Anno <- getFromNamespace("build_Anno", "DOSE")
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/WikiPathways.rds")
+#saveRDS(annoData, file = "extdata/geneSets/WikiPathways.rds", compress = "xz")
 packageVersion("clusterProfiler")
 ```
 
@@ -77,7 +77,7 @@ packageVersion("clusterProfiler")
 ```{r include=T, eval=F}
 get_Reactome_DATA <- getFromNamespace("get_Reactome_DATA", "ReactomePA")
 annoData <- get_Reactome_DATA("human")
-#saveRDS(annoData, file = "extdata/geneSets/Reactome.rds")
+#saveRDS(annoData, file = "extdata/geneSets/Reactome.rds", compress = "xz")
 ```
 
 # SynGO (how to make annoDat from xlsx)
@@ -115,8 +115,9 @@ TERM2NAME <- data %>%
 # Use build_Anno function from DOSE package
 build_Anno <- getFromNamespace("build_Anno", "DOSE")
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/SynGO.rds")
+#saveRDS(annoData, file = "extdata/geneSets/SynGO.rds",compress='xz')
 ```
+
 
 # CellTypes Seidlitz2020 (how to prepare annoData with a csv file)
 ### Seidlitz, J., Nadig, A., Liu, S., Bethlehem, R. A., Vértes, P. E., Morgan, S. E., ... & Raznahan, A. (2020). Transcriptomic and cellular decoding of regional brain vulnerability to neurogenetic disorders. Nature communications, 11(1), 3358.
@@ -142,7 +143,7 @@ TERM2NAME <- TERM2GENE %>%
   dplyr::mutate(description = term) %>%
   dplyr::select(term, description)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/CellTypes_Seidlitz2020.rds")
+#saveRDS(annoData, file = "extdata/geneSets/CellTypes_Seidlitz2020.rds", compress = "xz")
 ```
 
 
@@ -170,7 +171,7 @@ TERM2NAME <- TERM2GENE %>%
   dplyr::mutate(description = term) %>%
   dplyr::select(term, description)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/CellTypes_Lake2018.rds")
+#saveRDS(annoData, file = "extdata/geneSets/CellTypes_Lake2018.rds", compress = "xz")
 ```
 
 # CellTypes Martins2021 (how to prepare annoData with a gmt file)
@@ -195,7 +196,7 @@ TERM2NAME <- TERM2GENE %>%
   dplyr::mutate(description = term) %>%
   dplyr::select(term, description)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/CellTypes_Martins2021.rds")
+#saveRDS(annoData, file = "extdata/geneSets/CellTypes_Martins2021.rds", compress = "xz")
 ```
 
 

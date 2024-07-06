@@ -48,12 +48,12 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
   if (!dir.exists(gene_exp_dir)) {
     dir.create(gene_exp_dir, recursive = TRUE)
   }
-  GeneExpCSV <- file.path(gene_exp_dir, sprintf("%s_%s.csv", atlas, rdonor))
+  GeneExpCSV <- file.path(gene_exp_dir, sprintf("%s_%s.csv.bz2", atlas, rdonor))
 
 
 
   # Define GitHub URL for downloading the file
-  url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneExp/", atlas, "_", rdonor, ".csv")
+  url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneExp/", atlas, "_", rdonor, ".csv.bz2")
   
   if (!file.exists(GeneExpCSV)) {
       options(timeout = 300) 
@@ -61,7 +61,7 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
   }
 
   # Read the CSV file
-  gene.df <- read.csv(GeneExpCSV, stringsAsFactors = FALSE)
+  gene.df <- read.csv_bzip2(GeneExpCSV, stringsAsFactors = FALSE)
 
   # Filter based on hemisphere
   if (hem %in% c("L", "R")) {
