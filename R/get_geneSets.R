@@ -31,17 +31,29 @@ get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021",
   type <- match.arg(type)
   
   # Define local file path
-  local_file <- system.file("extdata", "geneSets", paste0(type, ".rds"), package = "BrainEnrich")
-  data_path <- system.file("extdata", package = "BrainEnrich")
-  gene_set_dir <- file.path(data_path, "geneSets")
+
+
+  # Determine the package installation directory
+  package_dir <- find.package("BrainEnrich")
+  # Specify the path for the new 'extdata' directory
+  extdata_dir <- file.path(package_dir, "extdata")
+  # Create the 'extdata' directory if it does not exist
+  if (!dir.exists(extdata_dir)) {
+    dir.create(extdata_dir)
+  }
+
+
+  gene_set_dir <- file.path(extdata_dir, "geneSets")
+
+   if (!dir.exists(gene_set_dir)) {
+      dir.create(gene_set_dir)
+    }
   GeneSetsRDS <- file.path(gene_set_dir, paste0(type, ".rds"))
 
     # Ensure the gene_set_dir directory exists
-    if (!dir.exists(gene_set_dir)) {
-      dir.create(gene_set_dir, recursive = TRUE)
-    }
+
   # Define GitHub URL for downloading the file
-  url <- paste0("https://github.com/zh1peng/BrainEnrich/tree/master/inst/extdata/geneSets/", type, ".rds")
+  url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneSets/", type, ".rds")
   
   if (!file.exists(GeneSetsRDS)) {
     message("File not found locally. Downloading from GitHub...")
@@ -64,6 +76,36 @@ get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021",
   annoData <- readRDS(GeneSetsRDS)
   
   return(annoData)
+}
+
+
+#' Get Gene Set List
+#'
+#' This function retrieves a gene set list from annotation data. It optionally converts
+#' gene identifiers to gene symbols.
+#'
+#' @param annoData Annotation data to retrieve gene sets from.
+#' @param convert_to_symbol Logical; if TRUE, converts gene identifiers to gene symbols.
+#' @return A list of gene sets.
+#' @import DOSE
+#' @export 
+get_geneSetList <- function(annoData) {
+  getGeneSet <- getFromNamespace('getGeneSet', 'DOSE')
+  geneSetList <- getGeneSet(annoData)
+  return(geneSetList)
+}
+
+#' Get Gene Set Descriptions
+#'
+#' This function retrieves descriptions for gene sets from annotation data.
+#'
+#' @param annoData An environment containing annotation data.
+#' @return A character vector of gene set descriptions.
+#' @import DOSE
+#' @export 
+get_geneSetDescription <- function(annoData) {
+  TERM2NAME <- getFromNamespace("TERM2NAME", "DOSE")
+  gs.name <- names(annoData)
 }
 
 

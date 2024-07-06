@@ -35,17 +35,25 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
   }
 
   # Define the path to the gene expression data
-  data_path <- system.file("extdata", package = "BrainEnrich")
-  gene_exp_dir <- file.path(data_path, "geneExp")
-  GeneExpCSV <- file.path(gene_exp_dir, sprintf("%s_%s.csv", atlas, rdonor))
+  package_dir <- find.package("BrainEnrich")
+  # Specify the path for the new 'extdata' directory
+  extdata_dir <- file.path(package_dir, "extdata")
+  # Create the 'extdata' directory if it does not exist
+  if (!dir.exists(extdata_dir)) {
+    dir.create(extdata_dir)
+  }
 
-  # Ensure the extdata/geneExp directory exists
+  gene_exp_dir <- file.path(extdata_dir, "geneExp")
+    # Ensure the extdata/geneExp directory exists
   if (!dir.exists(gene_exp_dir)) {
     dir.create(gene_exp_dir, recursive = TRUE)
   }
+  GeneExpCSV <- file.path(gene_exp_dir, sprintf("%s_%s.csv", atlas, rdonor))
+
+
 
   # Define GitHub URL for downloading the file
-  url <- paste0("https://github.com/zh1peng/BrainEnrich/tree/master/inst/extdata/geneExp/", atlas, "_", rdonor, ".csv")
+  url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneExp/", atlas, "_", rdonor, ".csv")
   
   if (!file.exists(GeneExpCSV)) {
     message("File not found locally. Downloading from GitHub...")
