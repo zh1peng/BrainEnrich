@@ -39,7 +39,7 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
   GeneExpCSV <- file.path(data_path, sprintf("geneExp/%s_%s.csv", atlas, rdonor))
 
   # Define GitHub URL for downloading the file
-  url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/main/inst/extdata/geneExp/", atlas, "_", rdonor, ".csv")
+  url <- paste0("https://github.com/zh1peng/BrainEnrich/tree/master/inst/extdata/geneExp/", atlas, "_", rdonor, ".csv")
   
   if (!file.exists(GeneExpCSV)) {
     message("File not found locally. Downloading from GitHub...")

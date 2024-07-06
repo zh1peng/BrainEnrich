@@ -23,10 +23,10 @@
 #'
 #' @examples
 #' \dontrun{
-#' annoData <- get_geneSets("GO_BP")
+#' annoData <- get_annoData("GO_BP")
 #' }
 
-get_geneSets <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021", "CellTypes_Seidlitz2020",
+get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021", "CellTypes_Seidlitz2020",
                                   "DGN", "GO_BP", "GO_CC", "GO_MF", "KEGG", "Reactome", "SynGO", "WikiPathways")) {
   type <- match.arg(type)
   
@@ -34,7 +34,7 @@ get_geneSets <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021",
   local_file <- system.file("extdata", "geneSets", paste0(type, ".rds"), package = "BrainEnrich")
 
   # Define GitHub URL for downloading the file
-  url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/main/inst/extdata/geneSets/", type, ".rds")
+  url <- paste0("https://github.com/zh1peng/BrainEnrich/tree/master/inst/extdata/geneSets/", type, ".rds")
   
   if (!file.exists(local_file)) {
     message("File not found locally. Downloading from GitHub...")
