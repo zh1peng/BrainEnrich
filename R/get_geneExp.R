@@ -56,20 +56,8 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
   url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneExp/", atlas, "_", rdonor, ".csv")
   
   if (!file.exists(GeneExpCSV)) {
-    message("File not found locally. Downloading from GitHub...")
-    temp_file <- tempfile(fileext = ".csv")
-    
-    # Clean-up function to ensure temp files are removed
-    on.exit({
-      if (file.exists(temp_file)) unlink(temp_file)
-    }, add = TRUE)
-    
-    tryCatch({
-      download.file(url, temp_file, mode = "wb")
-      file.copy(temp_file, GeneExpCSV)
-    }, error = function(e) {
-      stop("An error occurred while downloading the file: ", e$message)
-    })
+      options(timeout = 300) 
+      download.file(url, GeneExpCSV,method='libcurl')
   }
 
   # Read the CSV file

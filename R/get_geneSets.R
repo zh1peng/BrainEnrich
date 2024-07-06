@@ -57,19 +57,8 @@ get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021",
   
   if (!file.exists(GeneSetsRDS)) {
     message("File not found locally. Downloading from GitHub...")
-    temp_file <- tempfile(fileext = ".rds")
-    
-    # Clean-up function to ensure temp files are removed
-    on.exit({
-      if (file.exists(temp_file)) unlink(temp_file)
-    }, add = TRUE)
-    
-    tryCatch({
-      download.file(url, temp_file, mode = "wb")
-      file.copy(temp_file, GeneSetsRDS)
-    }, error = function(e) {
-      stop("An error occurred while downloading the file: ", e$message)
-    })
+    options(timeout = 600) 
+    download.file(url, GeneSetsRDS, method = 'libcurl')
   }
   
   message("Loading annotation data...")
