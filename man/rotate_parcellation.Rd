@@ -42,6 +42,7 @@ Modifications include:
 }
 }
 \examples{
+dontrun{
 # Example usage with both hemispheres
 coord.l <- matrix(runif(30), nrow = 10, ncol = 3)
 coord.r <- matrix(runif(30), nrow = 10, ncol = 3)
@@ -54,4 +55,5 @@ permutations <- rotate_parcellation(coord.l, NULL)
 # Example usage with one hemisphere (right)
 coord.r <- matrix(runif(30), nrow = 10, ncol = 3)
 permutations <- rotate_parcellation(NULL, coord.r)
+}
 }

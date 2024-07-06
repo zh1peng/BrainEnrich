@@ -68,6 +68,7 @@ generate_null_brain_data <- function(brain_data, perm_id) {
 #' @importFrom clue solve_LSAP
 #' @export
 #' @examples
+#' dontrun{
 #' # Example usage with both hemispheres
 #' coord.l <- matrix(runif(30), nrow = 10, ncol = 3)
 #' coord.r <- matrix(runif(30), nrow = 10, ncol = 3)
@@ -80,6 +81,7 @@ generate_null_brain_data <- function(brain_data, perm_id) {
 #' # Example usage with one hemisphere (right)
 #' coord.r <- matrix(runif(30), nrow = 10, ncol = 3)
 #' permutations <- rotate_parcellation(NULL, coord.r)
+#' }
 rotate_parcellation <- function(coord.l = NULL,
                                 coord.r = NULL, nrot = 5000,
                                 method = c("hungarian", "vasa"),

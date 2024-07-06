@@ -1,19 +1,25 @@
 #' Get Gene Expression Data
 #'
 #' This function retrieves gene expression data based on specified parameters.
+#' #' This function loads gene expression data from CSV files located in the `inst/extdata/geneExp` directory of the package.
+#' If the specified file does not exist locally, it will be downloaded from the GitHub repository.
+#'
 #' The data is obtained from the ENIGMA-TOOLBOX. Please cite the ENIGMA-TOOLBOX:
 #' Larivière, S., Paquola, C., Park, B. Y., Royer, J., Wang, Y., Benkarim, O., ... & Bernhardt, B. C. (2021).
 #' The ENIGMA Toolbox: multiscale neural contextualization of multisite neuroimaging datasets. Nature Methods, 18(7), 698-700.
 #'
-#' @param atlas Character. The brain atlas to use. One of 'desikan', 'schaefer100', or 'schaefer200'.
-#' @param rdonor Character. The donor region to use. One of 'r0.2', 'r0.4', or 'r0.6'.
-#' @param hem Character. The hemisphere to use. One of 'L', 'R', or 'B'.
+#'
+#' @param atlas A character string specifying the atlas to use. Options are "desikan", "schaefer100", "schaefer200", "schaefer300".
+#' @param rdonor A character string specifying the donor resolution to use. Options are "r0.2", "r0.4", "r0.6".
+#' @param hem A character string specifying the hemisphere to use. Options are "L" (Left), "R" (Right), "B" (Both).
 #'
 #' @return A matrix containing the gene expression data.
 #' @export
-#' @importFrom dplyr filter
-#' @importFrom tibble column_to_rownames
 #'
+#' @examples
+#' \dontrun{
+#' geneExpMatrix <- get_geneExp("desikan", "r0.4", "L")
+#' }
 
 get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "schaefer300"),
                         rdonor = c("r0.2", "r0.4", "r0.6"),
@@ -32,9 +38,24 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
   data_path <- system.file("extdata", package = "BrainEnrich")
   GeneExpCSV <- file.path(data_path, sprintf("geneExp/%s_%s.csv", atlas, rdonor))
 
-  # Check if the CSV file exists, otherwise stop
+  # Define GitHub URL for downloading the file
+  url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/main/inst/extdata/geneExp/", atlas, "_", rdonor, ".csv")
+  
   if (!file.exists(GeneExpCSV)) {
-    stop(sprintf("GeneExp file %s does not exist", GeneExpCSV))
+    message("File not found locally. Downloading from GitHub...")
+    temp_file <- tempfile(fileext = ".csv")
+    
+    # Clean-up function to ensure temp files are removed
+    on.exit({
+      if (file.exists(temp_file)) unlink(temp_file)
+    }, add = TRUE)
+    
+    tryCatch({
+      download.file(url, temp_file, mode = "wb")
+      file.copy(temp_file, GeneExpCSV)
+    }, error = function(e) {
+      stop("An error occurred while downloading the file: ", e$message)
+    })
   }
 
   # Read the CSV file
@@ -42,13 +63,13 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
 
   # Filter based on hemisphere
   if (hem %in% c("L", "R")) {
-    gene.df <- filter(gene.df, grepl(search_pattern, Region))
+    gene.df <- dplyr::filter(gene.df, grepl(search_pattern, Region))
   }
 
   # Filter complete cases and convert to matrix
   gene.df <- gene.df %>%
-    filter(complete.cases(.)) %>%
-    column_to_rownames("Region")
+    dplyr::filter(complete.cases(.)) %>%
+    tibble::column_to_rownames("Region")
 
   gene.mx <- as.matrix(gene.df)
 

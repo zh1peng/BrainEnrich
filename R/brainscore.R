@@ -16,7 +16,6 @@
 #' @param minGSSize An integer specifying the minimum gene set size. Default is 10.
 #' @param maxGSSize An integer specifying the maximum gene set size. Default is 200.
 #' @return A data frame containing the gene set scores with regions as rows and gene sets as columns.
-#' @importFrom stats cor
 #' @export
 brainscore <- function(brain_data,
                        gene_data,

@@ -18,9 +18,7 @@ ensure_bioc_packages <- function() {
   if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
   }
-
-  bioc_packages <- c("org.Hs.eg.db", "clusterProfiler", "DOSE")
-
+  bioc_packages <- c("DOSE")
   for (pkg in bioc_packages) {
     if (!requireNamespace(pkg, quietly = TRUE)) {
       BiocManager::install(pkg)

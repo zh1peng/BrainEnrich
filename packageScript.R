@@ -56,6 +56,8 @@ usethis::use_test('brainscore.R')
 usethis::use_vignette('brainenrich')
 usethis::use_vignette('visualization')
 usethis::use_vignette('brainscore')
+usethis::use_vignette('prepare_geneSet')
+
 
 usethis::use_pkgdown()
 usethis::edit_r_environ()

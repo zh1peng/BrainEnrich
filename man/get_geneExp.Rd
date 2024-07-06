@@ -11,18 +11,27 @@ get_geneExp(
 )
 }
 \arguments{
-\item{atlas}{Character. The brain atlas to use. One of 'desikan', 'schaefer100', or 'schaefer200'.}
+\item{atlas}{A character string specifying the atlas to use. Options are "desikan", "schaefer100", "schaefer200", "schaefer300".}
 
-\item{rdonor}{Character. The donor region to use. One of 'r0.2', 'r0.4', or 'r0.6'.}
+\item{rdonor}{A character string specifying the donor resolution to use. Options are "r0.2", "r0.4", "r0.6".}
 
-\item{hem}{Character. The hemisphere to use. One of 'L', 'R', or 'B'.}
+\item{hem}{A character string specifying the hemisphere to use. Options are "L" (Left), "R" (Right), "B" (Both).}
 }
 \value{
 A matrix containing the gene expression data.
 }
 \description{
 This function retrieves gene expression data based on specified parameters.
+#' This function loads gene expression data from CSV files located in the \code{inst/extdata/geneExp} directory of the package.
+If the specified file does not exist locally, it will be downloaded from the GitHub repository.
+}
+\details{
 The data is obtained from the ENIGMA-TOOLBOX. Please cite the ENIGMA-TOOLBOX:
 Larivière, S., Paquola, C., Park, B. Y., Royer, J., Wang, Y., Benkarim, O., ... & Bernhardt, B. C. (2021).
 The ENIGMA Toolbox: multiscale neural contextualization of multisite neuroimaging datasets. Nature Methods, 18(7), 698-700.
+}
+\examples{
+\dontrun{
+geneExpMatrix <- get_geneExp("desikan", "r0.4", "L")
+}
 }
