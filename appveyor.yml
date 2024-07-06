@@ -14,7 +14,7 @@ install:
 
   # Install Bioconductor packages
   - cmd: >
-      "C:\Program Files\R\R-%R_VERSION%\bin\R.exe" -e "BiocManager::install(c('DOSE', 'clusterProfiler', 'ReactomePA', 'org.Hs.eg.db'))"
+      "C:\Program Files\R\R-%R_VERSION%\bin\R.exe" -e "BiocManager::install(c('DOSE'))"
 
   # Install devtools
   - cmd: >
