@@ -36,7 +36,13 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
 
   # Define the path to the gene expression data
   data_path <- system.file("extdata", package = "BrainEnrich")
-  GeneExpCSV <- file.path(data_path, sprintf("geneExp/%s_%s.csv", atlas, rdonor))
+  gene_exp_dir <- file.path(data_path, "geneExp")
+  GeneExpCSV <- file.path(gene_exp_dir, sprintf("%s_%s.csv", atlas, rdonor))
+
+  # Ensure the extdata/geneExp directory exists
+  if (!dir.exists(gene_exp_dir)) {
+    dir.create(gene_exp_dir, recursive = TRUE)
+  }
 
   # Define GitHub URL for downloading the file
   url <- paste0("https://github.com/zh1peng/BrainEnrich/tree/master/inst/extdata/geneExp/", atlas, "_", rdonor, ".csv")

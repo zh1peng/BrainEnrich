@@ -32,11 +32,18 @@ get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021",
   
   # Define local file path
   local_file <- system.file("extdata", "geneSets", paste0(type, ".rds"), package = "BrainEnrich")
+  data_path <- system.file("extdata", package = "BrainEnrich")
+  gene_set_dir <- file.path(data_path, "geneSets")
+  GeneSetsRDS <- file.path(gene_set_dir, paste0(type, ".rds"))
 
+    # Ensure the gene_set_dir directory exists
+    if (!dir.exists(gene_set_dir)) {
+      dir.create(gene_set_dir, recursive = TRUE)
+    }
   # Define GitHub URL for downloading the file
   url <- paste0("https://github.com/zh1peng/BrainEnrich/tree/master/inst/extdata/geneSets/", type, ".rds")
   
-  if (!file.exists(local_file)) {
+  if (!file.exists(GeneSetsRDS)) {
     message("File not found locally. Downloading from GitHub...")
     temp_file <- tempfile(fileext = ".rds")
     
@@ -47,14 +54,14 @@ get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021",
     
     tryCatch({
       download.file(url, temp_file, mode = "wb")
-      file.copy(temp_file, local_file)
+      file.copy(temp_file, GeneSetsRDS)
     }, error = function(e) {
       stop("An error occurred while downloading the file: ", e$message)
     })
   }
   
   message("Loading annotation data...")
-  annoData <- readRDS(local_file)
+  annoData <- readRDS(GeneSetsRDS)
   
   return(annoData)
 }
