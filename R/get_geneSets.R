@@ -89,14 +89,17 @@ get_geneSetList <- function(annoData) {
 #' Get Gene Set Descriptions
 #'
 #' This function retrieves descriptions for gene sets from annotation data.
-#'
+#' @param term term to search from annoData (can be a vector of terms).
 #' @param annoData An environment containing annotation data.
+#' @param strip_prefix A character string to remove from the beginning of each term. 
 #' @return A character vector of gene set descriptions.
 #' @import DOSE
 #' @export 
-get_geneSetDescription <- function(annoData) {
+get_termDescription <- function(term, annoData, strip_prefix = '') {
+  term = sapply(term, function(x) gsub(strip_prefix, '', x))
   TERM2NAME <- getFromNamespace("TERM2NAME", "DOSE")
-  gs.name <- names(annoData)
+  termDescrip <- TERM2NAME(term, annoData)
+  return(termDescrip)
 }
 
 
