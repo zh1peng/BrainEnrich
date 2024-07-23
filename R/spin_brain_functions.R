@@ -15,6 +15,9 @@ generate_null_brain_data <- function(brain_data, perm_id) {
     stop("Duplicate entries found in perm_id.")
   }
 
+   if (ncol(brain_data) != 1) {
+    stop("This function is designed for group-level analysis and supports one column of brain data. Consider using lapply.")
+  }
   if (is.data.frame(brain_data)) {
     brain_data <- as.matrix(brain_data)
   }

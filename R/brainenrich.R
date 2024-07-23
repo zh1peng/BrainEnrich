@@ -43,8 +43,7 @@ brainenrich <- function(brain_data,
                         aggre_method = c(
                           "mean", "median", "meanabs", "meansqr",
                           "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum",
-                          "local_fdr", "sign_test", "rank_sum", "custom"
-                        ),
+                          "local_fdr", "sign_test", "rank_sum", "custom"),
                         null_model = c("spin_brain", "resample_gene", "coexp_matched"),
                         minGSSize = 10,
                         maxGSSize = 200,
@@ -78,7 +77,7 @@ brainenrich <- function(brain_data,
   }
 
   if (ncol(brain_data) != 1) {
-    stop("This function is designed for group-level analysis and supports one column of brain data. Consider using sapply.")
+    stop("This function is designed for group-level analysis and supports one column of brain data. Consider using s/lapply.")
   }
 
   cor_method <- match.arg(cor_method)
@@ -110,7 +109,7 @@ brainenrich <- function(brain_data,
     gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
   } else if (null_model == "coexp_matched") {
     message("Generating null gene list with coexp_matched model...")
-    geneList.null <- resample_gene_coexp_matched(gene_data, geneSetList, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
+    sampled_gs <- resample_gene_coexp_matched(gene_data, geneSetList, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
     gs_score.null <- aggregate_geneSetList_matching_coexp(geneList.true, selected.gs, sampled_gs, method = aggre_method, n_cores = n_cores)
   }
 
