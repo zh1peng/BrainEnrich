@@ -43,7 +43,8 @@ brainenrich <- function(brain_data,
                         aggre_method = c(
                           "mean", "median", "meanabs", "meansqr",
                           "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum",
-                          "local_fdr", "sign_test", "rank_sum", "custom"),
+                          "local_fdr", "sign_test", "rank_sum", "custom"
+                        ),
                         null_model = c("spin_brain", "resample_gene", "coexp_matched"),
                         minGSSize = 10,
                         maxGSSize = 200,
@@ -94,7 +95,7 @@ brainenrich <- function(brain_data,
   selected.gs <- filter_geneSetList(rownames(geneList.true), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
   message("Aggregating true gene set scores...")
   gs_score.true <- aggregate_geneSetList(geneList.true, selected.gs, method = aggre_method, n_cores = n_cores)
- 
+
   if (null_model == "spin_brain") {
     message("Generating null brain data with spin_brain model...")
     if (is.null(perm_id)) {

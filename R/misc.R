@@ -18,7 +18,7 @@ calculate_pvals <- function(statList.true, statList.null, method = c("standard",
 
   pvals <- map2(statList.true, statList.null, function(true_stat, null_stat) {
     if (method == "standard") {
-      (sum(abs(null_stat) >= abs(true_stat))+1) / (length(null_stat) + 1)
+      (sum(abs(null_stat) >= abs(true_stat)) + 1) / (length(null_stat) + 1)
     } else if (method == "split_pos_neg") {
       if (true_stat >= 0) {
         (sum(null_stat >= true_stat) + 1) / (sum(null_stat >= 0) + 1)
@@ -63,12 +63,12 @@ ask_user_continue <- function(msg) {
 compress_csv_bzip2 <- function(input_csv) {
   output_csv_bz <- paste0(input_csv, ".bz2")
   data <- read.csv(input_csv)
-  write.csv(data, bzfile(output_csv_bz),row.names = FALSE)
+  write.csv(data, bzfile(output_csv_bz), row.names = FALSE)
 }
 
 # Decompress and load a CSV file using bzip2
-read.csv_bzip2 <- function(input_csv_bz,...) {
-  data <- read.csv(bzfile(input_csv_bz),...)
+read.csv_bzip2 <- function(input_csv_bz, ...) {
+  data <- read.csv(bzfile(input_csv_bz), ...)
   return(data)
 }
 

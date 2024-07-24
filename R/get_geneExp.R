@@ -20,7 +20,6 @@
 #' \dontrun{
 #' geneExpMatrix <- get_geneExp("desikan", "r0.4", "L")
 #' }
-
 get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "schaefer300"),
                         rdonor = c("r0.2", "r0.4", "r0.6"),
                         hem = c("L", "R", "B")) {
@@ -44,7 +43,7 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
   }
 
   gene_exp_dir <- file.path(extdata_dir, "geneExp")
-    # Ensure the extdata/geneExp directory exists
+  # Ensure the extdata/geneExp directory exists
   if (!dir.exists(gene_exp_dir)) {
     dir.create(gene_exp_dir, recursive = TRUE)
   }
@@ -54,13 +53,13 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
 
   # Define GitHub URL for downloading the file
   url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneExp/", atlas, "_", rdonor, ".csv.bz2")
-  
+
   if (!file.exists(GeneExpCSV)) {
     message(sprintf("File not found locally. Downloading from GitHub... %s", url))
     message("If the download is slow, download manually.")
     message(sprintf("and save files as %s", GeneExpCSV))
-      options(timeout = 600) 
-      download.file(url, GeneExpCSV,method='libcurl')
+    options(timeout = 600)
+    download.file(url, GeneExpCSV, method = "libcurl")
   }
 
   # Read the CSV file

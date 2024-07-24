@@ -22,7 +22,8 @@ brainscore <- function(brain_data,
                        cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
                        aggre_method = c(
                          "mean", "median", "meanabs", "meansqr", "maxmean",
-                         "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
+                         "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"
+                       ),
                        prefix = NULL,
                        minGSSize = 10,
                        maxGSSize = 200,
@@ -88,39 +89,40 @@ simple_lm <- function(df,
                       pred_var,
                       cov_vars,
                       var2extract = NULL,
-                      stat2return = c( "full","statistic","p.value")) { 
-  
+                      stat2return = c("full", "statistic", "p.value")) {
   if (is.null(var2extract)) {
     var2extract <- pred_var
   }
-  
+
   # Check if the specified variables exist in the data frame
   all_vars <- c(dependent_vars, pred_var, cov_vars)
   missing_vars <- setdiff(all_vars, colnames(df))
   if (length(missing_vars) > 0) {
     stop("The following variables are not found in the data frame: ", paste(missing_vars, collapse = ", "))
   }
-  
+
   df_model <- df %>%
     dplyr::select(all_of(pred_var), all_of(cov_vars), all_of(dependent_vars)) %>%
     pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
     group_by(Dependent_vars) %>%
     nest() %>%
     mutate(
-      lm_model = map(data, ~lm(paste("Dependent_value", "~", paste(c(pred_var, cov_vars), collapse = "+")), data = .x)),
+      lm_model = map(data, ~ lm(paste("Dependent_value", "~", paste(c(pred_var, cov_vars), collapse = "+")), data = .x)),
       tidy_model = map(lm_model, tidy)
     )
 
   # Conditionally calculate std_coefs only if stat2return is "full"
   if (stat2return == "full") {
     df_model <- df_model %>%
-      mutate(std_coefs = map(lm_model, ~standardize_parameters(.x, method = "refit") %>% as_tibble() %>% filter(Parameter %in% var2extract)))
+      mutate(std_coefs = map(lm_model, ~ standardize_parameters(.x, method = "refit") %>%
+        as_tibble() %>%
+        filter(Parameter %in% var2extract)))
   }
 
   df_model <- df_model %>%
     unnest(tidy_model) %>%
     filter(term == var2extract)
-  
+
   if (stat2return == "full") {
     df_model <- df_model %>%
       unnest(std_coefs) %>%
@@ -156,10 +158,9 @@ simple_lm <- function(df,
   } else {
     stop("Invalid value for stat2return. Choose from 'statistic', 'p.value', or 'full'.")
   }
-  
+
   return(df_model)
 }
 
 
 brainscore.comp
-

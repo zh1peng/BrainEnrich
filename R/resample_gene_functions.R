@@ -61,8 +61,8 @@ resample_gene <- function(geneList.true, n_perm = 5000) {
 #' @param n_perm An integer indicating the number of permutations to generate (default = 5000).
 #' @param n_cores An integer indicating the number of cores to use for parallel processing (default = 1).
 #' @return A list of resampled gene sets based on the specified constraints.
-#' @import pbapply 
-#' @import parallel 
+#' @import pbapply
+#' @import parallel
 #' @export
 #' @references
 #' Wei, Y., de Lange, S. C., Pijnenburg, R., Scholtens, L. H., Ardesch, D. J., Watanabe, K., Posthuma, D., & van den Heuvel, M. P. (2022).

@@ -25,11 +25,12 @@
 #' \dontrun{
 #' annoData <- get_annoData("GO_BP")
 #' }
-
-get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021", "CellTypes_Seidlitz2020",
-                                  "DGN", "GO_BP", "GO_CC", "GO_MF", "KEGG", "Reactome", "SynGO", "WikiPathways")) {
+get_annoData <- function(type = c(
+                           "CellTypes_Lake2018", "CellTypes_Martins2021", "CellTypes_Seidlitz2020",
+                           "DGN", "GO_BP", "GO_CC", "GO_MF", "KEGG", "Reactome", "SynGO", "WikiPathways"
+                         )) {
   type <- match.arg(type)
-  
+
   # Define local file path
 
 
@@ -45,27 +46,27 @@ get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021",
 
   gene_set_dir <- file.path(extdata_dir, "geneSets")
 
-   if (!dir.exists(gene_set_dir)) {
-      dir.create(gene_set_dir)
-    }
+  if (!dir.exists(gene_set_dir)) {
+    dir.create(gene_set_dir)
+  }
   GeneSetsRDS <- file.path(gene_set_dir, paste0(type, ".rds"))
 
-    # Ensure the gene_set_dir directory exists
+  # Ensure the gene_set_dir directory exists
 
   # Define GitHub URL for downloading the file
   url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneSets/", type, ".rds")
-  
+
   if (!file.exists(GeneSetsRDS)) {
     message(sprintf("File not found locally. Downloading from GitHub... %s", url))
     message("If the download is slow, download manually.")
     message(sprintf("and save files as %s", GeneSetsRDS))
-    options(timeout = 600) 
-    download.file(url, GeneSetsRDS, method = 'libcurl')
+    options(timeout = 600)
+    download.file(url, GeneSetsRDS, method = "libcurl")
   }
-  
+
   message("Loading annotation data...")
   annoData <- readRDS(GeneSetsRDS)
-  
+
   return(annoData)
 }
 
@@ -79,9 +80,9 @@ get_annoData <- function(type = c("CellTypes_Lake2018", "CellTypes_Martins2021",
 #' @param convert_to_symbol Logical; if TRUE, converts gene identifiers to gene symbols.
 #' @return A list of gene sets.
 #' @import DOSE
-#' @export 
+#' @export
 get_geneSetList <- function(annoData) {
-  getGeneSet <- getFromNamespace('getGeneSet', 'DOSE')
+  getGeneSet <- getFromNamespace("getGeneSet", "DOSE")
   geneSetList <- getGeneSet(annoData)
   return(geneSetList)
 }
@@ -91,12 +92,12 @@ get_geneSetList <- function(annoData) {
 #' This function retrieves descriptions for gene sets from annotation data.
 #' @param term term to search from annoData (can be a vector of terms).
 #' @param annoData An environment containing annotation data.
-#' @param strip_prefix A character string to remove from the beginning of each term. 
+#' @param strip_prefix A character string to remove from the beginning of each term.
 #' @return A character vector of gene set descriptions.
 #' @import DOSE
-#' @export 
-get_termDescription <- function(term, annoData, strip_prefix = '') {
-  term = sapply(term, function(x) gsub(strip_prefix, '', x))
+#' @export
+get_termDescription <- function(term, annoData, strip_prefix = "") {
+  term <- sapply(term, function(x) gsub(strip_prefix, "", x))
   TERM2NAME <- getFromNamespace("TERM2NAME", "DOSE")
   termDescrip <- TERM2NAME(term, annoData)
   return(termDescrip)
@@ -123,6 +124,3 @@ filter_geneSetList <- function(bg_genes, geneSetList, minGSSize, maxGSSize) {
   geneSetList_filtered <- geneSet_filter(geneSetList, tmp.val, minGSSize, maxGSSize)
   return(geneSetList_filtered)
 }
-
-
-

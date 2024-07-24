@@ -15,7 +15,7 @@ generate_null_brain_data <- function(brain_data, perm_id) {
     stop("Duplicate entries found in perm_id.")
   }
 
-   if (ncol(brain_data) != 1) {
+  if (ncol(brain_data) != 1) {
     stop("This function is designed for group-level analysis and supports one column of brain data. Consider using lapply.")
   }
   if (is.data.frame(brain_data)) {
@@ -70,21 +70,7 @@ generate_null_brain_data <- function(brain_data, perm_id) {
 #' @importFrom matrixStats rowMins
 #' @importFrom clue solve_LSAP
 #' @export
-#' @examples
-#' dontrun{
-#' # Example usage with both hemispheres
-#' coord.l <- matrix(runif(30), nrow = 10, ncol = 3)
-#' coord.r <- matrix(runif(30), nrow = 10, ncol = 3)
-#' permutations <- rotate_parcellation(coord.l, coord.r)
-#'
-#' # Example usage with one hemisphere (left)
-#' coord.l <- matrix(runif(30), nrow = 10, ncol = 3)
-#' permutations <- rotate_parcellation(coord.l, NULL)
-#'
-#' # Example usage with one hemisphere (right)
-#' coord.r <- matrix(runif(30), nrow = 10, ncol = 3)
-#' permutations <- rotate_parcellation(NULL, coord.r)
-#' }
+
 rotate_parcellation <- function(coord.l = NULL,
                                 coord.r = NULL, nrot = 5000,
                                 method = c("hungarian", "vasa"),

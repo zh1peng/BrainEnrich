@@ -19,26 +19,27 @@ knitr::opts_chunk$set(
 library(readxl)
 library(dplyr)
 library(tidyr)
-  if (!requireNamespace("BiocManager", quietly = TRUE)) {
-      install.packages("BiocManager")}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 
-  bioc_packages <- c("org.Hs.eg.db", "clusterProfiler", "DOSE","ReactomePA", "reactome.db")
-  for (pkg in bioc_packages) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      BiocManager::install(pkg)
-    }
+bioc_packages <- c("org.Hs.eg.db", "clusterProfiler", "DOSE", "ReactomePA", "reactome.db")
+for (pkg in bioc_packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    BiocManager::install(pkg)
   }
+}
 
 build_Anno <- getFromNamespace("build_Anno", "DOSE")
 ```
 # Gene ontology (GO) gene sets
 ```{r include=T, eval=F}
 get_GO_data <- getFromNamespace("get_GO_data", "clusterProfiler")
-annoData <- get_GO_data("org.Hs.eg.db", ont = 'BP', keytype = "SYMBOL")
-#saveRDS(annoData, file = "extdata/geneSets/GO_BP.rds", compress = "xz")
-annoData <- get_GO_data("org.Hs.eg.db", ont = 'MF', keytype = "SYMBOL")
-#saveRDS(annoData, file = "extdata/geneSets/GO_MF.rds", compress = "xz")
-annoData <- get_GO_data("org.Hs.eg.db", ont = 'CC', keytype = "SYMBOL")
+annoData <- get_GO_data("org.Hs.eg.db", ont = "BP", keytype = "SYMBOL")
+# saveRDS(annoData, file = "extdata/geneSets/GO_BP.rds", compress = "xz")
+annoData <- get_GO_data("org.Hs.eg.db", ont = "MF", keytype = "SYMBOL")
+# saveRDS(annoData, file = "extdata/geneSets/GO_MF.rds", compress = "xz")
+annoData <- get_GO_data("org.Hs.eg.db", ont = "CC", keytype = "SYMBOL")
 save(annoData, file = "extdata/geneSets/GO_CC.rds", compress = "xz")
 # check version of org.Hs.eg.db
 packageVersion("clusterProfiler")
@@ -47,17 +48,17 @@ packageVersion("org.Hs.eg.db")
 
 # DisGeNET gene sets
 ```{r include=T, eval=F}
- get_DGN_data <- getFromNamespace("get_DGN_data", "DOSE")
- annoData <- get_DGN_data()
- save(annoData, file = "extdata/geneSets/DGN.rds", compress = "xz")
- packageVersion("DOSE")
+get_DGN_data <- getFromNamespace("get_DGN_data", "DOSE")
+annoData <- get_DGN_data()
+save(annoData, file = "extdata/geneSets/DGN.rds", compress = "xz")
+packageVersion("DOSE")
 ```
 
 # KEGG
 ```{r include=T, eval=F}
 prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
 annoData <- prepare_KEGG("hsa", "MKEGG", "kegg")
-#saveRDS(annoData, file = "extdata/geneSets/KEGG.rds", compress = "xz")
+# saveRDS(annoData, file = "extdata/geneSets/KEGG.rds", compress = "xz")
 packageVersion("clusterProfiler")
 ```
 
@@ -69,7 +70,7 @@ TERM2GENE <- wpdata$WPID2GENE
 TERM2NAME <- wpdata$WPID2NAME
 build_Anno <- getFromNamespace("build_Anno", "DOSE")
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/WikiPathways.rds", compress = "xz")
+# saveRDS(annoData, file = "extdata/geneSets/WikiPathways.rds", compress = "xz")
 packageVersion("clusterProfiler")
 ```
 
@@ -77,7 +78,7 @@ packageVersion("clusterProfiler")
 ```{r include=T, eval=F}
 get_Reactome_DATA <- getFromNamespace("get_Reactome_DATA", "ReactomePA")
 annoData <- get_Reactome_DATA("human")
-#saveRDS(annoData, file = "extdata/geneSets/Reactome.rds", compress = "xz")
+# saveRDS(annoData, file = "extdata/geneSets/Reactome.rds", compress = "xz")
 ```
 
 # SynGO (how to make annoDat from xlsx)
@@ -88,10 +89,13 @@ url <- "https://www.syngoportal.org/data/SynGO_bulk_download_release_20231201.zi
 zip_path <- tempfile(fileext = ".zip")
 temp_dir <- tempdir()
 # Clean-up function to ensure temp files are removed
-on.exit({
-  if (file.exists(zip_path)) unlink(zip_path)
-  if (file.exists(extracted_file)) unlink(extracted_file)
-}, add = TRUE)
+on.exit(
+  {
+    if (file.exists(zip_path)) unlink(zip_path)
+    if (file.exists(extracted_file)) unlink(extracted_file)
+  },
+  add = TRUE
+)
 extracted_file <- file.path(temp_dir, "syngo_ontologies.xlsx")
 download.file(url, zip_path, mode = "wb")
 unzip(zip_path, files = "syngo_ontologies.xlsx", exdir = temp_dir)
@@ -115,7 +119,7 @@ TERM2NAME <- data %>%
 # Use build_Anno function from DOSE package
 build_Anno <- getFromNamespace("build_Anno", "DOSE")
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/SynGO.rds",compress='xz')
+# saveRDS(annoData, file = "extdata/geneSets/SynGO.rds",compress='xz')
 ```
 
 
@@ -128,9 +132,12 @@ url <- "https://github.com/jms290/PolySyn_MSNs/blob/master/Data/AHBA/celltypes_P
 # Create temporary file
 temp_file <- tempfile()
 # Clean-up function to ensure temp files are removed
-on.exit({
-  if (file.exists(temp_file)) unlink(temp_file)
-}, add = TRUE)
+on.exit(
+  {
+    if (file.exists(temp_file)) unlink(temp_file)
+  },
+  add = TRUE
+)
 
 download.file(url, temp_file, mode = "wb")
 
@@ -143,7 +150,7 @@ TERM2NAME <- TERM2GENE %>%
   dplyr::mutate(description = term) %>%
   dplyr::select(term, description)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/CellTypes_Seidlitz2020.rds", compress = "xz")
+# saveRDS(annoData, file = "extdata/geneSets/CellTypes_Seidlitz2020.rds", compress = "xz")
 ```
 
 
@@ -155,9 +162,12 @@ url <- "https://github.com/molecular-neuroimaging/Imaging_Transcriptomics/raw/ma
 # Create temporary file
 temp_file <- tempfile()
 # Clean-up function to ensure temp files are removed
-on.exit({
-  if (file.exists(temp_file)) unlink(temp_file)
-}, add = TRUE)
+on.exit(
+  {
+    if (file.exists(temp_file)) unlink(temp_file)
+  },
+  add = TRUE
+)
 
 
 download.file(url, temp_file, mode = "wb")
@@ -171,7 +181,7 @@ TERM2NAME <- TERM2GENE %>%
   dplyr::mutate(description = term) %>%
   dplyr::select(term, description)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/CellTypes_Lake2018.rds", compress = "xz")
+# saveRDS(annoData, file = "extdata/geneSets/CellTypes_Lake2018.rds", compress = "xz")
 ```
 
 # CellTypes Martins2021 (how to prepare annoData with a gmt file)
@@ -182,9 +192,12 @@ url <- "https://github.com/molecular-neuroimaging/Imaging_Transcriptomics/raw/ma
 # Create temporary file
 temp_file <- tempfile()
 # Clean-up function to ensure temp files are removed
-on.exit({
-  if (file.exists(temp_file)) unlink(temp_file)
-}, add = TRUE)
+on.exit(
+  {
+    if (file.exists(temp_file)) unlink(temp_file)
+  },
+  add = TRUE
+)
 download.file(url, temp_file, mode = "wb")
 # Read GMT file
 TERM2GENE <- suppressWarnings({
@@ -196,7 +209,7 @@ TERM2NAME <- TERM2GENE %>%
   dplyr::mutate(description = term) %>%
   dplyr::select(term, description)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-#saveRDS(annoData, file = "extdata/geneSets/CellTypes_Martins2021.rds", compress = "xz")
+# saveRDS(annoData, file = "extdata/geneSets/CellTypes_Martins2021.rds", compress = "xz")
 ```
 
 
