@@ -99,7 +99,7 @@ brainenrich <- function(brain_data,
   if (null_model == "spin_brain") {
     message("Generating null brain data with spin_brain model...")
     if (is.null(perm_id)) {
-      perm_id <- rotate_parcellation(coord.l = coord.l, coord.r = coord.r, nrot = n_perm)
+      perm_id <- rotate_parcellation(coord.l = coord.l, coord.r = coord.r, nrot = n_perm,seed=seed)
     }
     null_brain_data <- generate_null_brain_data(brain_data, perm_id)
     geneList.null <- corr_brain_gene(gene_data = gene_data, brain_data = null_brain_data, method = cor_method)
@@ -110,7 +110,7 @@ brainenrich <- function(brain_data,
     gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
   } else if (null_model == "coexp_matched") {
     message("Generating null gene list with coexp_matched model...")
-    sampled_gs <- resample_gene_coexp_matched(gene_data, geneSetList, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
+    sampled_gs <- resample_geneSetList_matching_coexp(gene_data, geneSetList, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
     gs_score.null <- aggregate_geneSetList_matching_coexp(geneList.true, selected.gs, sampled_gs, method = aggre_method, n_cores = n_cores)
   }
 
@@ -171,8 +171,8 @@ brainenrich <- function(brain_data,
     ))
   } else {
     message("Identifying core genes...")
-    servived.gs <- selected.gs[res$ID]
-    core_genes <- find_core_genes(geneList.true, servived.gs, method = aggre_method, n_cores = n_cores, threshold_type = thres_type, threshold = thres_val)
+    survived.gs <- selected.gs[res$ID]
+    core_genes <- find_core_genes(geneList.true, survived.gs, method = aggre_method, n_cores = n_cores, threshold_type = thres_type, threshold = thres_val)
     res$core_enrichment <- sapply(core_genes, paste0, collapse = "/")
 
     message("Analysis complete.")
