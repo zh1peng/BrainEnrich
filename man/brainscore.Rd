@@ -10,11 +10,18 @@ brainscore(
   annoData,
   cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
   aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig",
-    "ks_weighted", "ks_pos_neg_sum", "local_fdr", "sign_test", "rank_sum", "custom"),
-  prefix = NULL,
+    "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
+  null_model = c("none", "spin_brain", "resample_gene", "coexp_matched"),
   minGSSize = 10,
   maxGSSize = 200,
-  n_cores = 0
+  n_cores = 0,
+  n_perm = 5000,
+  perm_id = NULL,
+  coord.l = NULL,
+  coord.r = NULL,
+  seed = NULL,
+  matchcoexp_tol = 0.05,
+  matchcoexp_max_iter = 1e+06
 )
 }
 \arguments{
@@ -24,24 +31,35 @@ brainscore(
 
 \item{annoData}{An environment containing annotation data.}
 
-\item{cor_method}{A character string specifying the correlation method.
-Default is 'pearson'. Other options include 'spearman', 'pls1c',
-'pls1w', 'custom'.}
+\item{cor_method}{A character string specifying the correlation method. Default is 'pearson'. Other options include 'spearman', 'pls1c', 'pls1w', 'custom'.}
 
-\item{aggre_method}{A character string specifying the aggregation method.
-Default is 'mean'. Other options include 'median', 'meanabs',
-'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum',
-'local_fdr', 'sign_test', 'rank_sum', 'custom'.}
+\item{aggre_method}{A character string specifying the aggregation method. Default is 'mean'. Other options include 'median', 'meanabs', 'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.}
 
-\item{prefix}{A character string to be prefixed to the column names of the result. Default is NULL.}
+\item{null_model}{A character string specifying the null model. Default is 'none'. Other options include 'spin_brain', 'resample_gene', 'coexp_matched'.}
 
 \item{minGSSize}{An integer specifying the minimum gene set size. Default is 10.}
 
 \item{maxGSSize}{An integer specifying the maximum gene set size. Default is 200.}
+
+\item{n_cores}{An integer specifying the number of cores to use for parallel processing. Default is 0 (no parallel processing).}
+
+\item{n_perm}{An integer specifying the number of permutations for null models. Default is 5000.}
+
+\item{perm_id}{A matrix of permutation indices for 'spin_brain' null model. Default is NULL. Either perm_id or any of coord.l or coord.r must be provided if choosing spin_brain mode.}
+
+\item{coord.l}{A matrix of coordinates for the left hemisphere for 'spin_brain' null model. Default is NULL.}
+
+\item{coord.r}{A matrix of coordinates for the right hemisphere for 'spin_brain' null model. Default is NULL.}
+
+\item{seed}{An integer specifying the seed for reproducibility of spinning brain. Default is NULL.}
+
+\item{matchcoexp_tol}{A numeric value specifying the tolerance for matching co-expression in 'coexp_matched' null model. Default is 0.05.}
+
+\item{matchcoexp_max_iter}{An integer specifying the maximum iterations for matching co-expression in 'coexp_matched' null model. Default is 1000000.}
 }
 \value{
 A data frame containing the gene set scores with regions as rows and gene sets as columns.
 }
 \description{
-This function calculates scores for gene sets based on brain data.
+This function calculates scores for gene sets based on brain data. It includes options for different null models.
 }

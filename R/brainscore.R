@@ -104,6 +104,11 @@ brainscore <- function(brain_data,
   } else if (null_model == "coexp_matched") {
     message("Generating null gene list with coexp_matched model...")
     sampled_gs <- resample_geneSetList_matching_coexp(gene_data, selected.gs, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
+    
+    if (is.null(sampled_gs)) {
+      stop("NULL sampled_gs returned.")
+    }
+    
     if (!identical(names(geneSetList), names(sampled_gs))) {
       stop("geneSetList and sampled_geneSetList are not matched.")
     }
@@ -133,19 +138,22 @@ brainscore <- function(brain_data,
 #' This function fits linear models for specified dependent variables using given predictors and covariates.
 #' It returns a data frame containing model summaries.
 #'
-#' @param df A data frame containing the data.
-#' @param dependent_vars A character vector of dependent variable names.
-#' @param pred_var A character vector of predictor variable names.
-#' @param cov_vars A character vector of covariate variable names.
-#' @param var2extract A character string or vector specifying which predictor's coefficient to extract. If NULL, defaults to pred_var. For a factor variable, specify the level to extract.
-#' @param stat2return A character string specifying which statistic to return ("statistic", "p.value", or "full"). Default is "full". "statistic" returns only the t-value for permutation purpose, "p.value" returns only the p-value for simulation analysis, and "full" returns all information for the parametric test.
-#' @return A data frame containing model summaries.
+#' @param dependent_df A data frame containing the dependent variables.
+#' @param pred_df A data frame containing the predictor variables.
+#' @param cov_df A data frame containing the covariate variables.
+#' @param stat2return A character string specifying which statistic to return ("statistic", "p.value", or "full"). Default is "full". "statistic" returns only the t-value for permutation purposes, "p.value" returns only the p-value for simulation analysis, and "full" returns all information for the parametric test.
+#' @return A data frame containing model summaries. Depending on `stat2return`, the output can include different statistics:
+#' \itemize{
+#'   \item If `stat2return` is "all", the output includes unstandardized and standardized coefficients, standard errors, t-values, confidence intervals, p-values, adjusted p-values, and significance markers.
+#'   \item If `stat2return` is "tval", the output includes only the t-values.
+#'   \item If `stat2return` is "pval", the output includes only the p-values.
+#' }
 #' @import dplyr tidyr purrr broom parameters
 #' @export
 simple_lm <- function(dependent_df,
                       pred_df,
                       cov_df,
-                      stat2return = c("full", "statistic", "p.value")) {
+                      stat2return = c("all", "tval", "pval")) {
   
   stat2return <- match.arg(stat2return)
   # Check if the specified variables exist in the data frame
@@ -154,22 +162,23 @@ simple_lm <- function(dependent_df,
   pred_var <- colnames(pred_df)
   cov_vars <- colnames(cov_df)
 
-if (is.numeric(pred_df[[pred_var]])) {
-      # If the column is a continuous variable
-      var2extract <- pred_var
-    } else if (is.factor(pred_df[[pred_var]])) {
-      levels_var <- levels(pred_df[[pred_var]])
-      if (length(levels_var) == 2) {
-        # Ensure the first level is the reference
-        pred_df[[pred_var]] <- relevel(pred_df[[pred_var]], ref = levels_var[1])
-        # Create var2extract with the second level
-        var2extract <-  paste0(var, levels_var[2])
-      } else {
-        # Stop if the factor has more than two levels
-        stop("If you have more than two levels in pred_df, considering analysis directly with brain score data ")
-      }
-     } 
+  if (is.numeric(pred_df[[pred_var]])) {
+    # If the column is a continuous variable
+    var2extract <- pred_var
+  } else if (is.factor(pred_df[[pred_var]])) {
+    levels_var <- levels(pred_df[[pred_var]])
+    if (length(levels_var) == 2) {
+      # Ensure the first level is the reference
+      pred_df[[pred_var]] <- relevel(pred_df[[pred_var]], ref = levels_var[1])
+      # Create var2extract with the second level
+      var2extract <- paste0(pred_var, levels_var[2])
+    } else {
+      # Stop if the factor has more than two levels
+      stop("If you have more than two levels in pred_df, consider analysis directly with brain score data.")
+    }
+  }
 
+  # Pivot longer, group, nest, and fit models
   df_model <- df %>%
     pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
     group_by(Dependent_vars) %>%
@@ -177,55 +186,48 @@ if (is.numeric(pred_df[[pred_var]])) {
     mutate(
       lm_model = map(data, ~ lm(paste("Dependent_value", "~", paste(c(pred_var, cov_vars), collapse = "+")), data = .x)),
       tidy_model = map(lm_model, tidy)
-    )
-
-  # Conditionally calculate std_coefs only if stat2return is "full"
-  if (stat2return == "full") {
-    df_model <- df_model %>%
-      mutate(std_coefs = map(lm_model, ~ standardize_parameters(.x, method = "refit") %>%
-        as_tibble() %>%
-        filter(Parameter %in% var2extract)))
-  }
-
-  df_model <- df_model %>%
+    ) %>%
+    {if (stat2return == "all") {
+         mutate(., std_coefs = map(lm_model, ~ standardize_parameters(.x, method = "refit")))
+      } else {
+        .
+      }
+    } %>%
     unnest(tidy_model) %>%
-    filter(term == var2extract)
-
-  if (stat2return == "full") {
-    df_model <- df_model %>%
-      unnest(std_coefs) %>%
-      filter(Parameter == var2extract) %>%
-      mutate(
-        p.adj = p.adjust(p.value, method = "fdr"),
-        ifsig = case_when(
-          p.adj < 0.001 ~ "***",
-          p.adj < 0.01 ~ "**",
-          p.adj < 0.05 ~ "*",
-          TRUE ~ "n.s."
-        )
-      ) %>%
-      dplyr::select(Dependent_vars, term, estimate, std.error, statistic, Std_Coefficient, CI_low, CI_high, p.value, p.adj, ifsig) %>%
-      rename(
-        Predictor = term,
-        Unstandardized_Coefficient = estimate,
-        Standard_Error = std.error,
-        t_Value = statistic,
-        Standardized_Coefficient = Std_Coefficient,
-        CI_95_Lower = CI_low,
-        CI_95_Upper = CI_high,
-        p.val = p.value
-      )
-  } else if (stat2return == "statistic") {
-    df_model <- df_model %>%
-      dplyr::select(Dependent_vars, term, statistic) %>%
-      rename(Predictor = term, t_Value = statistic)
-  } else if (stat2return == "p.value") {
-    df_model <- df_model %>%
-      dplyr::select(Dependent_vars, term, p.value) %>%
-      rename(Predictor = term, p.val = p.value)
-  } else {
-    stop("Invalid value for stat2return. Choose from 'statistic', 'p.value', or 'full'.")
-  }
-
+    filter(term == var2extract) %>%
+    {if (stat2return == "all") {
+          unnest(., std_coefs) %>%
+          filter(Parameter == var2extract) %>%
+          ungroup() %>%
+          mutate(
+            p.adj = p.adjust(p.value, method = "fdr"),
+            ifsig = case_when(
+              p.adj < 0.001 ~ "***",
+              p.adj < 0.01 ~ "**",
+              p.adj < 0.05 ~ "*",
+              TRUE ~ "n.s."
+            )
+          ) %>%
+          dplyr::select(Dependent_vars, term, estimate, std.error, statistic, Std_Coefficient, CI_low, CI_high, p.value, p.adj, ifsig) %>%
+          rename(
+            Predictor = term,
+            Unstandardized_Coefficient = estimate,
+            Standard_Error = std.error,
+            t_Value = statistic,
+            Standardized_Coefficient = Std_Coefficient,
+            CI_95_Lower = CI_low,
+            CI_95_Upper = CI_high,
+            p.val = p.value
+          )
+      } else if (stat2return == "tval") {
+          dplyr::select(., Dependent_vars, term, statistic) %>%
+          rename(Predictor = term, tval = statistic) %>%
+          ungroup()
+      } else if (stat2return == "pval") {
+          dplyr::select(., Dependent_vars, term, p.value) %>%
+          rename(Predictor = term, pval = p.value) %>%
+          ungroup()
+      } 
+    }
   return(df_model)
 }

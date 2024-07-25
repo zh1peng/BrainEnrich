@@ -99,7 +99,7 @@ brainenrich <- function(brain_data,
   if (null_model == "spin_brain") {
     message("Generating null brain data with spin_brain model...")
     if (is.null(perm_id)) {
-      perm_id <- rotate_parcellation(coord.l = coord.l, coord.r = coord.r, nrot = n_perm,seed=seed)
+      perm_id <- rotate_parcellation(coord.l = coord.l, coord.r = coord.r, nrot = n_perm, seed = seed)
     }
     null_brain_data <- generate_null_brain_data(brain_data, perm_id)
     geneList.null <- corr_brain_gene(gene_data = gene_data, brain_data = null_brain_data, method = cor_method)
