@@ -20,7 +20,7 @@ brainenrich(
   coord.l = NULL,
   coord.r = NULL,
   seed = NULL,
-  thres_type = c("sd", "percentile"),
+  threshold_type = c("sd", "percentile"),
   thres_val = 1,
   pvalueCutoff = 0.05,
   pAdjustMethod = "fdr",
@@ -64,7 +64,7 @@ Default is 'spin_brain'. Other options include 'resample_gene',
 
 \item{seed}{An integer specifying the seed for reproducibility of spinning brain. Default is NULL.}
 
-\item{thres_type}{A character string specifying the threshold type for core genes.
+\item{threshold_type}{A character string specifying the threshold type for core genes.
 Default is 'sd'. Other option is 'percentile'.}
 
 \item{thres_val}{A numeric value specifying the threshold value for core genes. Default is 1.}

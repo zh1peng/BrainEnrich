@@ -97,6 +97,7 @@ brainscore <- function(brain_data,
         message(paste("Processing permutation", idx, "of", n_perm, "..."))
       }
       geneList.null <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
+      rownames(geneList.null) <- rownames(geneList)
       gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
       return(gs_score.null)
     })
@@ -146,14 +147,15 @@ brainscore <- function(brain_data,
 #' \itemize{
 #'   \item If `stat2return` is "all", the output includes unstandardized and standardized coefficients, standard errors, t-values, confidence intervals, p-values, adjusted p-values, and significance markers.
 #'   \item If `stat2return` is "tval", the output includes only the t-values.
+#'   \item If `stat2return` is "tval", the output includes only the t-values as a list.
 #'   \item If `stat2return` is "pval", the output includes only the p-values.
 #' }
-#' @import dplyr tidyr purrr broom parameters
+#' @import dplyr tidyr purrr broom parameters tibble
 #' @export
 simple_lm <- function(dependent_df,
                       pred_df,
                       cov_df,
-                      stat2return = c("all", "tval", "pval")) {
+                      stat2return = c("all", "tval", "pval",'tval_list')) {
   
   stat2return <- match.arg(stat2return)
   # Check if the specified variables exist in the data frame
@@ -179,27 +181,27 @@ simple_lm <- function(dependent_df,
   }
 
   # Pivot longer, group, nest, and fit models
-  df_model <- df %>%
-    pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
-    group_by(Dependent_vars) %>%
-    nest() %>%
-    mutate(
-      lm_model = map(data, ~ lm(paste("Dependent_value", "~", paste(c(pred_var, cov_vars), collapse = "+")), data = .x)),
+  res <- df %>%
+    tidyr::pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
+    dplyr::group_by(Dependent_vars) %>%
+    tidyr::nest() %>%
+    dplyr::mutate(
+      lm_model = map(data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
       tidy_model = map(lm_model, tidy)
     ) %>%
     {if (stat2return == "all") {
-         mutate(., std_coefs = map(lm_model, ~ standardize_parameters(.x, method = "refit")))
+         dplyr::mutate(., std_coefs = map(lm_model, ~ standardize_parameters(.x, method = "refit")))
       } else {
         .
       }
     } %>%
-    unnest(tidy_model) %>%
-    filter(term == var2extract) %>%
+    tidyr::unnest(tidy_model) %>%
+    dplyr::filter(term == var2extract) %>%
     {if (stat2return == "all") {
           unnest(., std_coefs) %>%
-          filter(Parameter == var2extract) %>%
-          ungroup() %>%
-          mutate(
+          dplyr::filter(Parameter == var2extract) %>%
+          dplyr::ungroup() %>%
+          dplyr::mutate(
             p.adj = p.adjust(p.value, method = "fdr"),
             ifsig = case_when(
               p.adj < 0.001 ~ "***",
@@ -209,7 +211,7 @@ simple_lm <- function(dependent_df,
             )
           ) %>%
           dplyr::select(Dependent_vars, term, estimate, std.error, statistic, Std_Coefficient, CI_low, CI_high, p.value, p.adj, ifsig) %>%
-          rename(
+          dplyr::rename(
             Predictor = term,
             Unstandardized_Coefficient = estimate,
             Standard_Error = std.error,
@@ -221,13 +223,18 @@ simple_lm <- function(dependent_df,
           )
       } else if (stat2return == "tval") {
           dplyr::select(., Dependent_vars, term, statistic) %>%
-          rename(Predictor = term, tval = statistic) %>%
-          ungroup()
-      } else if (stat2return == "pval") {
+          dplyr::rename(Predictor = term, tval = statistic) %>%
+          dplyr::ungroup()
+      } else if (stat2return == "tval_list") {
+          dplyr::select(., Dependent_vars, statistic) %>%
+          tibble::deframe() %>%
+          as.list()
+      }
+       else if (stat2return == "pval") {
           dplyr::select(., Dependent_vars, term, p.value) %>%
-          rename(Predictor = term, pval = p.value) %>%
-          ungroup()
+          dplyr::rename(Predictor = term, pval = p.value) %>%
+          dplyr::ungroup()
       } 
     }
-  return(df_model)
+  return(res)
 }

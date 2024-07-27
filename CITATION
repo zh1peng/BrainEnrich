@@ -2,13 +2,24 @@ citHeader("To cite package 'BrainEnrich' in publications use:")
 
 bibentry(
   bibtype = "Article",
-  title = "BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment",
+  title = "Unraveling the molecular relevance of brain phenotypes: A comparative analysis of null models and test statistics",
   author = c(
-    person(given = "Zhipeng", family = "Cao")
+    person(given = "Zhipeng", family = "Cao"),
+    person(given = "Guilai", family = "Zhan"),
+    person(given = "Jinmei", family = "Qin"),
+    person(given = "Renata B", family = "Cupertino"),
+    person(given = "Jonatan", family = "Ottino-Gonzalez"),
+    person(given = "Alistair", family = "Murphy"),
+    person(given = "Devarshi", family = "Pancholi"),
+    person(given = "Sage", family = "Hahn"),
+    person(given = "Dekang", family = "Yuan"),
+    person(given = "Peter", family = "Callas"),
+    person(given = "Scott", family = "Mackey"),
+    person(given = "Hugh", family = "Garavan"),
   ),
-  journal = "NeuroImage",
+  journal = "Neuroimage",
   year = 2024,
-  volume = 1,
-  pages = "1-10",
-  doi = "10.1234/jbio.2024.001"
+  volume = 293,
+  pages = "120622",
+  publisher = "Elsevier"
 )

@@ -23,7 +23,7 @@
 #' @param n_cores An integer specifying the number of cores to use. Default is 0.
 #' @param minGSSize An integer specifying the minimum gene set size. Default is 10.
 #' @param maxGSSize An integer specifying the maximum gene set size. Default is 200.
-#' @param thres_type A character string specifying the threshold type for core genes.
+#' @param threshold_type A character string specifying the threshold type for core genes.
 #'                   Default is 'sd'. Other option is 'percentile'.
 #' @param thres_val A numeric value specifying the threshold value for core genes. Default is 1.
 #' @param pvalueCutoff A numeric value specifying the p-value cutoff for output. Default is 0.05.
@@ -54,7 +54,7 @@ brainenrich <- function(brain_data,
                         coord.l = NULL,
                         coord.r = NULL,
                         seed = NULL,
-                        thres_type = c("sd", "percentile"),
+                        threshold_type = c("sd", "percentile"),
                         thres_val = 1,
                         pvalueCutoff = 0.05,
                         pAdjustMethod = "fdr",
@@ -84,7 +84,7 @@ brainenrich <- function(brain_data,
   cor_method <- match.arg(cor_method)
   aggre_method <- match.arg(aggre_method)
   null_model <- match.arg(null_model)
-  thres_type <- match.arg(thres_type)
+  threshold_type <- match.arg(threshold_type)
 
   # Perform analysis
   message("Calculating true gene-brain correlations...")
@@ -138,7 +138,7 @@ brainenrich <- function(brain_data,
     corMethod = cor_method,
     aggreMethod = aggre_method,
     nullType = null_model,
-    thresType = thres_type,
+    thresType = threshold_type,
     thresVal = thres_val
   )
 
@@ -172,7 +172,7 @@ brainenrich <- function(brain_data,
   } else {
     message("Identifying core genes...")
     survived.gs <- selected.gs[res$ID]
-    core_genes <- find_core_genes(geneList.true, survived.gs, method = aggre_method, n_cores = n_cores, threshold_type = thres_type, threshold = thres_val)
+    core_genes <- find_core_genes(geneList.true, survived.gs, method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = thres_val)
     res$core_enrichment <- sapply(core_genes, paste0, collapse = "/")
 
     message("Analysis complete.")

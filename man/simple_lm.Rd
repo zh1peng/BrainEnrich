@@ -8,24 +8,26 @@ simple_lm(
   dependent_df,
   pred_df,
   cov_df,
-  stat2return = c("full", "statistic", "p.value")
+  stat2return = c("all", "tval", "pval", "tval_list")
 )
 }
 \arguments{
-\item{stat2return}{A character string specifying which statistic to return ("statistic", "p.value", or "full"). Default is "full". "statistic" returns only the t-value for permutation purpose, "p.value" returns only the p-value for simulation analysis, and "full" returns all information for the parametric test.}
+\item{dependent_df}{A data frame containing the dependent variables.}
 
-\item{df}{A data frame containing the data.}
+\item{pred_df}{A data frame containing the predictor variables.}
 
-\item{dependent_vars}{A character vector of dependent variable names.}
+\item{cov_df}{A data frame containing the covariate variables.}
 
-\item{pred_var}{A character vector of predictor variable names.}
-
-\item{cov_vars}{A character vector of covariate variable names.}
-
-\item{var2extract}{A character string or vector specifying which predictor's coefficient to extract. If NULL, defaults to pred_var. For a factor variable, specify the level to extract.}
+\item{stat2return}{A character string specifying which statistic to return ("statistic", "p.value", or "full"). Default is "full". "statistic" returns only the t-value for permutation purposes, "p.value" returns only the p-value for simulation analysis, and "full" returns all information for the parametric test.}
 }
 \value{
-A data frame containing model summaries.
+A data frame containing model summaries. Depending on \code{stat2return}, the output can include different statistics:
+\itemize{
+\item If \code{stat2return} is "all", the output includes unstandardized and standardized coefficients, standard errors, t-values, confidence intervals, p-values, adjusted p-values, and significance markers.
+\item If \code{stat2return} is "tval", the output includes only the t-values.
+\item If \code{stat2return} is "tval", the output includes only the t-values as a list.
+\item If \code{stat2return} is "pval", the output includes only the p-values.
+}
 }
 \description{
 This function fits linear models for specified dependent variables using given predictors and covariates.

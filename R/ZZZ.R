@@ -9,7 +9,7 @@
   packageStartupMessage("Welcome to ", pkgname, "!")
   packageStartupMessage("To cite the package, please use the following reference:")
   citation_info <- citation(pkgname)
-  packageStartupMessage(citation_info$textVersion)
+  packageStartupMessage(capture.output(print(citation_info, style="text")))
 }
 
 
