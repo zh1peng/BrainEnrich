@@ -114,8 +114,8 @@ identify_core_genes <- function(changes, threshold_type = c("sd", "percentile"),
     }
     threshold <- quantile(changes, probs = threshold_value / 100)
   } else if (threshold_type == "sd") {
-    if (threshold_value < 0 || threshold_value > 3) {
-      stop("For 'sd', threshold_value should be between 0 and 3.")
+    if (threshold_value < 0 || threshold_value > 4) {
+      stop("For 'sd', threshold_value should be between 0 and 4.")
     }
     mean_change <- mean(changes)
     sd_change <- sd(changes)
