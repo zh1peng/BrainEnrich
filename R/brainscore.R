@@ -564,7 +564,7 @@ brainscore.simulate <- function(pred_df,
         }
         stat.null <- list_transpose(stat.tmp)
         np_pval <- calculate_pvals(stat.true, stat.null, method = "standard")
-        np_p.adj <- p.adjust(np_pval, method = pAdjustMethod)
+        np_p.adj <- p.adjust(np_pval, method = 'fdr')
 
         check_names <- all(
           names(stat.true) == names(stat.null),
@@ -618,8 +618,12 @@ brainscore.simulate <- function(pred_df,
       rownames(sim.geneList) <- rownames(geneList)
       sim.gsScore <- aggregate_geneSetList(sim.geneList, selected.gs, method = aggre_method, n_cores = n_cores)
       dependent_df.true <- data.frame(sim.gsScore, check.names = FALSE)
-
+       message("Aggregating gene set scores in resample_gene mode...")
+      progress_interval <- max(1, round(n_perm / 10))     
       gsScoreList.null <- lapply(1:n_perm, function(idx) {
+         if (idx %% progress_interval == 0) {
+        message(paste("Processing permutation", idx, "of", n_perm, "..."))
+      }
         geneList.null <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
         rownames(geneList.null) <- rownames(geneList)
         gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
@@ -653,7 +657,7 @@ brainscore.simulate <- function(pred_df,
         }
         stat.null <- list_transpose(stat.tmp)
         np_pval <- calculate_pvals(stat.true, stat.null, method = "standard")
-        np_p.adj <- p.adjust(np_pval, method = pAdjustMethod)
+        np_p.adj <- p.adjust(np_pval, method = 'fdr')
 
         check_names <- all(
           names(stat.true) == names(stat.null),

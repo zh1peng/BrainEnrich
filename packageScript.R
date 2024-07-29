@@ -87,3 +87,4 @@ devtools::install_github("zh1peng/BrainEnrich")
 
 # fix push issue
 git config --global --unset http.proxy
+git push origin
