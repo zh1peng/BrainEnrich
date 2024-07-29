@@ -443,13 +443,11 @@ brainscore.simulate <- function(pred_df,
                                 annoData,
                                 sim_n = 1000,
                                 subsample_size = 100,
-                                sim_type = c("randomize_pred", "spin_brain", "resample_gene", "coexp_matched"),
+                                sim_type = c("randomize_pred", "spin_brain", "resample_gene"),
                                 cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
                                 aggre_method = c(
                                   "mean", "median", "meanabs", "meansqr", "maxmean",
-                                  "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"
-                                ),
-                                null_model = c("spin_brain", "resample_gene"), # score in null setting?
+                                  "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
                                 minGSSize = 10,
                                 maxGSSize = 200,
                                 n_cores = 0,
