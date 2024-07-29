@@ -66,7 +66,7 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
     }, cl = cl)
   } else if (!type1_analysis & is.data.frame(pred_df) & is.data.frame(cov_df)) {
     # Export necessary variables to the cluster
-    clusterExport(cl, varlist = c("geneList", "aggregate_geneSet", "aggre_method", "pred_df", "cov_df"), envir = environment())
+    clusterExport(cl, varlist = c("geneList", "aggregate_geneSet", "aggre_method", "pred_df", "cov_df","simple_lm"), envir = environment())
 
     loo_changes <- pblapply(seq_along(geneSetList), function(i) {
       gs <- geneSetList[[i]]

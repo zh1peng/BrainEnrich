@@ -20,7 +20,7 @@ brainenrich(
   coord.l = NULL,
   coord.r = NULL,
   seed = NULL,
-  threshold_type = c("sd", "percentile"),
+  threshold_type = c("sd", "percentile", "none"),
   thres_val = 1,
   pvalueCutoff = 0.05,
   pAdjustMethod = "fdr",

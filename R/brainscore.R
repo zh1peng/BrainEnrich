@@ -274,7 +274,6 @@ simple_lm <- function(dependent_df,
 #' @param matchcoexp_max_iter Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.
 #' @return A data frame containing the results of the linear model test, including p-values, adjusted p-values,
 #'         q-values, descriptions, and core genes.
-#' @importFrom DOSE calculate_qvalue
 #' @export
 brainscore.lm_test <- function(pred_df,
                                cov_df,
@@ -306,7 +305,8 @@ brainscore.lm_test <- function(pred_df,
   aggre_method <- match.arg(aggre_method)
   null_model <- match.arg(null_model)
   threshold_type <- match.arg(threshold_type)
-
+  
+  message("=========Emprical model======")
   # Generate true gene set scores
   gsScore.true <- brainscore(
     brain_data = brain_data,
@@ -317,12 +317,12 @@ brainscore.lm_test <- function(pred_df,
     null_model = "none",
     minGSSize = minGSSize,
     maxGSSize = maxGSSize,
-    n_cores = n_cores
-  )
+    n_cores = n_cores)
   dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
   res <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
   stat.true <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "tval_list")
 
+  message("=========Null model======")
   # Generate null gene set scores
   gsScoreList.null <- brainscore(
     brain_data = brain_data,
@@ -377,8 +377,8 @@ brainscore.lm_test <- function(pred_df,
     res$Description <- get_termDescription(res$Dependent_vars, annoData)
     res$np.pval <- pvals
     res$np.padj <- pvals.adj
-    res$null_model <- null_model
     res$np.qval <- qvals
+    res$null_model <- null_model
   }
 
   # Filter significant results
@@ -401,9 +401,10 @@ brainscore.lm_test <- function(pred_df,
       core_genes <- find_core_genes(geneList, survived.gs, pred_df = pred_df, cov_df = cov_df, aggre_method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = threshold_value)
       res$core_genes <- sapply(core_genes, paste0, collapse = "/")
     }
+    res <- res %>% rename(ID=Dependent_vars) %>%
+    dplyr::select(ID, Description, everything())
     message("Analysis complete.")
   }
-
   return(res)
 }
 
