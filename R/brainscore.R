@@ -457,7 +457,6 @@ brainscore.simulate <- function(pred_df,
   sim_type <- match.arg(sim_type)
   cor_method <- match.arg(cor_method)
   aggre_method <- match.arg(aggre_method)
-  null_model <- match.arg(null_model)
 
   # Initialize results list
   results_list <- list()
@@ -492,24 +491,24 @@ brainscore.simulate <- function(pred_df,
           mutate(
             nofdr_ifsig = case_when(
               p.val < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
+              TRUE ~ 0),
             fdr_ifsig = case_when(
               p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            )
-          ) %>%
+              TRUE ~ 0)) %>%
           dplyr::select(Dependent_vars, nofdr_ifsig, fdr_ifsig) %>%
           rename(
             !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := nofdr_ifsig,
-            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := fdr_ifsig
-          )
-        results_list[[paste0("iter_", sim_i, "_subsample_", size2use)]] <- sampled_res
+            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := fdr_ifsig)
+        results_list[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
     }
   } else if (sim_type == "spin_brain") {
+    if (dim(perm_id)[2]< sim_n){
+      stop("The number of simulation must be less than or equal to the number of columns in 'perm_id'.")
+    }
     for (sim_i in 1:sim_n) {
       sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
+      rownames(sim.brain_data) <- rownames(brain_data)
       gsScore.true <- brainscore(
         brain_data = sim.brain_data,
         gene_data = gene_data,
@@ -533,7 +532,7 @@ brainscore.simulate <- function(pred_df,
         minGSSize = minGSSize,
         maxGSSize = maxGSSize,
         n_cores = n_cores,
-        n_perm = 5000,
+        n_perm = n_perm,
         perm_id = perm_id
       )
 
@@ -606,7 +605,7 @@ brainscore.simulate <- function(pred_df,
             !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := np_nofdr_ifsig,
             !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := np_fdr_ifsig
           )
-        results_list[[paste0("iter_", sim_i, "_subsample_", size2use)]] <- sampled_res
+        results_list[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
     }
   } else if (sim_type == "resample_gene") {
@@ -670,24 +669,18 @@ brainscore.simulate <- function(pred_df,
           res$np_p.adj <- np_p.adj
         }
         sampled_res <- res %>%
-          mutate(
-            nofdr_ifsig = case_when(
-              pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
+          mutate(nofdr_ifsig = case_when(
+                        pval < 0.05 ~ 1,
+                        TRUE ~ 0),
             fdr_ifsig = case_when(
-              p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
+                        p.adj < 0.05 ~ 1,
+                        TRUE ~ 0),
             np_nofdr_ifsig = case_when(
-              np_pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
+                        np_pval < 0.05 ~ 1,
+                        TRUE ~ 0),
             np_fdr_ifsig = case_when(
-              np_p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            )
-          ) %>%
+                      np_p.adj < 0.05 ~ 1,
+                      TRUE ~ 0)) %>%
           dplyr::select(Dependent_vars, nofdr_ifsig, fdr_ifsig, np_nofdr_ifsig, np_fdr_ifsig) %>%
           rename(
             !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := nofdr_ifsig,
@@ -695,7 +688,7 @@ brainscore.simulate <- function(pred_df,
             !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := np_nofdr_ifsig,
             !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := np_fdr_ifsig
           )
-        results_list[[paste0("iter_", sim_i, "_subsample_", size2use)]] <- sampled_res
+        results_list[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
     }
   }
