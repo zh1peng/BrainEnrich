@@ -477,6 +477,7 @@ brainscore.simulate <- function(pred_df,
     dependent_df <- data.frame(gsScore, check.names = FALSE)
 
     for (sim_i in 1:sim_n) {
+      message(paste("=========Processing simulation:", sim_i, "/", sim_n, "========="))
       pred_df.sim[[1]] <- sample(pred_df[[1]])
       for (size_i in seq_along(subsample_size)) {
         size2use <- subsample_size[size_i]
@@ -507,6 +508,7 @@ brainscore.simulate <- function(pred_df,
       stop("The number of simulation must be less than or equal to the number of columns in 'perm_id'.")
     }
     for (sim_i in 1:sim_n) {
+      message(paste("=========Processing simulation:", sim_i, "/", sim_n, "========="))
       sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
       rownames(sim.brain_data) <- rownames(brain_data)
       gsScore.true <- brainscore(
@@ -614,6 +616,7 @@ brainscore.simulate <- function(pred_df,
     selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
 
     for (sim_i in 1:sim_n) {
+      message(paste("=========Processing simulation:", sim_i, "/", sim_n, "========="))
       sim.geneList <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
       rownames(sim.geneList) <- rownames(geneList)
       sim.gsScore <- aggregate_geneSetList(sim.geneList, selected.gs, method = aggre_method, n_cores = n_cores)
@@ -630,7 +633,7 @@ brainscore.simulate <- function(pred_df,
         return(gs_score.null)
       })
 
-      for (size_i in seq_along(subsample_size)) {
+      for (size_i in seq_along(subsample_size)){
         size2use <- subsample_size[size_i]
         sampled_idx <- sample(1:nrow(dependent_df.true), size = size2use, replace = FALSE)
         res <- simple_lm(
