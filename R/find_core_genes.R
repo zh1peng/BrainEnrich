@@ -21,9 +21,9 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
   require(parallel)
 
   if (is.null(pred_df) & is.null(cov_df)) {
-    type1_analysis = TRUE # find core genes contribute to group enrichment results
+    type1_analysis <- TRUE # find core genes contribute to group enrichment results
   } else {
-    type1_analysis = FALSE
+    type1_analysis <- FALSE
   }
 
   # Validate the threshold_type argument
@@ -58,7 +58,7 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
       loo_results <- sapply(seq_along(gs), function(gs_i) {
         modified_geneSet <- setdiff(gs, gs[gs_i])
         loo_score <- aggregate_geneSet(geneList, modified_geneSet, method = aggre_method)
-        adiff = abs(full_score - loo_score)
+        adiff <- abs(full_score - loo_score)
         return(adiff)
       })
       names(loo_results) <- gs
@@ -68,22 +68,22 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
     # Export necessary variables to the cluster
     clusterExport(cl, varlist = c("geneList", "aggregate_geneSet", "aggre_method", "pred_df", "cov_df"), envir = environment())
 
-    loo_changes = pblapply(seq_along(geneSetList), function(i) {
+    loo_changes <- pblapply(seq_along(geneSetList), function(i) {
       gs <- geneSetList[[i]]
       gs_name <- names(geneSetList)[i]
       full_score <- aggregate_geneSet(geneList, gs, method = aggre_method)
-      dependent_df.full = data.frame(full_score)
+      dependent_df.full <- data.frame(full_score)
       colnames(dependent_df.full) <- gs_name
-      lm_res.full = simple_lm(dependent_df = dependent_df.full, pred_df = pred_df, cov_df = cov_df, stat2return = 'all')
+      lm_res.full <- simple_lm(dependent_df = dependent_df.full, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
 
       # Perform Leave-One-Out Analysis for each gene in the gene set
       loo_results <- sapply(seq_along(gs), function(gs_i) {
         modified_geneSet <- setdiff(gs, gs[gs_i])
         loo_score <- aggregate_geneSet(geneList, modified_geneSet, method = aggre_method)
-        dependent_df.loo = data.frame(loo_score)
+        dependent_df.loo <- data.frame(loo_score)
         colnames(dependent_df.loo) <- gs_name
-        lm_res.loo = simple_lm(dependent_df = dependent_df.loo, pred_df = pred_df, cov_df = cov_df, stat2return = 'all')
-        adiff = abs(lm_res.full$Standardized_Coefficient - lm_res.loo$Standardized_Coefficient)
+        lm_res.loo <- simple_lm(dependent_df = dependent_df.loo, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
+        adiff <- abs(lm_res.full$Standardized_Coefficient - lm_res.loo$Standardized_Coefficient)
         return(adiff)
       })
       names(loo_results) <- gs
@@ -126,7 +126,7 @@ identify_core_genes <- function(changes, threshold_type = c("sd", "percentile"),
   core_genes <- core_genes[changes[core_genes] != 0]
   # If no core genes left, return NA
   if (length(core_genes) == 0) {
-    core_genes='NOT_FOUND'
+    core_genes <- "NOT_FOUND"
   }
   return(core_genes)
 }

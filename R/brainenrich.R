@@ -54,7 +54,7 @@ brainenrich <- function(brain_data,
                         coord.l = NULL,
                         coord.r = NULL,
                         seed = NULL,
-                        threshold_type = c("sd", "percentile","none"),
+                        threshold_type = c("sd", "percentile", "none"),
                         thres_val = 1,
                         pvalueCutoff = 0.05,
                         pAdjustMethod = "fdr",
@@ -170,11 +170,11 @@ brainenrich <- function(brain_data,
       readable = FALSE
     ))
   } else {
-    if (threshold_type!="none"){
-    message("Identifying core genes...")
-    survived.gs <- selected.gs[res$ID]
-    core_genes <- find_core_genes(geneList.true, survived.gs, method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = thres_val)
-    res$core_enrichment <- sapply(core_genes, paste0, collapse = "/")
+    if (threshold_type != "none") {
+      message("Identifying core genes...")
+      survived.gs <- selected.gs[res$ID]
+      core_genes <- find_core_genes(geneList.true, survived.gs, method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = thres_val)
+      res$core_enrichment <- sapply(core_genes, paste0, collapse = "/")
     }
 
     message("Analysis complete.")
@@ -188,4 +188,3 @@ brainenrich <- function(brain_data,
     ))
   }
 }
-
