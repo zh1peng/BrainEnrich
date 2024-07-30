@@ -2,9 +2,9 @@
 #'
 #' This dataset contains PC1 data filtered for regions starting with 'L_' in the Desikan atlas.
 #'
-#' @format A data frame with rows as regions and columns as PC1 data.
+#' @format A data frame with rows as regions and columns as effect sizes of case-control comparisons on regional cortical thickness between bipolar disorders and healthy controls.
 #' @source read.csv('data-raw/desikan_PC1_data.csv')
-"brain_data_PC1"
+"brain_data"
 
 
 #' Desikan Centroid Coordinates for Left Hemisphere

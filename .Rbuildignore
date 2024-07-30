@@ -7,5 +7,7 @@
 ^pkgdown$
 ^\.github$
 ^vignettes$
+^.*\.Rmd$
+^.*\.Rnw$
 ^doc$
 ^Meta$

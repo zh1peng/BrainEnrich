@@ -1,8 +1,17 @@
 # Process PC1 data, filter for regions starting with 'L_' and set row names
-brain_data_PC1 <- read.csv("data-raw/desikan_PC1_data.csv") %>%
-  filter(stringr::str_detect(Region, "^L_")) %>%
-  tibble::column_to_rownames("Region")
-usethis::use_data(brain_data_PC1, overwrite = TRUE, compress = "xz")
+# brain_data <- read.csv("data-raw/desikan_PC1_data.csv") %>%
+#   filter(stringr::str_detect(Region, "^L_")) %>%
+#   tibble::column_to_rownames("Region")
+# usethis::use_data(brain_data, overwrite = TRUE, compress = "xz")
+
+
+df=read.csv(file.path('E:/xhmhc/BrainEnrich_ms/data','MP_data.csv')) %>% dplyr::filter(stringr::str_detect(label,'L_'))
+brain_data=df %>% dplyr::select(label, BD) %>% dplyr::filter(stringr::str_detect(label,'L_')) %>% tibble::column_to_rownames('label')
+usethis::use_data(brain_data, overwrite = TRUE, compress = "xz")
+
+
+res=readRDS(file.path('E:/xhmhc/BrainEnrich_ms/results','bd_MF_res.RDS'))
+usethis::use_data(res, overwrite = TRUE, compress = "xz")
 
 # Load coordinate data and save it
 coord_dk_lh <- read.csv("data-raw/desikan_centroid.csv", stringsAsFactors = FALSE) %>%
