@@ -1,5 +1,3 @@
-
-
 #' Perform Brain Score Linear Model Test
 #'
 #' This function performs a linear model test on brain score data with the option to use various null models for comparison.
@@ -65,7 +63,7 @@ brainscore.lm_test <- function(pred_df,
   aggre_method <- match.arg(aggre_method)
   null_model <- match.arg(null_model)
   threshold_type <- match.arg(threshold_type)
-  
+
   message("=========Emprical model======")
   # Generate true gene set scores
   gsScore.true <- brainscore(
@@ -77,7 +75,8 @@ brainscore.lm_test <- function(pred_df,
     null_model = "none",
     minGSSize = minGSSize,
     maxGSSize = maxGSSize,
-    n_cores = n_cores)
+    n_cores = n_cores
+  )
   dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
   res <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
   stat.true <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "tval_list")
@@ -161,18 +160,19 @@ brainscore.lm_test <- function(pred_df,
       core_genes <- find_core_genes(geneList, survived.gs, pred_df = pred_df, cov_df = cov_df, aggre_method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = threshold_value)
       res$core_genes <- sapply(core_genes, paste0, collapse = "/")
     }
-    res <- res %>% rename(ID=Dependent_vars) %>%
-    dplyr::select(ID, Description, everything())
+    res <- res %>%
+      rename(ID = Dependent_vars) %>%
+      dplyr::select(ID, Description, everything())
     message("Analysis complete.")
   }
   return(res)
 }
 
 
-dotplot.res <- function (res) {
+dotplot.res <- function(res) {
 }
 
-barplot.res <- function (res) {
+barplot.res <- function(res) {
 }
 
 
@@ -282,8 +282,3 @@ simple_lm <- function(dependent_df,
     }
   return(res)
 }
-
-
-
-
-
