@@ -169,15 +169,6 @@ brainscore.lm_test <- function(pred_df,
 }
 
 
-dotplot.res <- function(res) {
-}
-
-barplot.res <- function(res) {
-}
-
-
-
-
 #' Perform Linear Regression with Multiple Predictors and Covariates
 #'
 #' This function fits linear models for specified dependent variables using given predictors and covariates.

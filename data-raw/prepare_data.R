@@ -1,32 +1,8 @@
-# Fetch annotation data from BrainEnrich package and save it
-annoData_synGO <- BrainEnrich::get_annoData(type = "SynGO")
-usethis::use_data(annoData_synGO, overwrite = TRUE, compress = "xz")
-
 # Process PC1 data, filter for regions starting with 'L_' and set row names
 brain_data_PC1 <- read.csv("data-raw/desikan_PC1_data.csv") %>%
   filter(stringr::str_detect(Region, "^L_")) %>%
   tibble::column_to_rownames("Region")
 usethis::use_data(brain_data_PC1, overwrite = TRUE, compress = "xz")
-
-# Process Cushing's data, rename columns, filter, and reorder based on PC1 data
-Cushing_data_tmp <- read.csv("data-raw/desikan_cushing_data.csv") %>%
-  rename(
-    Region = "Dependent.Variable",
-    cohend = "Cohen.s.d"
-  ) %>%
-  filter(stringr::str_detect(Region, "^L_")) %>%
-  select(Region, cohend)
-# Reorder rows based on variable order in PC1 data
-var_order <- read.csv("data-raw/desikan_PC1_data.csv") %>%
-  filter(stringr::str_detect(Region, "^L_")) %>%
-  select(Region)
-brain_data_Cushing <- left_join(var_order, Cushing_data_tmp, by = "Region") %>%
-  tibble::column_to_rownames("Region")
-usethis::use_data(brain_data_Cushing, overwrite = TRUE, compress = "xz")
-
-# Load gene expression data and save it
-gene_data_sample <- BrainEnrich::get_geneExp(atlas = "desikan", rdonor = "r0.6", hem = "L")
-usethis::use_data(gene_data_sample, overwrite = TRUE, compress = "xz")
 
 # Load coordinate data and save it
 coord_dk_lh <- read.csv("data-raw/desikan_centroid.csv", stringsAsFactors = FALSE) %>%
@@ -44,3 +20,8 @@ brain_data_random <- matrix(runif(rows * cols, min = 0, max = 3), nrow = rows, n
 colnames(brain_data_random) <- paste0("sub_", 1:cols)
 rownames(brain_data_random) <- var_order$Region
 usethis::use_data(brain_data_random, overwrite = TRUE, compress = "xz")
+
+
+
+perm_id <- readRDS(file.path("E:/xhmhc/BrainEnrich_ms/data", "perm_id_dk_lh_5000.RDS"))
+usethis::use_data(perm_id, overwrite = TRUE, compress = "xz")
