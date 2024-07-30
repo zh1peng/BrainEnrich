@@ -16,6 +16,9 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(BrainEnrich)
+# if (!requireNamespace("enrichplot", quietly=TRUE)){
+# BiocManager::install("enrichplot")}
+library(enrichplot)
 ```
 
 ## 1. Prepare Data for the Analysis
@@ -28,9 +31,9 @@ str(brain_data)
 ```
 #### show effect size map for BD
 ```{r fig.align='center', fig.height=8, fig.width=8, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-
-p=plot_brain(brain_data,ats='dk',filterby = 'none',limit2show=c(-0.5,0.5), 
-        what2plot = 'statistic',hem='left',low='#0197b2',mid='white',high='orange',
+df2plot=brain_data %>% tibble::rownames_to_column('label')
+plot_brain(df2plot,ats='dk',filterby = 'none',limit2show=c(-0.5,0.5), 
+        what2plot = 'BD',hem='left',low='#0197b2',mid='white',high='orange',
         legend2show = 'Effect Size')
 ```
 
@@ -39,12 +42,12 @@ p=plot_brain(brain_data,ats='dk',filterby = 'none',limit2show=c(-0.5,0.5),
 ```{r eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 # read the centroid coordinates of the brain regions
 data(coord_dk_lh)
-perm_id=rotate_parcellation(coord.l=coord_dk_lh, nrot=5000, seed=2024)
+perm_id_dk_lh_5000=rotate_parcellation(coord.l=coord_dk_lh, nrot=5000, seed=2024)
 ```
 #### Here, we can load the perm_id directly from the package.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-data(perm_id)
-str(perm_id)
+data(perm_id_dk_lh_5000)
+str(perm_id_dk_lh_5000)
 ```
 
 ### 1.3. Load gene expression data for the Analysis
@@ -72,7 +75,7 @@ print(sprintf('%d MF terms have gene size ranging between 20 and 200',length(sel
 res=brainenrich(brain_data=brain_data, 
                     gene_data=gene_data, 
                     annoData = annoData, 
-                    perm_id=perm_id, 
+                    perm_id=perm_id_dk_lh_5000, 
                     cor_method = 'pearson',
                     aggre_method = 'mean',
                     null_model = 'spin_brain',
@@ -94,6 +97,7 @@ upsetplot(res, top=10)
 ```
 ### 3.2. Gene-Concept Network
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
+geneList=res@geneList
 cnetplot(res, layout='kk', color_category='#a6a6a6', foldChange=geneList,
           # color.params = list(foldChange = geneList),
           showCategory =5, cex.params = list(category_node=1, gene_node=0.75,
@@ -115,6 +119,3 @@ dotplot(res,x='gsScore',label_format=50, showCategory=10)+
 heatplot(res,foldChange=geneList,label_format=50)
 ```
 
-```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=6, fig.width=10}
-barplot(res)
-```

@@ -103,14 +103,17 @@ brainenrich <- function(brain_data,
     }
     null_brain_data <- generate_null_brain_data(brain_data, perm_id)
     geneList.null <- corr_brain_gene(gene_data = gene_data, brain_data = null_brain_data, method = cor_method)
+    message("Aggregating true gene set scores...")
     gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
   } else if (null_model == "resample_gene") {
     message("Generating null gene list with resample_gene model...")
     geneList.null <- resample_gene(geneList.true, n_perm = n_perm)
+    message("Aggregating true gene set scores...")
     gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
   } else if (null_model == "coexp_matched") {
     message("Generating null gene list with coexp_matched model...")
     sampled_gs <- resample_geneSetList_matching_coexp(gene_data, geneSetList, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
+    message("Aggregating true gene set scores...")
     gs_score.null <- aggregate_geneSetList_matching_coexp(geneList.true, selected.gs, sampled_gs, method = aggre_method, n_cores = n_cores)
   }
 
@@ -139,7 +142,7 @@ brainenrich <- function(brain_data,
     aggreMethod = aggre_method,
     nullType = null_model,
     thresType = threshold_type,
-    thresVal = thres_val
+    thresVal = threshold_val
   )
 
   res <- data.frame(

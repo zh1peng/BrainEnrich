@@ -18,6 +18,7 @@ if (!requireNamespace("testthat", quietly = TRUE)) {
 devtools::has_devel()
 
 devtools::document()
+devtools::check()
 devtools::build()
 devtools::install()
 

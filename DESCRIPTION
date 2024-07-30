@@ -12,8 +12,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests: 
     knitr,
-    rmarkdown,
-    testthat (>= 3.0.0)
+    rmarkdown
 Config/testthat/edition: 3
 Imports:
     DOSE,
@@ -23,12 +22,16 @@ Imports:
     parallel,
     pbapply,
     purrr,
-    readxl,
     stats,
     tibble,
     tidyr,
     utils,
-    devtools
+    devtools,
+    broom,
+    ggplot2,
+    ggseg,
+    parameters,
+    pls
 Depends: 
     R (>= 4.0.0)
 LazyData: true
