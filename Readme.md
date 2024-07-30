@@ -25,7 +25,8 @@ Once available, it can be installed from GitHub via the `devtools` package:
 
 ```r
 # Install devtools if you haven't already
-install.packages("devtools")
+if (!requireNamespace("devtools", quietly = TRUE)) {
+      install.packages("devtools")}
 
 # Install brainEnrich from GitHub
 devtools::install_github("zh1peng/BrainEnrich")
@@ -38,7 +39,7 @@ devtools::install_github("zh1peng/BrainEnrich")
 ## To-Do List 📋
 - [x] Initialize the project 2023/11/04
 - [x] Finalize manuscript revision. 🔧
-- [ ] Development of core functions🔧
+- [x] Development of core functions🔧
 - [ ] Create detailed vignettes for each major function. 📚
 - [ ] Optimize performance for large datasets. ⚡
 - [ ] Conduct extensive testing with real-world data. 🌏

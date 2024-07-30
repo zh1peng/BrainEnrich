@@ -77,6 +77,7 @@ install.packages("styler")
 
 styler::style_pkg()
 
+devtools::build_vignettes()
 
 usethis::use_github_action("lint")
 

@@ -1,5 +1,3 @@
-#' @importFrom BiocManager install
-#' @importFrom utils install.packages
 .onLoad <- function(libname, pkgname) {
   ensure_bioc_packages()
 }
