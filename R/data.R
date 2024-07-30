@@ -14,3 +14,9 @@
 #' @format A data frame with rows as regions and columns as coordinates (x, y, z).
 #' @source read.csv('data-raw/desikan_centroid.csv')
 "coord_dk_lh"
+
+
+#' Permutation index for left Desikan regions (5000 permutations)
+#' @format A matrix with rows as regions and columns as permutated indices.
+#' @source rotate_parcellation(coord.l = coord_dk_lh, nrot = 5000)
+"perm_id_dk_lh_5000"
