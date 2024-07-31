@@ -76,4 +76,5 @@ devtools::install_github("zh1peng/BrainEnrich")
 
 # fix push issue
 git config --global --unset http.proxy
+git config --global http.proxy http://127.0.0.1:7890
 git push origin
