@@ -57,9 +57,6 @@ Other options include 'median', 'meanabs', 'meansqr', 'maxmean',
 \item{n_perm}{Integer specifying the number of permutations. Default is 5000.}
 
 \item{perm_id}{Optional permutation ID.}
-
-\item{null_model}{Character string specifying the null model method. Default is 'spin_brain'.
-Other option is 'resample_gene'.}
 }
 \value{
 A list of data frames containing the results of the simulations.

@@ -14,12 +14,10 @@
 #'                 Uses all available cores minus one if set to 0.
 #' @param threshold_type The method to determine significance ('sd' for standard deviation, 'percentile' for percentile threshold).
 #' @param threshold_value Numeric value specifying the threshold level; meaning depends on `threshold_type`.
+#' @import pbapply parallel
 #' @return A list of core genes for each gene set.
 #' @export
 find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL, aggre_method, n_cores = 1, threshold_type = c("sd", "percentile"), threshold_value = 1) {
-  require(pbapply)
-  require(parallel)
-
   if (is.null(pred_df) & is.null(cov_df)) {
     type1_analysis <- TRUE # find core genes contribute to group enrichment results
   } else {
@@ -102,7 +100,7 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
 #' Identify core genes based on a specified threshold method
 #'
 #' @param changes Named vector of changes from LOO analysis.
-#' @param method Character string specifying the method to use for threshold calculation ("percentile" or "sd").
+#' @param threshold_type Character string indicating the method to determine the threshold ("sd" or "percentile").
 #' @param threshold_value Numeric value indicating the percentile (if method is "percentile") or the number of standard deviations (if method is "sd").
 #' @importFrom stats quantile sd
 #' @return Vector of core genes or NA if no core genes are identified.

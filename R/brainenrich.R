@@ -25,7 +25,7 @@
 #' @param maxGSSize An integer specifying the maximum gene set size. Default is 200.
 #' @param threshold_type A character string specifying the threshold type for core genes.
 #'                   Default is 'sd'. Other option is 'percentile'.
-#' @param thres_val A numeric value specifying the threshold value for core genes. Default is 1.
+#' @param threshold_val A numeric value specifying the threshold value for core genes. Default is 1.
 #' @param pvalueCutoff A numeric value specifying the p-value cutoff for output. Default is 0.05.
 #' @param pAdjustMethod A character string specifying the method for p-value adjustment.
 #'                      Default is 'fdr'.

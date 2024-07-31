@@ -67,6 +67,8 @@ Default is 'spin_brain'. Other options include 'resample_gene',
 \item{threshold_type}{A character string specifying the threshold type for core genes.
 Default is 'sd'. Other option is 'percentile'.}
 
+\item{threshold_val}{A numeric value specifying the threshold value for core genes. Default is 1.}
+
 \item{pvalueCutoff}{A numeric value specifying the p-value cutoff for output. Default is 0.05.}
 
 \item{pAdjustMethod}{A character string specifying the method for p-value adjustment.
@@ -77,8 +79,6 @@ Lower value means better matching but will take much more iterations. Default is
 
 \item{matchcoexp_max_iter}{An integer specifying the maximum number of iterations
 for matched co-expression. Default is 1000000.}
-
-\item{thres_val}{A numeric value specifying the threshold value for core genes. Default is 1.}
 }
 \value{
 A gseaResult object containing the enrichment results.

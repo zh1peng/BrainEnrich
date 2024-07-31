@@ -17,14 +17,13 @@
 #' @param aggre_method Character string specifying the aggregation method. Default is 'mean'.
 #'                     Other options include 'median', 'meanabs', 'meansqr', 'maxmean',
 #'                     'ks_orig', 'ks_weighted', 'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.
-#' @param null_model Character string specifying the null model method. Default is 'spin_brain'.
-#'                   Other option is 'resample_gene'.
 #' @param minGSSize Integer specifying the minimum gene set size. Default is 10.
 #' @param maxGSSize Integer specifying the maximum gene set size. Default is 200.
 #' @param n_cores Integer specifying the number of cores to use for parallel processing. Default is 0.
 #' @param n_perm Integer specifying the number of permutations. Default is 5000.
 #' @param perm_id Optional permutation ID.
 #' @importFrom dplyr case_when select rename %>%
+#' @importFrom data.table :=
 #' @return A list of data frames containing the results of the simulations.
 #' @export
 brainscore.simulate <- function(pred_df,
@@ -83,18 +82,18 @@ brainscore.simulate <- function(pred_df,
         sampled_res <- sampled_res %>%
           dplyr::mutate(
             nofdr_ifsig = case_when(
-              p.val < 0.05 ~ 1,
+              .data$p.val < 0.05 ~ 1,
               TRUE ~ 0
             ),
             fdr_ifsig = case_when(
-              p.adj < 0.05 ~ 1,
+              .data$p.adj < 0.05 ~ 1,
               TRUE ~ 0
             )
           ) %>%
-          dplyr::select(Dependent_vars, nofdr_ifsig, fdr_ifsig) %>%
+          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig) %>%
           dplyr::rename(
-            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := nofdr_ifsig,
-            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := fdr_ifsig
+            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
+            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig
           )
         results_list[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
@@ -180,28 +179,28 @@ brainscore.simulate <- function(pred_df,
         sampled_res <- res %>%
            dplyr::mutate(
             nofdr_ifsig = case_when(
-              pval < 0.05 ~ 1,
+              .data$pval < 0.05 ~ 1,
               TRUE ~ 0
             ),
             fdr_ifsig = case_when(
-              p.adj < 0.05 ~ 1,
+              .data$p.adj < 0.05 ~ 1,
               TRUE ~ 0
             ),
             np_nofdr_ifsig = case_when(
-              np_pval < 0.05 ~ 1,
+              .data$np_pval < 0.05 ~ 1,
               TRUE ~ 0
             ),
             np_fdr_ifsig = case_when(
-              np_p.adj < 0.05 ~ 1,
+              .data$np_p.adj < 0.05 ~ 1,
               TRUE ~ 0
             )
           ) %>%
-          dplyr::select(Dependent_vars, nofdr_ifsig, fdr_ifsig, np_nofdr_ifsig, np_fdr_ifsig) %>%
+          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
           dplyr::rename(
-            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := nofdr_ifsig,
-            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := fdr_ifsig,
-            !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := np_nofdr_ifsig,
-            !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := np_fdr_ifsig
+            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
+            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,
+            !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_nofdr_ifsig,
+            !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := .data$np_fdr_ifsig
           )
         results_list[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
@@ -274,28 +273,28 @@ brainscore.simulate <- function(pred_df,
         sampled_res <- res %>%
            dplyr::mutate(
             nofdr_ifsig = case_when(
-              pval < 0.05 ~ 1,
+              .data$pval < 0.05 ~ 1,
               TRUE ~ 0
             ),
             fdr_ifsig = case_when(
-              p.adj < 0.05 ~ 1,
+              .data$p.adj < 0.05 ~ 1,
               TRUE ~ 0
             ),
             np_nofdr_ifsig = case_when(
-              np_pval < 0.05 ~ 1,
+              .data$np_pval < 0.05 ~ 1,
               TRUE ~ 0
             ),
             np_fdr_ifsig = case_when(
-              np_p.adj < 0.05 ~ 1,
+              .data$np_p.adj < 0.05 ~ 1,
               TRUE ~ 0
             )
           ) %>%
-          dplyr::select(Dependent_vars, nofdr_ifsig, fdr_ifsig, np_nofdr_ifsig, np_fdr_ifsig) %>%
+          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
           rename(
-            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := nofdr_ifsig,
-            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := fdr_ifsig,
-            !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := np_nofdr_ifsig,
-            !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := np_fdr_ifsig
+            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
+            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,
+            !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_nofdr_ifsig,
+            !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := .data$np_fdr_ifsig
           )
         results_list[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }

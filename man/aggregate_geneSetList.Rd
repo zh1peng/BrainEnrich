@@ -11,10 +11,9 @@ aggregate_geneSetList(geneList, geneSetList, method, n_cores = 1)
 
 \item{geneSetList}{A list of gene sets to be aggregated.}
 
-\item{n_cores}{Number of cores to use for parallel processing. Default is 1.
-If set to 0, it uses all available cores minus one.}
+\item{method}{aggregation method used.}
 
-\item{...}{Additional arguments to be passed to the \code{aggregate_geneSet} function.}
+\item{n_cores}{Number of cores to use for parallel processing. Default is 1.}
 }
 \value{
 A list of aggregated gene set scores.

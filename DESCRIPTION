@@ -32,6 +32,7 @@ Imports:
     BiocManager,
     methods,
     stats,
+    data.table,
     utils
 Depends: 
     R (>= 4.0.0)

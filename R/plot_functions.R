@@ -39,9 +39,9 @@ plot_brain <- function(df2plot,
 
   # Apply filters based on p-values
   if (filterby == "p.value") {
-    df2plot <- df2plot %>% filter(p.value < 0.05)
+    df2plot <- df2plot %>% filter(.data$p.value < 0.05)
   } else if (filterby == "p.adj") {
-    df2plot <- df2plot %>% filter(p.adj < 0.05)
+    df2plot <- df2plot %>% filter(.data$p.adj < 0.05)
   } else if (filterby == "none") {
     df2plot <- df2plot
   }
@@ -51,15 +51,15 @@ plot_brain <- function(df2plot,
     atlas <- ifelse(ats == "dx", "desterieux", "dk")
     df2plot <- df2plot %>%
       mutate(
-        label = sub(".*L_", "lh_", label),
-        label = sub(".*R_", "rh_", label),
-        label = sub(sufix2remove, "", label)
+        label = sub(".*L_", "lh_", .data$label),
+        label = sub(".*R_", "rh_", .data$label),
+        label = sub(sufix2remove, "", .data$label)
       ) %>%
       brain_join(get(atlas)) %>%
-      reposition_brain(. ~ hemi + side)
+      reposition_brain(. ~ .data$hemi + .data$side)
   } else if (ats == "aseg") {
     df2plot <- df2plot %>%
-      mutate(label = recode(key,
+      mutate(label = recode(.data$key,
         "SV_L_" = "Left-",
         "SV_R_" = "Right-",
         "thal" = "Thalamus-Proper",
@@ -71,14 +71,14 @@ plot_brain <- function(df2plot,
         "accumb" = "Accumben-area",
         "LatVent" = "Lateral-Ventricle"
       )) %>%
-      filter(!key %in% c("SV_L_accumb", "SV_R_accumb")) %>%
-      brain_join(aseg) %>%
-      filter(side == "coronal")
+      filter(!.data$key %in% c("SV_L_accumb", "SV_R_accumb")) %>%
+      brain_join(ggseg::aseg) %>%
+      filter(.data$side == "coronal")
   }
 
   # Apply conditional filtering based on hemisphere
   if (hem %in% c("left", "right")) {
-    df2plot <- df2plot %>% filter(hemi == hem)
+    df2plot <- df2plot %>% filter(.data$hemi == hem)
   }
 
   # Construct the plot

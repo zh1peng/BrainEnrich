@@ -8,8 +8,6 @@ get_geneSetList(annoData)
 }
 \arguments{
 \item{annoData}{Annotation data to retrieve gene sets from.}
-
-\item{convert_to_symbol}{Logical; if TRUE, converts gene identifiers to gene symbols.}
 }
 \value{
 A list of gene sets.

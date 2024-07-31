@@ -13,9 +13,9 @@ identify_core_genes(
 \arguments{
 \item{changes}{Named vector of changes from LOO analysis.}
 
-\item{threshold_value}{Numeric value indicating the percentile (if method is "percentile") or the number of standard deviations (if method is "sd").}
+\item{threshold_type}{Character string indicating the method to determine the threshold ("sd" or "percentile").}
 
-\item{method}{Character string specifying the method to use for threshold calculation ("percentile" or "sd").}
+\item{threshold_value}{Numeric value indicating the percentile (if method is "percentile") or the number of standard deviations (if method is "sd").}
 }
 \value{
 Vector of core genes or NA if no core genes are identified.

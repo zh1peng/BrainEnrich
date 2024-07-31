@@ -11,3 +11,9 @@
 ^.*\.Rnw$
 ^doc$
 ^Meta$
+^inst/extdata$
+.md$
+^packageScript.R$
+.yml$
+.svnignore$
+

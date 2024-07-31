@@ -20,6 +20,8 @@ rotate_parcellation(
 \item{nrot}{Number of rotations (default = 5000).}
 
 \item{method}{Method to match rotated and unrotated regions; options are 'vasa' (faster, can be suboptimal) or 'hungarian' (default, slower, optimal).}
+
+\item{seed}{Seed for reproducibility.}
 }
 \value{
 Array of permutations, from set of regions to itself (array of size n(total regions) x nrot).

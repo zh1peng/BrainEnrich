@@ -77,7 +77,6 @@ get_annoData <- function(type = c(
 #' gene identifiers to gene symbols.
 #'
 #' @param annoData Annotation data to retrieve gene sets from.
-#' @param convert_to_symbol Logical; if TRUE, converts gene identifiers to gene symbols.
 #' @return A list of gene sets.
 #' @import DOSE
 #' @importFrom utils getFromNamespace

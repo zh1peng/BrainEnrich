@@ -226,15 +226,13 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
 #' @param geneSetList A list of gene sets to be aggregated.
 #' @param n_cores Number of cores to use for parallel processing. Default is 1.
 #' If set to 0, it uses all available cores minus one.
-#' @param ... Additional arguments to be passed to the `aggregate_geneSet` function.
+#' @param method aggregation method used.
+#' @param n_cores Number of cores to use for parallel processing. Default is 1.
 #' @return A list of aggregated gene set scores.
 #' @import pbapply
 #' @import parallel
 #' @export
 aggregate_geneSetList <- function(geneList, geneSetList, method, n_cores = 1) {
-  # Load necessary packages
-  library(pbapply)
-  library(parallel)
   # Determine the number of cores to use
   if (n_cores == 0 | n_cores > detectCores() - 1) {
     n_cores <- detectCores() - 1
@@ -282,10 +280,6 @@ aggregate_geneSetList_matching_coexp <- function(geneList.true,
                                                  sampled_geneSetList,
                                                  method,
                                                  n_cores = 1) {
-  # Load necessary packages
-  library(parallel)
-  library(pbapply)
-
   # Ensure geneList.true is a matrix with one column
   if (!is.matrix(geneList.true) || ncol(geneList.true) != 1) {
     stop("geneList.true should be a m x 1 matrix. Please include drop=FALSE when subsetting.")

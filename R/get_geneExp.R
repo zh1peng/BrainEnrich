@@ -70,12 +70,12 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
 
   # Filter based on hemisphere
   if (hem %in% c("L", "R")) {
-    gene.df <- dplyr::filter(gene.df, grepl(search_pattern, Region))
+    gene.df <- dplyr::filter(gene.df, grepl(search_pattern, .data$Region))
   }
 
   # Filter complete cases and convert to matrix
   gene.df <- gene.df %>%
-    dplyr::filter(complete.cases(.)) %>%
+    dplyr::filter(complete.cases(.data)) %>%
     tibble::column_to_rownames("Region")
 
   gene.mx <- as.matrix(gene.df)
