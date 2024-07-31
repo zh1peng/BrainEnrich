@@ -6,9 +6,6 @@
 ^docs$
 ^pkgdown$
 ^\.github$
-^vignettes$
-^.*\.Rmd$
-^.*\.Rnw$
 ^doc$
 ^Meta$
 ^inst/extdata$
@@ -16,4 +13,7 @@
 ^packageScript.R$
 .yml$
 .svnignore$
+^vignettes$
+^.*\.Rmd$
+^.*\.Rnw$
 

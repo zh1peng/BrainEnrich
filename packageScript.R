@@ -23,6 +23,10 @@ devtools::build()
 devtools::install()
 
 devtools::build_vignettes()
+^vignettes$
+^.*\.Rmd$
+^.*\.Rnw$
+
 
 # install pdflatex for building manual
 devtools::build_manual()
@@ -78,3 +82,5 @@ devtools::install_github("zh1peng/BrainEnrich")
 git config --global --unset http.proxy
 git config --global http.proxy http://127.0.0.1:7890
 git push origin
+
+R CMD Rd2pdf .
