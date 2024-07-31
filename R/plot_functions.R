@@ -18,6 +18,7 @@
 #' @return A ggplot2 object.
 #' @import ggplot2
 #' @import ggseg
+#' @importFrom dplyr filter mutate %>% recode
 #' @export
 plot_brain <- function(df2plot,
                        ats = c("dx", "dk", "aseg"),

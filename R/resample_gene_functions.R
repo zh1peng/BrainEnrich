@@ -63,6 +63,7 @@ resample_gene <- function(geneList.true, n_perm = 5000) {
 #' @return A list of resampled gene sets based on the specified constraints.
 #' @import pbapply
 #' @import parallel
+#' @importFrom stats cor
 #' @export
 #' @references
 #' Wei, Y., de Lange, S. C., Pijnenburg, R., Scholtens, L. H., Ardesch, D. J., Watanabe, K., Posthuma, D., & van den Heuvel, M. P. (2022).
@@ -73,10 +74,6 @@ resample_geneSetList_matching_coexp <- function(gene_data, geneSetList, tol = 0.
     cat("Operation aborted by the user.\n")
     return(NULL)
   }
-  # Load necessary packages
-  library(pbapply)
-  library(parallel)
-
   # Calculate the co-expression matrix
   coexp_matrix <- cor(gene_data)
   total_gs <- length(geneSetList)

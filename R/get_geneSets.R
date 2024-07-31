@@ -17,7 +17,7 @@
 #'     \item{"SynGO"}{SynGO gene sets}
 #'     \item{"WikiPathways"}{WikiPathways gene sets}
 #'   }
-#'
+#' @importFrom utils download.file
 #' @return A data frame containing the annotation data.
 #' @export
 #'
@@ -80,7 +80,7 @@ get_annoData <- function(type = c(
 #' @param convert_to_symbol Logical; if TRUE, converts gene identifiers to gene symbols.
 #' @return A list of gene sets.
 #' @import DOSE
-#' @import utils getFromNamespace
+#' @importFrom utils getFromNamespace
 #' @export
 get_geneSetList <- function(annoData) {
   getGeneSet <- getFromNamespace("getGeneSet", "DOSE")
@@ -96,7 +96,7 @@ get_geneSetList <- function(annoData) {
 #' @param strip_prefix A character string to remove from the beginning of each term.
 #' @return A character vector of gene set descriptions.
 #' @import DOSE
-#' @import utils getFromNamespace
+#' @importFrom utils getFromNamespace
 #' @export
 get_termDescription <- function(term, annoData, strip_prefix = "") {
   term <- sapply(term, function(x) gsub(strip_prefix, "", x))
@@ -116,7 +116,7 @@ get_termDescription <- function(term, annoData, strip_prefix = "") {
 #' @param maxGSSize Maximum gene set size for filtering.
 #' @return A filtered list of gene sets that meet the size constraints and background genes criteria.
 #' @import DOSE
-#' @import utils getFromNamespace
+#' @importFrom utils getFromNamespace
 #' @export
 filter_geneSetList <- function(bg_genes, geneSetList, minGSSize, maxGSSize) {
   # Create temporary values to name the background genes

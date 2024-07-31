@@ -69,6 +69,7 @@ generate_null_brain_data <- function(brain_data, perm_id) {
 #' @return Array of permutations, from set of regions to itself (array of size n(total regions) x nrot).
 #' @importFrom matrixStats rowMins
 #' @importFrom clue solve_LSAP
+#' @importFrom stats rnorm
 #' @export
 
 rotate_parcellation <- function(coord.l = NULL,

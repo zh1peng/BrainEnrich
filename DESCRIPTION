@@ -36,5 +36,4 @@ Imports:
 Depends: 
     R (>= 4.0.0)
 LazyData: true
-VignetteBuilder: knitr
 URL: https://zh1peng.github.io/BrainEnrich/

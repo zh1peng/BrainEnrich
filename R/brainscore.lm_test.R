@@ -32,6 +32,8 @@
 #' @param matchcoexp_max_iter Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.
 #' @importFrom stats p.adjust
 #' @importFrom utils getFromNamespace
+#' @importFrom purrr list_transpose
+#' @importFrom dplyr select rename %>% everything
 #' @import DOSE
 #' @return A data frame containing the results of the linear model test, including p-values, adjusted p-values,
 #'         q-values, descriptions, and core genes.
@@ -164,7 +166,7 @@ brainscore.lm_test <- function(pred_df,
       res$core_genes <- sapply(core_genes, paste0, collapse = "/")
     }
     res <- res %>%
-      rename(ID = Dependent_vars) %>%
+      dplyr::rename(ID = Dependent_vars) %>%
       dplyr::select(ID, Description, everything())
     message("Analysis complete.")
   }
@@ -188,7 +190,7 @@ brainscore.lm_test <- function(pred_df,
 #'   \item If `stat2return` is "tval", the output includes only the t-values as a list.
 #'   \item If `stat2return` is "pval", the output includes only the p-values.
 #' }
-#' @importFrom dplyr filter mutate select ungroup
+#' @importFrom dplyr filter mutate select ungroup %>% all_of case_when
 #' @importFrom tidyr pivot_longer unnest
 #' @importFrom purrr map
 #' @importFrom broom tidy

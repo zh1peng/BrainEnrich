@@ -9,6 +9,7 @@
 #'
 #' @return A matrix with correlation or association coefficients between gene data and brain data.
 #' @import pls
+#' @importFrom stats cor
 #' @export
 
 corr_brain_gene <- function(gene_data,

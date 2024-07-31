@@ -24,6 +24,7 @@
 #' @param n_cores Integer specifying the number of cores to use for parallel processing. Default is 0.
 #' @param n_perm Integer specifying the number of permutations. Default is 5000.
 #' @param perm_id Optional permutation ID.
+#' @importFrom dplyr case_when select rename %>%
 #' @return A list of data frames containing the results of the simulations.
 #' @export
 brainscore.simulate <- function(pred_df,
@@ -80,7 +81,7 @@ brainscore.simulate <- function(pred_df,
           stat2return = "all"
         )
         sampled_res <- sampled_res %>%
-          mutate(
+          dplyr::mutate(
             nofdr_ifsig = case_when(
               p.val < 0.05 ~ 1,
               TRUE ~ 0
@@ -91,7 +92,7 @@ brainscore.simulate <- function(pred_df,
             )
           ) %>%
           dplyr::select(Dependent_vars, nofdr_ifsig, fdr_ifsig) %>%
-          rename(
+          dplyr::rename(
             !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := nofdr_ifsig,
             !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := fdr_ifsig
           )
@@ -177,7 +178,7 @@ brainscore.simulate <- function(pred_df,
           res$np_p.adj <- np_p.adj
         }
         sampled_res <- res %>%
-          mutate(
+           dplyr::mutate(
             nofdr_ifsig = case_when(
               pval < 0.05 ~ 1,
               TRUE ~ 0
@@ -196,7 +197,7 @@ brainscore.simulate <- function(pred_df,
             )
           ) %>%
           dplyr::select(Dependent_vars, nofdr_ifsig, fdr_ifsig, np_nofdr_ifsig, np_fdr_ifsig) %>%
-          rename(
+          dplyr::rename(
             !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := nofdr_ifsig,
             !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := fdr_ifsig,
             !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := np_nofdr_ifsig,
@@ -271,7 +272,7 @@ brainscore.simulate <- function(pred_df,
           res$np_p.adj <- np_p.adj
         }
         sampled_res <- res %>%
-          mutate(
+           dplyr::mutate(
             nofdr_ifsig = case_when(
               pval < 0.05 ~ 1,
               TRUE ~ 0

@@ -26,7 +26,7 @@ ask_user_continue <- function(msg) {
 
 
 # Function to compress a CSV file using bzip2
-#' @importFrom base bzfile
+#' @importFrom utils write.csv
 compress_csv_bzip2 <- function(input_csv) {
   output_csv_bz <- paste0(input_csv, ".bz2")
   data <- read.csv(input_csv)
@@ -34,7 +34,7 @@ compress_csv_bzip2 <- function(input_csv) {
 }
 
 # Decompress and load a CSV file using bzip2
-#' @importFrom base bzfile
+#' @importFrom utils read.csv
 read.csv_bzip2 <- function(input_csv_bz, ...) {
   data <- read.csv(bzfile(input_csv_bz), ...)
   return(data)
