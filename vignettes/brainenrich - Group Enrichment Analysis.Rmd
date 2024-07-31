@@ -14,49 +14,78 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Introduction
+
+This tutorial demonstrates how to perform an enrichment analysis of derived group-level statistics using the `BrainEnrich` package. We will use effect size maps of Bipolar Disorders (BD) and gene expression data to identify significant gene sets.
+
+### Prerequisites
+
+Before you begin, ensure you have installed the necessary packages:
+
+```{r setup, eval=FALSE}
+if (!requireNamespace("BrainEnrich", quietly=TRUE)){
+  install.packages("BrainEnrich")
+}
+if (!requireNamespace("enrichplot", quietly=TRUE)){
+  BiocManager::install("enrichplot")
+}
+```
+
+Load the required libraries:
+
 ```{r setup}
 library(BrainEnrich)
-# if (!requireNamespace("enrichplot", quietly=TRUE)){
-# BiocManager::install("enrichplot")}
 library(enrichplot)
 ```
 
 ## 1. Prepare Data for the Analysis
+
 ### 1.1. Load brain_data (effect size maps of Bipolar Disorders)
+
+We will load brain data that contains the effect size maps of Bipolar Disorders. This data includes case-control comparisons of regional cortical thickness.
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-# load brain data from the pacakge
-# it is the case control comprisons of regional cortical thickness between Bipolar Disorders and controls
+# Load brain data from the package
 data(brain_data)
+# Display the structure of the brain data
 str(brain_data)
 ```
-#### show effect size map for BD
+
+#### Show effect size map for BD
+
+Visualize the effect size map to understand the regional differences in cortical thickness.
+
 ```{r fig.align='center', fig.height=8, fig.width=8, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-df2plot=brain_data %>% tibble::rownames_to_column('label')
+df2plot = brain_data %>% tibble::rownames_to_column('label')
 plot_brain(df2plot,ats='dk',filterby = 'none',limit2show=c(-0.5,0.5), 
         what2plot = 'BD',hem='left',low='#0197b2',mid='white',high='orange',
         legend2show = 'Effect Size')
 ```
 
-
 ### 1.2. Create perm_id for the Analysis
+
 ```{r eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 # read the centroid coordinates of the brain regions
 data(coord_dk_lh)
 perm_id_dk_lh_5000=rotate_parcellation(coord.l=coord_dk_lh, nrot=5000, seed=2024)
 ```
+
 #### Here, we can load the perm_id directly from the package.
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 data(perm_id_dk_lh_5000)
 str(perm_id_dk_lh_5000)
 ```
 
 ### 1.3. Load gene expression data for the Analysis
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 gene_data=get_geneExp(atlas='desikan', rdonor='r0.4',hem='L')
 str(gene_data)
 ```
 
 ### 1.4. Load GO MF for the Analysis
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 annoData=get_annoData(type='GO_MF')
 geneSetList=get_geneSetList(annoData)
@@ -66,11 +95,14 @@ print(sprintf('Number of MF terms: %d',length(geneSetList)))
 
 #### Filter the geneSetList (optional). 
 #### This step is embedded in the `brainenrich` function. Here is just to show how it is filtered.
+
 ```{r echo=TRUE, eval=FALSE}
 selected.gs=filter_geneSetList(bg_genes=colnames(gene_data), geneSetList=geneSetList, minGSSize=20, maxGSSize=200)
 print(sprintf('%d MF terms have gene size ranging between 20 and 200',length(selected.gs)))
 ```
+
 ## 2. Run the Analysis 
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 res=brainenrich(brain_data=brain_data, 
                     gene_data=gene_data, 
@@ -89,13 +121,17 @@ res=brainenrich(brain_data=brain_data,
 ```
 
 ## 3. Visualize the Results
-The res is a gseaResult object that is commonly used in clusterProfiler and DOSE packages.
-This means that we can use some existing functions to visualize the results.
+
+The res is a gseaResult object that is commonly used in clusterProfiler and DOSE packages. This means that we can use some existing functions to visualize the results.
+
 ### 3.1. Upset Plot
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=6, fig.width=10}
 upsetplot(res, top=10)
 ```
+
 ### 3.2. Gene-Concept Network
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
 geneList=res@geneList
 cnetplot(res, layout='kk', color_category='#a6a6a6', foldChange=geneList,
@@ -107,15 +143,15 @@ cnetplot(res, layout='kk', color_category='#a6a6a6', foldChange=geneList,
 ```
 
 ### 3.3. Dot Plot
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=6, fig.width=8}
 dotplot(res,x='gsScore',label_format=50, showCategory=10)+
   xlab('GS score')+scale_fill_gradient(high='#0197b2',low='orange',
                          space ="Lab" , name='p.adjusted')
-
 ```
 
 ### 3.4. Heatplot 
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=6, fig.width=10}
 heatplot(res,foldChange=geneList,label_format=50)
 ```
-

@@ -22,16 +22,17 @@ Imports:
     parallel,
     pbapply,
     purrr,
-    stats,
     tibble,
     tidyr,
-    utils,
-    devtools,
     broom,
     ggplot2,
     ggseg,
     parameters,
-    pls
+    pls,
+    BiocManager,
+    methods,
+    stats,
+    utils
 Depends: 
     R (>= 4.0.0)
 LazyData: true

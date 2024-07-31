@@ -19,7 +19,6 @@
 #' @param matchcoexp_tol A numeric value specifying the tolerance for matching co-expression in 'coexp_matched' null model. Default is 0.05.
 #' @param matchcoexp_max_iter An integer specifying the maximum iterations for matching co-expression in 'coexp_matched' null model. Default is 1000000.
 #' @return A data frame containing the gene set scores with regions as rows and gene sets as columns.
-#' @import DOSE
 #' @export
 brainscore <- function(brain_data,
                        gene_data,

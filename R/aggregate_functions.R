@@ -7,9 +7,9 @@
 #' @param geneSet A vector containing names of genes in the gene set of interest.
 #' @param method A character string specifying the method to use for aggregation.
 #'               Options include 'mean', 'median', 'meanabs', 'meansqr', 'maxmean',
-#'               'sig_n', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_sum',
-#'               and 'locfdr'. Default is 'mean'.
-#
+#'               'sig_n', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_sum'. Default is 'mean'.
+#' @importFrom stats median p.adjust
+#' @importFrom methods new
 #' @return Returns a numeric score based on the specified aggregation method.
 #' @export
 #'
@@ -19,7 +19,7 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
                               method = c(
                                 "mean", "median", "meanabs", "meansqr",
                                 "maxmean", "ks_orig", "ks_weighted",
-                                "ks_pos_neg_sum", "local_fdr",
+                                "ks_pos_neg_sum", 
                                 "sign_test", "rank_sum", "custom"
                               )) {
   if (is.function(method)) { # if method is a custom function
@@ -168,19 +168,19 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
         return(res)
       }
     },
-    local_fdr = {
-      function(genelist, geneSet) {
-        geneSet <- intersect(geneSet, names(genelist))
-        hits <- names(genelist) %in% geneSet ## logical
-        df <- data.frame(vals = as.numeric(genelist), hits = as.numeric(hits))
-        fit.pos <- glm(hits ~ vals, family = binomial(link = "logit"), data = df[df$vals >= 0, ])
-        fit.neg <- glm(hits ~ vals, family = binomial(link = "logit"), data = df[df$vals < 0, ])
-        S.pos <- coef(summary(fit.pos))["vals", "z value"]
-        S.neg <- coef(summary(fit.neg))["vals", "z value"]
-        res <- ifelse(abs(S.pos) > abs(S.neg), S.pos, S.neg)
-        return(res)
-      }
-    },
+    # local_fdr = {
+    #   function(genelist, geneSet) {
+    #     geneSet <- intersect(geneSet, names(genelist))
+    #     hits <- names(genelist) %in% geneSet ## logical
+    #     df <- data.frame(vals = as.numeric(genelist), hits = as.numeric(hits))
+    #     fit.pos <- glm(hits ~ vals, family = binomial(link = "logit"), data = df[df$vals >= 0, ])
+    #     fit.neg <- glm(hits ~ vals, family = binomial(link = "logit"), data = df[df$vals < 0, ])
+    #     S.pos <- coef(summary(fit.pos))["vals", "z value"]
+    #     S.neg <- coef(summary(fit.neg))["vals", "z value"]
+    #     res <- ifelse(abs(S.pos) > abs(S.neg), S.pos, S.neg)
+    #     return(res)
+    #   }
+    # },
     rank_sum = {
       function(genelist, geneSet) {
         abslist.sorted <- sort(abs(genelist), decreasing = F) # sort by abs value

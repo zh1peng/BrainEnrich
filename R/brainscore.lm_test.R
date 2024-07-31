@@ -30,6 +30,9 @@
 #' @param pAdjustMethod Character string specifying the method for p-value adjustment. Default is 'fdr'.
 #' @param matchcoexp_tol Numeric value specifying the tolerance for matched coexpression. Default is 0.05.
 #' @param matchcoexp_max_iter Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.
+#' @importFrom stats p.adjust
+#' @importFrom utils getFromNamespace
+#' @import DOSE
 #' @return A data frame containing the results of the linear model test, including p-values, adjusted p-values,
 #'         q-values, descriptions, and core genes.
 #' @export
@@ -185,7 +188,13 @@ brainscore.lm_test <- function(pred_df,
 #'   \item If `stat2return` is "tval", the output includes only the t-values as a list.
 #'   \item If `stat2return` is "pval", the output includes only the p-values.
 #' }
-#' @import dplyr tidyr purrr broom parameters tibble
+#' @importFrom dplyr filter mutate select ungroup
+#' @importFrom tidyr pivot_longer unnest
+#' @importFrom purrr map
+#' @importFrom broom tidy
+#' @importFrom parameters standardize_parameters
+#' @importFrom stats p.adjust relevel
+#' @importFrom tibble deframe
 #' @export
 simple_lm <- function(dependent_df,
                       pred_df,

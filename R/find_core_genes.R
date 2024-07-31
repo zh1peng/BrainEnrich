@@ -104,6 +104,7 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
 #' @param changes Named vector of changes from LOO analysis.
 #' @param method Character string specifying the method to use for threshold calculation ("percentile" or "sd").
 #' @param threshold_value Numeric value indicating the percentile (if method is "percentile") or the number of standard deviations (if method is "sd").
+#' @importFrom stats quantile sd
 #' @return Vector of core genes or NA if no core genes are identified.
 identify_core_genes <- function(changes, threshold_type = c("sd", "percentile"), threshold_value = 1) {
   threshold_type <- match.arg(threshold_type)

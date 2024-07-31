@@ -32,8 +32,6 @@ plot_brain <- function(df2plot,
                        mid = "white",
                        high = "firebrick1",
                        sufix2remove = "_thickavg") {
-  require(ggplot2)
-  require(ggseg)
   # Match arguments with allowed values
   ats <- match.arg(ats)
   filterby <- match.arg(filterby)

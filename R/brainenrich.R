@@ -33,8 +33,10 @@
 #'                       Lower value means better matching but will take much more iterations. Default is 0.05.
 #' @param matchcoexp_max_iter An integer specifying the maximum number of iterations
 #'                            for matched co-expression. Default is 1000000.
-#' @return A gseaResult object containing the enrichment results.
+#' @importClassesFrom DOSE gseaResult
 #' @import DOSE
+#' @importFrom utils getFromNamespace
+#' @return A gseaResult object containing the enrichment results.
 #' @export
 brainenrich <- function(brain_data,
                         gene_data,
@@ -119,7 +121,7 @@ brainenrich <- function(brain_data,
 
   message("Calculating p-values...")
   if (aggre_method %in% c("ks_orig", "ks_weighted")) {
-    pvals <- caculate_pvals(gs_score.true, gs_score.null, method = c("split_pos_neg"))
+    pvals <- calculate_pvals(gs_score.true, gs_score.null, method = c("split_pos_neg"))
   } else {
     pvals <- calculate_pvals(gs_score.true, gs_score.null, method = c("standard"))
   }

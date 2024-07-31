@@ -1,3 +1,5 @@
+
+#'@importFrom stats pt
 cor2p <- function(r, n) {
   t <- (r * sqrt(n - 2)) / sqrt(1 - r^2)
   p <- 2 * (1 - pt(abs(t), (n - 2)))
@@ -24,6 +26,7 @@ ask_user_continue <- function(msg) {
 
 
 # Function to compress a CSV file using bzip2
+#' @importFrom base bzfile
 compress_csv_bzip2 <- function(input_csv) {
   output_csv_bz <- paste0(input_csv, ".bz2")
   data <- read.csv(input_csv)
@@ -31,6 +34,7 @@ compress_csv_bzip2 <- function(input_csv) {
 }
 
 # Decompress and load a CSV file using bzip2
+#' @importFrom base bzfile
 read.csv_bzip2 <- function(input_csv_bz, ...) {
   data <- read.csv(bzfile(input_csv_bz), ...)
   return(data)

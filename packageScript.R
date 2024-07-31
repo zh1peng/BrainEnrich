@@ -22,6 +22,8 @@ devtools::check()
 devtools::build()
 devtools::install()
 
+devtools::build_vignettes()
+
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 

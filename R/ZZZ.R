@@ -17,6 +17,7 @@
 
 
 # Ensure Bioconductor Dependencies are Installed
+#' @importFrom utils install.packages
 ensure_bioc_packages <- function() {
   if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
