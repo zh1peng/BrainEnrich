@@ -24,6 +24,10 @@ devtools::install()
 
 devtools::build_vignettes()
 
+# install pdflatex for building manual
+devtools::build_manual()
+
+
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
@@ -41,25 +45,6 @@ usethis::use_citation()
 usethis::use_agpl3_license()
 
 uesthis::check_travis() # Check travis
-
-usethis::use_data()
-
-usethis::use_testthat() # Create testthat infrastructure
-usethis::use_test('corr_brain_gene') # Create test file for corr_brain_gene function
-devtools::test(filter = "corr_brain_gene") # Run tests for corr_brain_gene function
-# testthat::test_file("tests/testthat/test-corr_brain_gene.R") # Run tests for corr_brain_gene function
-
-usethis::use_test('aggregate_geneSet') # Create test file for aggregate_gene_data function
-devtools::test(filter = "aggregate_geneSet") 
-
-usethis::use_test('get_geneSets.R')
-usethis::use_test('brainenrich.R')
-usethis::use_test('brainscore.R')
-
-usethis::use_vignette('brainenrich')
-usethis::use_vignette('visualization')
-usethis::use_vignette('brainscore')
-usethis::use_vignette('prepare_geneSet')
 
 
 usethis::use_pkgdown()
