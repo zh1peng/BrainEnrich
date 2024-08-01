@@ -41,15 +41,16 @@ read.csv_bzip2 <- function(input_csv_bz, ...) {
 }
 
 
-# # Directory containing your CSV files
-# csv_directory <- "E:/xhmhc/BrainEnrich/extdata/geneExp"
+# # # Directory containing your CSV files
+# csv_directory <- "E:/xhmhc/BrainEnrich/inst/extdata/not_compressed"
 # # List all CSV files in the directory
 # csv_files <- list.files(path = csv_directory, pattern = "\\.csv$", full.names = TRUE)
 # # Compress each CSV file using bzip2
 # lapply(csv_files, compress_csv_bzip2)
 
-# test1=read.csv_bzip2("E:/xhmhc/BrainEnrich/extdata/geneExp/desikan_r0.6.csv.bz2")
-# test2=read.csv("E:/xhmhc/BrainEnrich/extdata/decompressed/desikan_r0.6.csv")
+# test1=read.csv_bzip2("E:/xhmhc/BrainEnrich/inst/extdata/not_compressed/desikan_r0.6.csv.bz2", check.names=FALSE)
+# test2=read.csv("E:/xhmhc/BrainEnrich/inst/extdata/not_compressed/desikan_r0.6.csv",check.names=FALSE)
+
 # # Compare column names
 # if (!identical(names(test1), names(test2))) {
 #   cat("Column names are different:\n")
