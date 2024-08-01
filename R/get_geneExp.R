@@ -13,7 +13,7 @@
 #' @param rdonor A character string specifying the donor resolution to use. Options are "r0.2", "r0.4", "r0.6".
 #' @param hem A character string specifying the hemisphere to use. Options are "L" (Left), "R" (Right), "B" (Both).
 #' @importFrom utils download.file
-#' @importFrom dplyr %>% filter
+#' @importFrom dplyr %>% filter everything
 #' @importFrom tibble column_to_rownames
 #' @importFrom stats complete.cases
 #' @return A matrix containing the gene expression data.
@@ -55,18 +55,32 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
 
 
   # Define GitHub URL for downloading the file
-  url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/extdata/geneExp/", atlas, "_", rdonor, ".csv.bz2")
+  url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/inst/extdata/geneExp/", atlas, "_", rdonor, ".csv.bz2")
+
 
   if (!file.exists(GeneExpCSV)) {
-    message(sprintf("File not found locally. Downloading from GitHub... %s", url))
-    message("If the download is slow, download manually.")
-    message(sprintf("and save files as %s", GeneExpCSV))
-    options(timeout = 600)
-    download.file(url, GeneExpCSV, method = "libcurl")
+  message(sprintf("File not found locally. Downloading from GitHub... %s", url))
+  message("If the download is slow, download manually.")
+  message(sprintf("and save files as %s", GeneExpCSV))
+ 
+  GeneExpDir <- dirname(GeneExpCSV)
+  if (!dir.exists(GeneExpDir)) {
+    dir.create(GeneExpDir, recursive = TRUE)
   }
+  options(timeout = 600)
+  tryCatch({
+    download.file(url, GeneExpCSV)
+    message("File successfully downloaded.")
+  }, error = function(e) {
+    message("Download failed. Please copy and paste the following URL into your browser:")
+    message(url)
+    message(sprintf("and save the file to the following folder: %s", GeneExpDir))
+  })
+}
+
 
   # Read the CSV file
-  gene.df <- read.csv_bzip2(GeneExpCSV, stringsAsFactors = FALSE)
+  gene.df <- read.csv_bzip2(GeneExpCSV, stringsAsFactors = FALSE, check.names = FALSE)
 
   # Filter based on hemisphere
   if (hem %in% c("L", "R")) {
@@ -75,7 +89,7 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
 
   # Filter complete cases and convert to matrix
   gene.df <- gene.df %>%
-    dplyr::filter(complete.cases(.data)) %>%
+    dplyr::filter(complete.cases(across(everything()))) %>%
     tibble::column_to_rownames("Region")
 
   gene.mx <- as.matrix(gene.df)

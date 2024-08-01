@@ -49,15 +49,17 @@ plot_brain <- function(df2plot,
   # Modify labels and join data based on anatomical terms
   if (ats == "dx" || ats == "dk") {
     atlas <- ifelse(ats == "dx", "desterieux", "dk")
+    atlas_data <- getExportedValue("ggseg", atlas)
     df2plot <- df2plot %>%
       mutate(
         label = sub(".*L_", "lh_", .data$label),
         label = sub(".*R_", "rh_", .data$label),
         label = sub(sufix2remove, "", .data$label)
       ) %>%
-      brain_join(get(atlas)) %>%
-      reposition_brain(. ~ .data$hemi + .data$side)
+      brain_join(atlas_data) %>%
+      reposition_brain(as.formula('. ~ hemi + side'))
   } else if (ats == "aseg") {
+    atlas_data <- getExportedValue("ggseg", "aseg") # ggseg::aseg
     df2plot <- df2plot %>%
       mutate(label = recode(.data$key,
         "SV_L_" = "Left-",
@@ -72,7 +74,7 @@ plot_brain <- function(df2plot,
         "LatVent" = "Lateral-Ventricle"
       )) %>%
       filter(!.data$key %in% c("SV_L_accumb", "SV_R_accumb")) %>%
-      brain_join(ggseg::aseg) %>%
+      brain_join(atlas_data) %>%
       filter(.data$side == "coronal")
   }
 
