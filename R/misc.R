@@ -29,7 +29,7 @@ ask_user_continue <- function(msg) {
 #' @importFrom utils write.csv
 compress_csv_bzip2 <- function(input_csv) {
   output_csv_bz <- paste0(input_csv, ".bz2")
-  data <- read.csv(input_csv)
+  data <- read.csv(input_csv, check.names = FALSE)
   write.csv(data, bzfile(output_csv_bz), row.names = FALSE)
 }
 
