@@ -236,9 +236,9 @@ simple_lm <- function(dependent_df,
     ) %>%
     {
       if (stat2return == "all") {
-        dplyr::mutate(.data, std_coefs = purrr::map(.data$lm_model, ~ parameters::standardize_parameters(.x, method = "refit")))
+        dplyr::mutate(., std_coefs = purrr::map(.data$lm_model, ~ parameters::standardize_parameters(.x, method = "refit")))
       } else {
-        .data
+        .
       }
     } %>%
     tidyr::unnest(.data$tidy_model) %>%
