@@ -1,0 +1,141 @@
+---
+title: "Enrichment analysis of derived group-level statistics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{brainenrich}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+```{r setup, eval=TRUE}
+# if (!requireNamespace("BrainEnrich", quietly=TRUE)){
+#   install.packages("BrainEnrich")
+# }
+# if (!requireNamespace("enrichplot", quietly=TRUE)){
+#   BiocManager::install("enrichplot")
+# }
+library(BrainEnrich)
+library(dplyr)
+```
+## 1. Prepare Data for the Analysis
+
+### 1.1. Load sample data frame. The data is simulated from HCP data.
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+data(sample_df)
+head(sample_df)
+colnames(sample_df)
+```
+### prepare brain_data for scoring
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+brain_data=dplyr::select(sample_df, starts_with('L_'))%>%t()
+colnames(brain_data)=paste0('sub-',1:ncol(brain_data))
+head(brain_data)
+```
+
+### 1.3. Load gene expression data for the Analysis
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+gene_data=get_geneExp(atlas='desikan', rdonor='r0.4',hem='L')
+str(gene_data)
+```
+
+### 1.4. Load GO MF for the Analysis
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+annoData=get_annoData(type='GO_MF')
+geneSetList=get_geneSetList(annoData)
+length(geneSetList)
+print(sprintf('Number of MF terms: %d',length(geneSetList)))
+```
+
+#### Filter the geneSetList (optional). 
+#### This step is embedded in the `brainenrich` function. Here is just to show how it is filtered.
+
+```{r echo=TRUE, eval=FALSE}
+selected.gs=filter_geneSetList(bg_genes=colnames(gene_data), geneSetList=geneSetList, minGSSize=20, maxGSSize=200)
+print(sprintf('%d MF terms have gene size ranging between 20 and 200',length(selected.gs)))
+```
+
+## 2. Run the Analysis 
+
+### 2.1. get the row score of the brain_data (`set null_model='none'`)
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+gsScore.raw=brainscore(brain_data=brain_data, 
+                    gene_data=gene_data, 
+                    annoData = annoData,
+                    cor_method='pearson', 
+                    aggre_method='mean',
+                    n_cores=0,
+                    minGSSize = 20,
+                    maxGSSize = 200,
+                    null_model='none')
+str(head(gsScore.raw))
+```
+The gsScore.raw is a list of molecular terms. For each of molecular terms, you can find individual gsScores and use them to do further analysis, such as linear regression, correlation analysis, etc.
+
+### 2.2. get the null score of the brain_data (`set null_model='spin_brain'`)
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+gsScore.spin=brainscore(brain_data=brain_data, 
+                    gene_data=gene_data, 
+                    annoData = annoData,
+                    cor_method='pearson', 
+                    aggre_method='mean',
+                    n_cores=0,
+                    minGSSize = 20,
+                    maxGSSize = 200,
+                    null_model='spin_brain',
+                    n_perm=10,
+                    perm_id=perm_id_dk_lh_5000)
+str(head(gsScore.spin,5),1)
+```
+The result is a list of lists. Each list contains a null list of the molecular terms.
+This is useful for the permutation test where you can compare the observed correlation between emprical gsScore against that from the null model.
+If you are using simple linear regression, you can use the brainscore.lm_test function to do the test, otherwise, you may need to caculated the null statistics yourself based on your analysis.
+
+
+
+### 2.3. get the null score of the resample_gene (`set null_model='resample_gene'`)
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+gsScore.resample=brainscore(brain_data=brain_data, 
+                    gene_data=gene_data, 
+                    annoData = annoData,
+                    cor_method='pearson', 
+                    aggre_method='mean',
+                    n_cores=0,
+                    minGSSize = 20,
+                    maxGSSize = 200,
+                    null_model='resample_gene',
+                    n_perm=10)
+str(head(gsScore.resample,5),1)
+```
+The result is a list of lists. Each list contains a null list of the molecular terms.
+This is useful for the permutation test where you can compare the observed correlation between emprical gsScore against that from the null model.
+If you are using simple linear regression, you can use the brainscore.lm_test function to do the test, otherwise, you may need to caculated the null statistics yourself based on your analysis.
+
+
+### 2.4. do linear regression test between the gsScore and the brain_data and build null model to determine the significance
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+cov_df=sample_df%>%dplyr::select(Age, Sex)
+pred_df=sample_df%>%dplyr::select(BMI)
+res=brainscore.lm_test(pred_df=pred_df,
+                    cov_df=cov_df,
+                    brain_data=brain_data, 
+                    gene_data=gene_data, 
+                    annoData = annoData,
+                    cor_method='pearson', 
+                    aggre_method='mean',
+                    n_cores=0,
+                    minGSSize = 20,
+                    maxGSSize = 200,
+                    null_model='spin_brain',
+                    n_perm=10,
+                    perm_id=perm_id_dk_lh_5000)
+
+```
