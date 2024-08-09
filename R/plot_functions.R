@@ -99,6 +99,11 @@ plot_brain <- function(df2plot,
   return(p)
 }
 
+convert2gseaObj <- function(df.res) {
+  
+  return(res)
+}
+
 
 # dotplot.res <- function(res) {
 # }
