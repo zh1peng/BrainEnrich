@@ -21,7 +21,7 @@ brainenrich(
   coord.r = NULL,
   seed = NULL,
   threshold_type = c("sd", "percentile", "none"),
-  threshold_val = 1,
+  threshold_value = 1,
   pvalueCutoff = 0.05,
   pAdjustMethod = "fdr",
   matchcoexp_tol = 0.05,
@@ -67,7 +67,7 @@ Default is 'spin_brain'. Other options include 'resample_gene',
 \item{threshold_type}{A character string specifying the threshold type for core genes.
 Default is 'sd'. Other option is 'percentile'.}
 
-\item{threshold_val}{A numeric value specifying the threshold value for core genes. Default is 1.}
+\item{threshold_value}{A numeric value specifying the threshold value for core genes. Default is 1.}
 
 \item{pvalueCutoff}{A numeric value specifying the p-value cutoff for output. Default is 0.05.}
 

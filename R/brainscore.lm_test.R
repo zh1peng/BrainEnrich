@@ -34,7 +34,7 @@
 #' @importFrom utils getFromNamespace
 #' @importFrom purrr list_transpose
 #' @importFrom dplyr select rename %>% everything
-#' @import DOSE
+#' @importClassesFrom DOSE gseaResult
 #' @return A data frame containing the results of the linear model test, including p-values, adjusted p-values,
 #'         q-values, descriptions, and core genes.
 #' @export
@@ -180,16 +180,19 @@ brainscore.lm_test <- function(pred_df,
       aggreMethod = aggre_method,
       nullType = null_model,
       thresType = threshold_type,
-      thresVal = threshold_val
+      thresVal = threshold_value
     )
-            res <- res %>%
-              dplyr::rename(ID = .data$Dependent_vars) %>%
-              dplyr::select(.data$ID, .data$Description, -.data$p.value, setSize, -.data$p.adj, everything())
-              dplyr::rename(pvalue=.data$np.pval, 
-                                p.adjust= .data$np.padj, 
-                                qvalue=.data$np.qval,
-                                core_enrichment=.data$core_genes)
-            message("Analysis complete.")
+
+    if (nrow(res) != 0){
+        res <- res %>%
+          dplyr::rename(ID = .data$Dependent_vars) %>%
+          dplyr::select(.data$ID, .data$Description, .data$setSize, -.data$p.val, -.data$p.adj, everything())%>%
+          dplyr::rename(pvalue=.data$np.pval, 
+                            p.adjust= .data$np.padj, 
+                            qvalue=.data$np.qval,
+                            core_enrichment=.data$core_genes)
+    }
+        message("Analysis complete.")
             return(new("gseaResult",
               result = res,
               geneSets = selected.gs,

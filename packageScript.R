@@ -23,6 +23,7 @@ devtools::build()
 devtools::install()
 
 detach("package:BrainEnrich", unload = TRUE)
+library(BrainEnrich)
 
 devtools::build_vignettes()
 ^vignettes$

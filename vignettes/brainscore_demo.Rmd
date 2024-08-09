@@ -135,8 +135,55 @@ res=brainscore.lm_test(pred_df=pred_df,
                     minGSSize = 50,
                     maxGSSize = 200,
                     null_model='spin_brain',
-                    n_perm=10,
+                    n_perm=5,
                     perm_id=perm_id_dk_lh_5000,
                     pvalueCutoff = 0.8)
 ```
 For demonstration, we only used 10 times of permutation and set minGSSize as 50. In practice, you may need to use more permutation (e.g., 5000) to get a more reliable p-value.
+
+
+## 3. Visualization
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(enrichplot)
+library(ggplot2)
+
+upsetplot(res, n=5)
+res.df=as.data.frame(res)
+
+dotplot(res,x='t_Value',label_format=50, showCategory=30)+
+  xlab('Correlation')+scale_fill_gradient(high='#0197b2',low='orange',
+                         space ="Lab" , name='p.adjusted')
+
+```
+
+
+
+### 3.2. Gene-Concept Network
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
+geneList=res@geneList
+cnetplot(res, layout='kk', color_category='#a6a6a6', foldChange=geneList,
+          # color.params = list(foldChange = geneList),
+          showCategory = 10, cex.params = list(category_node=1, gene_node=0.75,
+                                            category_label=1.2, gene_label=0.6),
+          )+scale_color_gradient2(midpoint=0,low='#0197b2',mid='white',high='orange',
+                         space ="Lab" ,limits = c(-1,1), name='Association')
+```
+
+
+
+### 3.3. Dot Plot
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
+dotplot(res,x='gsScore',label_format=50, showCategory=30)+
+  xlab('GS score')+scale_fill_gradient(high='#0197b2',low='orange',
+                         space ="Lab" , name='p.adjusted')
+```
+
+### 3.4. Heatplot 
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=6, fig.width=12}
+heatplot(res,foldChange=geneList,label_format=50, showCategory = 10)+
+  scale_fill_gradient2(midpoint=0,low='#0197b2',mid='white',high='orange',
+                         space ="Lab" ,limits = c(-1,1), name='Association')
+```

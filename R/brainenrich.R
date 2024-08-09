@@ -25,7 +25,7 @@
 #' @param maxGSSize An integer specifying the maximum gene set size. Default is 200.
 #' @param threshold_type A character string specifying the threshold type for core genes.
 #'                   Default is 'sd'. Other option is 'percentile'.
-#' @param threshold_val A numeric value specifying the threshold value for core genes. Default is 1.
+#' @param threshold_value A numeric value specifying the threshold value for core genes. Default is 1.
 #' @param pvalueCutoff A numeric value specifying the p-value cutoff for output. Default is 0.05.
 #' @param pAdjustMethod A character string specifying the method for p-value adjustment.
 #'                      Default is 'fdr'.
@@ -57,7 +57,7 @@ brainenrich <- function(brain_data,
                         coord.r = NULL,
                         seed = NULL,
                         threshold_type = c("sd", "percentile", "none"),
-                        threshold_val = 1,
+                        threshold_value = 1,
                         pvalueCutoff = 0.05,
                         pAdjustMethod = "fdr",
                         matchcoexp_tol = 0.05,
@@ -144,7 +144,7 @@ brainenrich <- function(brain_data,
     aggreMethod = aggre_method,
     nullType = null_model,
     thresType = threshold_type,
-    thresVal = threshold_val
+    thresVal = threshold_value
   )
 
   res <- data.frame(
@@ -179,7 +179,7 @@ brainenrich <- function(brain_data,
     if (threshold_type != "none") {
       message("Identifying core genes...")
       survived.gs <- selected.gs[res$ID]
-      core_genes <- find_core_genes(geneList.true, survived.gs, aggre_method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = threshold_val)
+      core_genes <- find_core_genes(geneList.true, survived.gs, aggre_method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = threshold_value)
       res$core_enrichment <- sapply(core_genes, paste0, collapse = "/")
     }
 
