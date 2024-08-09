@@ -18,9 +18,11 @@ if (!requireNamespace("testthat", quietly = TRUE)) {
 devtools::has_devel()
 
 devtools::document()
-devtools::check()
+# devtools::check()
 devtools::build()
 devtools::install()
+
+detach("package:BrainEnrich", unload = TRUE)
 
 devtools::build_vignettes()
 ^vignettes$
