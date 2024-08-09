@@ -75,7 +75,7 @@ simple_lm <- function(dependent_df,
           #   TRUE ~ "n.s."
           # )
         ) %>%
-        dplyr::select(.data$Dependent_vars, .data$term, .data$estimate, .data$std.error, .data$statistic, .data$Std_Coefficient, .data$CI_low, .data$CI_high, .data$p.value, .data$p.adj, .data$ifsig) %>%
+        dplyr::select(.data$Dependent_vars, .data$term, .data$estimate, .data$std.error, .data$statistic, .data$Std_Coefficient, .data$CI_low, .data$CI_high, .data$p.value, .data$p.adj) %>%
         dplyr::rename(
           Predictor = .data$term,
           Unstandardized_Coefficient = .data$estimate,

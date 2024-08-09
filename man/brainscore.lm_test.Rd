@@ -27,7 +27,8 @@ brainscore.lm_test(
   pvalueCutoff = 0.05,
   pAdjustMethod = "fdr",
   matchcoexp_tol = 0.05,
-  matchcoexp_max_iter = 1e+06
+  matchcoexp_max_iter = 1e+06,
+  gsea_obj = TRUE
 )
 }
 \arguments{

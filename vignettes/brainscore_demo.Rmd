@@ -138,6 +138,5 @@ res=brainscore.lm_test(pred_df=pred_df,
                     n_perm=10,
                     perm_id=perm_id_dk_lh_5000,
                     pvalueCutoff = 0.8)
-head(res)
 ```
 For demonstration, we only used 10 times of permutation and set minGSSize as 50. In practice, you may need to use more permutation (e.g., 5000) to get a more reliable p-value.
