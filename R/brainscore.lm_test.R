@@ -147,6 +147,29 @@ brainscore.lm_test <- function(pred_df,
   }
 
 
+  # Filter significant results
+  message("Filtering significant results...")
+  res <- res[!is.na(res$np.pval), ]
+  res <- res[res$np.pval <= pvalueCutoff, ]
+  res <- res[res$np.padj <= pvalueCutoff, ]
+  res <- res[order(res$np.pval), ]
+
+  if (nrow(res) == 0) {
+      message("None of the gene sets are significant at the given p-value cutoff.")
+    } else {
+      geneList <- corr_brain_gene(brain_data = brain_data, gene_data = gene_data, method = cor_method)
+      geneSetList <- get_geneSetList(annoData)
+      selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
+      survived.gs <- selected.gs[res$Dependent_vars]
+      res$setSize = sapply(survived.gs, length)
+      if (threshold_type != "none" | gsea_obj) {
+      message("Identifying core genes...")
+      core_genes <- find_core_genes(geneList, survived.gs, pred_df = pred_df, cov_df = cov_df, aggre_method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = threshold_value)
+      res$core_genes <- sapply(core_genes, paste0, collapse = "/")
+    }
+}
+  
+  if (gsea_obj) {
   params <- list(
       pvalueCutoff = pvalueCutoff,
       nPerm = n_perm,
@@ -159,60 +182,24 @@ brainscore.lm_test <- function(pred_df,
       thresType = threshold_type,
       thresVal = threshold_val
     )
-  # Filter significant results
-  message("Filtering significant results...")
-  res <- res[!is.na(res$np.pval), ]
-  res <- res[res$np.pval <= pvalueCutoff, ]
-  res <- res[res$np.padj <= pvalueCutoff, ]
-  res <- res[order(res$np.pval), ]
-
-  if (nrow(res) == 0) {
-    if (gsea_obj) {
-      message("None of the gene sets are significant at the given p-value cutoff.")
-      return(new("gseaResult",
-        result = res,
-        geneSets = selected.gs,
-        geneList = unlist(stat.true),
-        permScores = as.matrix(do.call(rbind, stat.null)),
-        params = params,
-        keytype='SYMBOL',
-        readable = TRUE
-      ))
-    } else {
-      message("None of the gene sets are significant at the given p-value cutoff.")
-      return(res)
-    }
-  } else {
-    if(gsea_obj){
-      geneList <- corr_brain_gene(brain_data = brain_data, gene_data = gene_data, method = cor_method)
-      geneSetList <- get_geneSetList(annoData)
-      selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
-      survived.gs <- selected.gs[res$Dependent_vars]
-      res$setSize = sapply(survived.gs, length)
-      if (threshold_type != "none") {
-      message("Identifying core genes...")
-      core_genes <- find_core_genes(geneList, survived.gs, pred_df = pred_df, cov_df = cov_df, aggre_method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = threshold_value)
-      res$core_genes <- sapply(core_genes, paste0, collapse = "/")
-    }
-    res <- res %>%
-      dplyr::rename(ID = .data$Dependent_vars) %>%
-      dplyr::select(.data$ID, .data$Description, -.data$p.value, setSize, -.data$p.adj, everything())
-      dplyr::rename(pvalue=.data$np.pval, 
-                        p.adjust= .data$np.padj, 
-                        qvalue=.data$np.qval,
-                        core_enrichment=.data$core_genes)
-    message("Analysis complete.")
-    return(new("gseaResult",
-      result = res,
-      geneSets = selected.gs,
-      geneList = unlist(stat.true),
-      permScores = as.matrix(do.call(rbind, stat.null)),
-      params = params,
-      keytype='SYMBOL',
-      readable = TRUE
-    ))
-  } else {
+            res <- res %>%
+              dplyr::rename(ID = .data$Dependent_vars) %>%
+              dplyr::select(.data$ID, .data$Description, -.data$p.value, setSize, -.data$p.adj, everything())
+              dplyr::rename(pvalue=.data$np.pval, 
+                                p.adjust= .data$np.padj, 
+                                qvalue=.data$np.qval,
+                                core_enrichment=.data$core_genes)
+            message("Analysis complete.")
+            return(new("gseaResult",
+              result = res,
+              geneSets = selected.gs,
+              geneList = unlist(stat.true),
+              permScores = as.matrix(do.call(rbind, stat.null)),
+              params = params,
+              keytype='SYMBOL',
+              readable = TRUE
+            ))
+          } else {
     return(res)
   }
 }
-                               }
