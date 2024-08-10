@@ -186,12 +186,15 @@ brainscore.lm_test <- function(pred_df,
     if (nrow(res) != 0){
         res <- res %>%
           dplyr::rename(ID = .data$Dependent_vars) %>%
-          dplyr::select(.data$ID, .data$Description, .data$setSize, -.data$p.val, -.data$p.adj, everything())%>%
+          dplyr::select(.data$ID, .data$Description, .data$setSize, everything())%>%
+          dplyr::select(-.data$p.val, -.data$p.adj) %>%
           dplyr::rename(pvalue=.data$np.pval, 
                             p.adjust= .data$np.padj, 
                             qvalue=.data$np.qval,
                             core_enrichment=.data$core_genes)
     }
+      res=as.data.frame(res)
+      rownames(res) <- res$ID
         message("Analysis complete.")
             return(new("gseaResult",
               result = res,
