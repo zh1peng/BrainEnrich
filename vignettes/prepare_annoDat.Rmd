@@ -44,7 +44,9 @@ annoData <- get_GO_data("org.Hs.eg.db", ont = "BP", keytype = "SYMBOL")
 annoData <- get_GO_data("org.Hs.eg.db", ont = "MF", keytype = "SYMBOL")
 # saveRDS(annoData, file = "extdata/geneSets/GO_MF.rds", compress = "xz")
 annoData <- get_GO_data("org.Hs.eg.db", ont = "CC", keytype = "SYMBOL")
-save(annoData, file = "inst/extdata/geneSets/GO_CC.rds", compress = "xz")
+saveRDS(annoData, file = "inst/extdata/geneSets/GO_CC.rds", compress = "xz")
+
+
 # check version of org.Hs.eg.db
 packageVersion("clusterProfiler")
 packageVersion("org.Hs.eg.db")
@@ -54,7 +56,7 @@ packageVersion("org.Hs.eg.db")
 ```{r include=T, eval=F}
 get_DGN_data <- getFromNamespace("get_DGN_data", "DOSE")
 annoData <- get_DGN_data()
-save(annoData, file = "extdata/geneSets/DGN.rds", compress = "xz")
+saveRDS(annoData, file = "inst/extdata/geneSets/DGN.rds", compress = "xz")
 packageVersion("DOSE")
 ```
 
