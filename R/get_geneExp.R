@@ -13,7 +13,7 @@
 #' @param rdonor A character string specifying the donor resolution to use. Options are "r0.2", "r0.4", "r0.6".
 #' @param hem A character string specifying the hemisphere to use. Options are "L" (Left), "R" (Right), "B" (Both).
 #' @importFrom utils download.file
-#' @importFrom dplyr %>% filter everything
+#' @importFrom dplyr %>% filter everything across
 #' @importFrom tibble column_to_rownames
 #' @importFrom stats complete.cases
 #' @return A matrix containing the gene expression data.

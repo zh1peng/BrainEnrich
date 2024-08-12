@@ -19,6 +19,7 @@
 #' @import ggplot2
 #' @import ggseg
 #' @importFrom dplyr filter mutate %>% recode
+#' @importFrom stats as.formula
 #' @export
 plot_brain <- function(df2plot,
                        ats = c("dx", "dk", "aseg"),
@@ -99,14 +100,3 @@ plot_brain <- function(df2plot,
   return(p)
 }
 
-convert2gseaObj <- function(df.res) {
-  
-  return(res)
-}
-
-
-# dotplot.res <- function(res) {
-# }
-
-# barplot.res <- function(res) {
-# }
