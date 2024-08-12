@@ -95,6 +95,7 @@ brainenrich <- function(brain_data,
   geneSetList <- get_geneSetList(annoData)
   message("Filtering gene set list...")
   selected.gs <- filter_geneSetList(rownames(geneList.true), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
+  message("Number of gene sets left: ", length(selected.gs))
   message("Aggregating true gene set scores...")
   gs_score.true <- aggregate_geneSetList(geneList.true, selected.gs, method = aggre_method, n_cores = n_cores)
 

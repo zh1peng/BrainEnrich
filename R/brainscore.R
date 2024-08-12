@@ -65,7 +65,7 @@ brainscore <- function(brain_data,
   # Filter gene set list
   message("Filtering gene set list...")
   selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
-
+  message("Number of gene sets left: ", length(selected.gs))
   if (null_model == "none") {
     message("Aggregating gene set scores...")
     gs.score <- aggregate_geneSetList(geneList, selected.gs, method = aggre_method, n_cores = n_cores)
