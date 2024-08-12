@@ -25,6 +25,8 @@ knitr::opts_chunk$set(
 # }
 library(BrainEnrich)
 library(dplyr)
+library(enrichplot)
+library(ggplot2)
 ```
 ## 1. Prepare Data for the Analysis
 
@@ -144,14 +146,7 @@ For demonstration, we only used 10 times of permutation and set minGSSize as 50.
 
 
 ## 3. Visualization
-```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-library(enrichplot)
-library(ggplot2)
-
-upsetplot(res, n=1)
-```
-
-
+Note: the upsetplot, heatplot that are available for brainenrich resutls are not applicable for these results.
 
 ### 3.2. Gene-Concept Network
 
@@ -174,17 +169,8 @@ cnetplot(res, layout='kk',
 
 
 ### 3.3. Dot Plot
-
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
 dotplot(res,x='t_Value',label_format=50, showCategory=30)+
   xlab('GS score')+scale_fill_gradient(high='#0197b2',low='orange',
                          space ="Lab" , name='p.adjusted')
-```
-
-### 3.4. Heatplot 
-
-```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=6, fig.width=12}
-heatplot(res,foldChange=geneList,label_format=50, showCategory = 10)+
-  scale_fill_gradient2(midpoint=0,low='#0197b2',mid='white',high='orange',
-                         space ="Lab" ,limits = c(-1,1), name='Association')
 ```
