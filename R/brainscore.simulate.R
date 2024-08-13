@@ -26,7 +26,7 @@
 #' @importFrom data.table :=
 #' @return A list of data frames containing the results of the simulations.
 #' @export
-brainscore.sim <- function(pred_df,
+brainscore.simulate <- function(pred_df,
                                 cov_df,
                                 brain_data,
                                 gene_data,
@@ -102,6 +102,22 @@ brainscore.sim <- function(pred_df,
     if (dim(perm_id)[2] < sim_n) {
       stop("The number of simulation must be less than or equal to the number of columns in 'perm_id'.")
     }
+    # To boost efficiency we can put this part outside the sim loop
+     gsScoreList.null <- brainscore(
+        brain_data = brain_data,
+        gene_data = gene_data,
+        annoData = annoData,
+        cor_method = cor_method,
+        aggre_method = aggre_method,
+        null_model = "spin_brain",
+        minGSSize = minGSSize,
+        maxGSSize = maxGSSize,
+        n_cores = n_cores,
+        n_perm = n_perm,
+        perm_id = perm_id
+      )
+
+
     for (sim_i in 1:sim_n) {
       message(paste("=========Processing simulation:", sim_i, "/", sim_n, "========="))
       sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
@@ -119,19 +135,20 @@ brainscore.sim <- function(pred_df,
       )
       dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
 
-      gsScoreList.null <- brainscore(
-        brain_data = sim.brain_data,
-        gene_data = gene_data,
-        annoData = annoData,
-        cor_method = cor_method,
-        aggre_method = aggre_method,
-        null_model = "spin_brain",
-        minGSSize = minGSSize,
-        maxGSSize = maxGSSize,
-        n_cores = n_cores,
-        n_perm = n_perm,
-        perm_id = perm_id
-      )
+      ## to boost the efficiency we can put this part outside the sim loop, otherwise for each sim_i we will have to re-calculate the null model for n_perm times
+      # gsScoreList.null <- brainscore(
+      #   brain_data = sim.brain_data,
+      #   gene_data = gene_data,
+      #   annoData = annoData,
+      #   cor_method = cor_method,
+      #   aggre_method = aggre_method,
+      #   null_model = "spin_brain",
+      #   minGSSize = minGSSize,
+      #   maxGSSize = maxGSSize,
+      #   n_cores = n_cores,
+      #   n_perm = n_perm,
+      #   perm_id = perm_id
+      # )
 
       for (size_i in seq_along(subsample_size)) {
         size2use <- subsample_size[size_i]
@@ -209,6 +226,18 @@ brainscore.sim <- function(pred_df,
     geneList <- corr_brain_gene(gene_data = gene_data, brain_data = brain_data, method = cor_method)
     geneSetList <- get_geneSetList(annoData)
     selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
+    gsScoreList.null <- brainscore(
+        brain_data = brain_data,
+        gene_data = gene_data,
+        annoData = annoData,
+        cor_method = cor_method,
+        aggre_method = aggre_method,
+        null_model = "resample_gene",
+        minGSSize = minGSSize,
+        maxGSSize = maxGSSize,
+        n_cores = n_cores,
+        n_perm = n_perm
+      )
 
     for (sim_i in 1:sim_n) {
       message(paste("=========Processing simulation:", sim_i, "/", sim_n, "========="))
@@ -216,17 +245,18 @@ brainscore.sim <- function(pred_df,
       rownames(sim.geneList) <- rownames(geneList)
       sim.gsScore <- aggregate_geneSetList(sim.geneList, selected.gs, method = aggre_method, n_cores = n_cores)
       dependent_df.true <- data.frame(sim.gsScore, check.names = FALSE)
-      message("Aggregating gene set scores in resample_gene mode...")
-      progress_interval <- max(1, round(n_perm / 10))
-      gsScoreList.null <- lapply(1:n_perm, function(idx) {
-        if (idx %% progress_interval == 0) {
-          message(paste("Processing permutation", idx, "of", n_perm, "..."))
-        }
-        geneList.null <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
-        rownames(geneList.null) <- rownames(geneList)
-        gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
-        return(gs_score.null)
-      })
+      ## To boost efficiency we can put this part outside the sim loop, otherwise for each sim_i we will have to re-calculate the null model for n_perm times
+      # message("Aggregating gene set scores in resample_gene mode...")
+      # progress_interval <- max(1, round(n_perm / 10))
+      # gsScoreList.null <- lapply(1:n_perm, function(idx) {
+      #   if (idx %% progress_interval == 0) {
+      #     message(paste("Processing permutation", idx, "of", n_perm, "..."))
+      #   }
+      #   geneList.null <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
+      #   rownames(geneList.null) <- rownames(geneList)
+      #   gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
+      #   return(gs_score.null)
+      # })
 
       for (size_i in seq_along(subsample_size)) {
         size2use <- subsample_size[size_i]
