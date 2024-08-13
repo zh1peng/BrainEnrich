@@ -26,7 +26,7 @@
 #' @importFrom data.table :=
 #' @return A list of data frames containing the results of the simulations.
 #' @export
-brainscore.simulate <- function(pred_df,
+brainscore.sim <- function(pred_df,
                                 cov_df,
                                 brain_data,
                                 gene_data,
