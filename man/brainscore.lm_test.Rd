@@ -80,6 +80,8 @@ Other options include 'percentile'.}
 \item{matchcoexp_tol}{Numeric value specifying the tolerance for matched coexpression. Default is 0.05.}
 
 \item{matchcoexp_max_iter}{Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.}
+
+\item{gsea_obj}{Logical specifying whether to return a GSEA object otherwise only a table will be return. Default is TRUE.}
 }
 \value{
 A data frame containing the results of the linear model test, including p-values, adjusted p-values,

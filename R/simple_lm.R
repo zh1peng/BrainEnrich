@@ -1,4 +1,3 @@
-
 #' Perform Linear Regression with Multiple Predictors and Covariates
 #'
 #' This function fits linear models for specified dependent variables using given predictors and covariates.
@@ -53,81 +52,82 @@ simple_lm <- function(dependent_df,
   # Pivot longer, group, nest, and fit models
 
   if (stat2return == "all") {
-        res <- df %>%
-        tidyr::pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
-        dplyr::group_by(.data$Dependent_vars) %>%
-        tidyr::nest() %>%
-        dplyr::mutate(
-          lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
-          tidy_model = purrr::map(.data$lm_model, broom::tidy),
-          std_coefs = purrr::map(.data$lm_model, ~ parameters::standardize_parameters(.x, method = "refit"))) %>%
-        tidyr::unnest(.data$tidy_model) %>%
-        dplyr::filter(.data$term == var2extract) %>%
-        tidyr::unnest(.data$std_coefs) %>%
-        dplyr::filter(.data$Parameter == var2extract) %>%
-        dplyr::ungroup() %>%
-        dplyr::mutate(
-          p.adj = p.adjust(.data$p.value, method = "fdr")
-          # ifsig = dplyr::case_when(
-          #   .data$p.adj < 0.001 ~ "***",
-          #   .data$p.adj < 0.01 ~ "**",
-          #   .data$p.adj < 0.05 ~ "*",
-          #   TRUE ~ "n.s."
-          # )
-        ) %>%
-        dplyr::select(.data$Dependent_vars, .data$term, .data$estimate, .data$std.error, .data$statistic, .data$Std_Coefficient, .data$CI_low, .data$CI_high, .data$p.value, .data$p.adj) %>%
-        dplyr::rename(
-          Predictor = .data$term,
-          Unstandardized_Coefficient = .data$estimate,
-          Standard_Error = .data$std.error,
-          t_Value = .data$statistic,
-          Standardized_Coefficient = .data$Std_Coefficient,
-          CI_95_Lower = .data$CI_low,
-          CI_95_Upper = .data$CI_high,
-          p.val = .data$p.value
-        )
-      } else if (stat2return == "tval") { 
-          res <- df %>%
-          tidyr::pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
-          dplyr::group_by(.data$Dependent_vars) %>%
-          tidyr::nest() %>%
-          dplyr::mutate(
-            lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
-            tidy_model = purrr::map(.data$lm_model, broom::tidy)
-          ) %>%
-          tidyr::unnest(.data$tidy_model) %>%
-          dplyr::filter(.data$term == var2extract) %>%
-              dplyr::select(.data$Dependent_vars, .data$term, .data$statistic) %>%
-                dplyr::rename(Predictor = .data$term, tval = .data$statistic) %>%
-                dplyr::ungroup()
-    } else if (stat2return == "tval_list") {
-      res <- df %>%
-          tidyr::pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
-          dplyr::group_by(.data$Dependent_vars) %>%
-          tidyr::nest() %>%
-          dplyr::mutate(
-            lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
-            tidy_model = purrr::map(.data$lm_model, broom::tidy)
-          ) %>%
-          tidyr::unnest(.data$tidy_model) %>%
-          dplyr::filter(.data$term == var2extract) %>%
-          dplyr::select(.data$Dependent_vars, .data$statistic) %>%
-          tibble::deframe() %>%
-          as.list()
-      } else if (stat2return == "pval") {
-      res <- df %>%
-        tidyr::pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
-        dplyr::group_by(.data$Dependent_vars) %>%
-        tidyr::nest() %>%
-        dplyr::mutate(
-          lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
-          tidy_model = purrr::map(.data$lm_model, broom::tidy)
-        ) %>%
-        tidyr::unnest(.data$tidy_model) %>%
-        dplyr::filter(.data$term == var2extract) %>%
-        dplyr::select(.data$Dependent_vars, .data$term, .data$p.value) %>%
-          dplyr::rename(Predictor = .data$term, pval = .data$p.value) %>%
-          dplyr::ungroup()
-      }
+    res <- df %>%
+      tidyr::pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
+      dplyr::group_by(.data$Dependent_vars) %>%
+      tidyr::nest() %>%
+      dplyr::mutate(
+        lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
+        tidy_model = purrr::map(.data$lm_model, broom::tidy),
+        std_coefs = purrr::map(.data$lm_model, ~ parameters::standardize_parameters(.x, method = "refit"))
+      ) %>%
+      tidyr::unnest(.data$tidy_model) %>%
+      dplyr::filter(.data$term == var2extract) %>%
+      tidyr::unnest(.data$std_coefs) %>%
+      dplyr::filter(.data$Parameter == var2extract) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate(
+        p.adj = p.adjust(.data$p.value, method = "fdr")
+        # ifsig = dplyr::case_when(
+        #   .data$p.adj < 0.001 ~ "***",
+        #   .data$p.adj < 0.01 ~ "**",
+        #   .data$p.adj < 0.05 ~ "*",
+        #   TRUE ~ "n.s."
+        # )
+      ) %>%
+      dplyr::select(.data$Dependent_vars, .data$term, .data$estimate, .data$std.error, .data$statistic, .data$Std_Coefficient, .data$CI_low, .data$CI_high, .data$p.value, .data$p.adj) %>%
+      dplyr::rename(
+        Predictor = .data$term,
+        Unstandardized_Coefficient = .data$estimate,
+        Standard_Error = .data$std.error,
+        t_Value = .data$statistic,
+        Standardized_Coefficient = .data$Std_Coefficient,
+        CI_95_Lower = .data$CI_low,
+        CI_95_Upper = .data$CI_high,
+        p.val = .data$p.value
+      )
+  } else if (stat2return == "tval") {
+    res <- df %>%
+      tidyr::pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
+      dplyr::group_by(.data$Dependent_vars) %>%
+      tidyr::nest() %>%
+      dplyr::mutate(
+        lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
+        tidy_model = purrr::map(.data$lm_model, broom::tidy)
+      ) %>%
+      tidyr::unnest(.data$tidy_model) %>%
+      dplyr::filter(.data$term == var2extract) %>%
+      dplyr::select(.data$Dependent_vars, .data$term, .data$statistic) %>%
+      dplyr::rename(Predictor = .data$term, tval = .data$statistic) %>%
+      dplyr::ungroup()
+  } else if (stat2return == "tval_list") {
+    res <- df %>%
+      tidyr::pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
+      dplyr::group_by(.data$Dependent_vars) %>%
+      tidyr::nest() %>%
+      dplyr::mutate(
+        lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
+        tidy_model = purrr::map(.data$lm_model, broom::tidy)
+      ) %>%
+      tidyr::unnest(.data$tidy_model) %>%
+      dplyr::filter(.data$term == var2extract) %>%
+      dplyr::select(.data$Dependent_vars, .data$statistic) %>%
+      tibble::deframe() %>%
+      as.list()
+  } else if (stat2return == "pval") {
+    res <- df %>%
+      tidyr::pivot_longer(cols = all_of(dependent_vars), names_to = "Dependent_vars", values_to = "Dependent_value") %>%
+      dplyr::group_by(.data$Dependent_vars) %>%
+      tidyr::nest() %>%
+      dplyr::mutate(
+        lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
+        tidy_model = purrr::map(.data$lm_model, broom::tidy)
+      ) %>%
+      tidyr::unnest(.data$tidy_model) %>%
+      dplyr::filter(.data$term == var2extract) %>%
+      dplyr::select(.data$Dependent_vars, .data$term, .data$p.value) %>%
+      dplyr::rename(Predictor = .data$term, pval = .data$p.value) %>%
+      dplyr::ungroup()
+  }
   return(res)
 }

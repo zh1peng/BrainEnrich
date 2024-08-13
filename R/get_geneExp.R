@@ -59,24 +59,27 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
 
 
   if (!file.exists(GeneExpCSV)) {
-  message(sprintf("File not found locally. Downloading from GitHub... %s", url))
-  message("If the download is slow, download manually.")
-  message(sprintf("and save files as %s", GeneExpCSV))
- 
-  GeneExpDir <- dirname(GeneExpCSV)
-  if (!dir.exists(GeneExpDir)) {
-    dir.create(GeneExpDir, recursive = TRUE)
+    message(sprintf("File not found locally. Downloading from GitHub... %s", url))
+    message("If the download is slow, download manually.")
+    message(sprintf("and save files as %s", GeneExpCSV))
+
+    GeneExpDir <- dirname(GeneExpCSV)
+    if (!dir.exists(GeneExpDir)) {
+      dir.create(GeneExpDir, recursive = TRUE)
+    }
+    options(timeout = 600)
+    tryCatch(
+      {
+        download.file(url, GeneExpCSV)
+        message("File successfully downloaded.")
+      },
+      error = function(e) {
+        message("Download failed. Please copy and paste the following URL into your browser:")
+        message(url)
+        message(sprintf("and save the file to the following folder: %s", GeneExpDir))
+      }
+    )
   }
-  options(timeout = 600)
-  tryCatch({
-    download.file(url, GeneExpCSV)
-    message("File successfully downloaded.")
-  }, error = function(e) {
-    message("Download failed. Please copy and paste the following URL into your browser:")
-    message(url)
-    message(sprintf("and save the file to the following folder: %s", GeneExpDir))
-  })
-}
 
 
   # Read the CSV file

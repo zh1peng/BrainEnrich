@@ -103,19 +103,19 @@ brainscore.simulate <- function(pred_df,
       stop("The number of simulation must be less than or equal to the number of columns in 'perm_id'.")
     }
     # To boost efficiency we can put this part outside the sim loop
-     gsScoreList.null <- brainscore(
-        brain_data = brain_data,
-        gene_data = gene_data,
-        annoData = annoData,
-        cor_method = cor_method,
-        aggre_method = aggre_method,
-        null_model = "spin_brain",
-        minGSSize = minGSSize,
-        maxGSSize = maxGSSize,
-        n_cores = n_cores,
-        n_perm = n_perm,
-        perm_id = perm_id
-      )
+    gsScoreList.null <- brainscore(
+      brain_data = brain_data,
+      gene_data = gene_data,
+      annoData = annoData,
+      cor_method = cor_method,
+      aggre_method = aggre_method,
+      null_model = "spin_brain",
+      minGSSize = minGSSize,
+      maxGSSize = maxGSSize,
+      n_cores = n_cores,
+      n_perm = n_perm,
+      perm_id = perm_id
+    )
 
 
     for (sim_i in 1:sim_n) {
@@ -194,7 +194,7 @@ brainscore.simulate <- function(pred_df,
           res$np_p.adj <- np_p.adj
         }
         sampled_res <- res %>%
-           dplyr::mutate(
+          dplyr::mutate(
             nofdr_ifsig = case_when(
               .data$pval < 0.05 ~ 1,
               TRUE ~ 0
@@ -227,17 +227,17 @@ brainscore.simulate <- function(pred_df,
     geneSetList <- get_geneSetList(annoData)
     selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
     gsScoreList.null <- brainscore(
-        brain_data = brain_data,
-        gene_data = gene_data,
-        annoData = annoData,
-        cor_method = cor_method,
-        aggre_method = aggre_method,
-        null_model = "resample_gene",
-        minGSSize = minGSSize,
-        maxGSSize = maxGSSize,
-        n_cores = n_cores,
-        n_perm = n_perm
-      )
+      brain_data = brain_data,
+      gene_data = gene_data,
+      annoData = annoData,
+      cor_method = cor_method,
+      aggre_method = aggre_method,
+      null_model = "resample_gene",
+      minGSSize = minGSSize,
+      maxGSSize = maxGSSize,
+      n_cores = n_cores,
+      n_perm = n_perm
+    )
 
     for (sim_i in 1:sim_n) {
       message(paste("=========Processing simulation:", sim_i, "/", sim_n, "========="))
@@ -301,7 +301,7 @@ brainscore.simulate <- function(pred_df,
           res$np_p.adj <- np_p.adj
         }
         sampled_res <- res %>%
-           dplyr::mutate(
+          dplyr::mutate(
             nofdr_ifsig = case_when(
               .data$pval < 0.05 ~ 1,
               TRUE ~ 0

@@ -173,7 +173,7 @@ brainenrich <- function(brain_data,
       geneList = geneList.true[, 1],
       permScores = as.matrix(do.call(rbind, gs_score.null)),
       params = params,
-      keytype='SYMBOL',
+      keytype = "SYMBOL",
       readable = FALSE
     ))
   } else {
@@ -191,7 +191,7 @@ brainenrich <- function(brain_data,
       geneList = geneList.true[, 1],
       permScores = as.matrix(do.call(rbind, gs_score.null)),
       params = params,
-      keytype='SYMBOL',
+      keytype = "SYMBOL",
       readable = TRUE
     ))
   }

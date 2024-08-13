@@ -30,6 +30,7 @@
 #' @param pAdjustMethod Character string specifying the method for p-value adjustment. Default is 'fdr'.
 #' @param matchcoexp_tol Numeric value specifying the tolerance for matched coexpression. Default is 0.05.
 #' @param matchcoexp_max_iter Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.
+#' @param gsea_obj Logical specifying whether to return a GSEA object otherwise only a table will be return. Default is TRUE.
 #' @importFrom stats p.adjust
 #' @importFrom utils getFromNamespace
 #' @importFrom purrr list_transpose
@@ -63,7 +64,7 @@ brainscore.lm_test <- function(pred_df,
                                pAdjustMethod = "fdr",
                                matchcoexp_tol = 0.05,
                                matchcoexp_max_iter = 1000000,
-                               gsea_obj=TRUE) {
+                               gsea_obj = TRUE) {
   # Validate arguments
   cor_method <- match.arg(cor_method)
   aggre_method <- match.arg(aggre_method)
@@ -155,22 +156,22 @@ brainscore.lm_test <- function(pred_df,
   res <- res[order(res$np.pval), ]
 
   if (nrow(res) == 0) {
-      message("None of the gene sets are significant at the given p-value cutoff.")
-    } else {
-      geneList <- corr_brain_gene(brain_data = brain_data, gene_data = gene_data, method = cor_method)
-      geneSetList <- get_geneSetList(annoData)
-      selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
-      survived.gs <- selected.gs[res$Dependent_vars]
-      res$setSize = sapply(survived.gs, length)
-      if (threshold_type != "none" | gsea_obj) {
+    message("None of the gene sets are significant at the given p-value cutoff.")
+  } else {
+    geneList <- corr_brain_gene(brain_data = brain_data, gene_data = gene_data, method = cor_method)
+    geneSetList <- get_geneSetList(annoData)
+    selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
+    survived.gs <- selected.gs[res$Dependent_vars]
+    res$setSize <- sapply(survived.gs, length)
+    if (threshold_type != "none" | gsea_obj) {
       message("Identifying core genes...")
       core_genes <- find_core_genes(geneList, survived.gs, pred_df = pred_df, cov_df = cov_df, aggre_method = aggre_method, n_cores = n_cores, threshold_type = threshold_type, threshold_value = threshold_value)
       res$core_genes <- sapply(core_genes, paste0, collapse = "/")
     }
-}
-  
+  }
+
   if (gsea_obj) {
-  params <- list(
+    params <- list(
       pvalueCutoff = pvalueCutoff,
       nPerm = n_perm,
       pAdjustMethod = pAdjustMethod,
@@ -183,29 +184,31 @@ brainscore.lm_test <- function(pred_df,
       thresVal = threshold_value
     )
 
-    if (nrow(res) != 0){
-        res <- res %>%
-          dplyr::rename(ID = .data$Dependent_vars) %>%
-          dplyr::select(.data$ID, .data$Description, .data$setSize, everything())%>%
-          dplyr::select(-.data$p.val, -.data$p.adj) %>%
-          dplyr::rename(pvalue=.data$np.pval, 
-                            p.adjust= .data$np.padj, 
-                            qvalue=.data$np.qval,
-                            core_enrichment=.data$core_genes)
+    if (nrow(res) != 0) {
+      res <- res %>%
+        dplyr::rename(ID = .data$Dependent_vars) %>%
+        dplyr::select(.data$ID, .data$Description, .data$setSize, everything()) %>%
+        dplyr::select(-.data$p.val, -.data$p.adj) %>%
+        dplyr::rename(
+          pvalue = .data$np.pval,
+          p.adjust = .data$np.padj,
+          qvalue = .data$np.qval,
+          core_enrichment = .data$core_genes
+        )
     }
-      res=as.data.frame(res)
-      rownames(res) <- res$ID
-        message("Analysis complete.")
-            return(new("gseaResult",
-              result = res,
-              geneSets = selected.gs,
-              geneList = unlist(stat.true),
-              permScores = as.matrix(do.call(rbind, stat.null)),
-              params = params,
-              keytype='SYMBOL',
-              readable = TRUE
-            ))
-          } else {
+    res <- as.data.frame(res)
+    rownames(res) <- res$ID
+    message("Analysis complete.")
+    return(new("gseaResult",
+      result = res,
+      geneSets = selected.gs,
+      geneList = unlist(stat.true),
+      permScores = as.matrix(do.call(rbind, stat.null)),
+      params = params,
+      keytype = "SYMBOL",
+      readable = TRUE
+    ))
+  } else {
     return(res)
   }
 }

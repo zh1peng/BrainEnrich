@@ -5,12 +5,15 @@
 # usethis::use_data(brain_data, overwrite = TRUE, compress = "xz")
 
 
-df=read.csv(file.path('E:/xhmhc/BrainEnrich_ms/data','MP_data.csv')) %>% dplyr::filter(stringr::str_detect(label,'L_'))
-brain_data=df %>% dplyr::select(label, BD) %>% dplyr::filter(stringr::str_detect(label,'L_')) %>% tibble::column_to_rownames('label')
+df <- read.csv(file.path("E:/xhmhc/BrainEnrich_ms/data", "MP_data.csv")) %>% dplyr::filter(stringr::str_detect(label, "L_"))
+brain_data <- df %>%
+  dplyr::select(label, BD) %>%
+  dplyr::filter(stringr::str_detect(label, "L_")) %>%
+  tibble::column_to_rownames("label")
 usethis::use_data(brain_data, overwrite = TRUE, compress = "xz")
 
 
-res=readRDS(file.path('E:/xhmhc/BrainEnrich_ms/results','bd_MF_res.RDS'))
+res <- readRDS(file.path("E:/xhmhc/BrainEnrich_ms/results", "bd_MF_res.RDS"))
 usethis::use_data(res, overwrite = TRUE, compress = "xz")
 
 # Load coordinate data and save it
@@ -35,20 +38,19 @@ usethis::use_data(perm_id_dk_lh_5000, overwrite = TRUE, compress = "xz")
 
 
 # simulate data from hcp data
-brain_data=df.hcp %>% 
-      tibble::column_to_rownames('SubjID') %>%
-      dplyr::select(starts_with('L_')&ends_with('thickavg'))%>%
-      dplyr::rename_all(~ stringr::str_replace_all(., "_thickavg$", ""))%>%
-      t()
+brain_data <- df.hcp %>%
+  tibble::column_to_rownames("SubjID") %>%
+  dplyr::select(starts_with("L_") & ends_with("thickavg")) %>%
+  dplyr::rename_all(~ stringr::str_replace_all(., "_thickavg$", "")) %>%
+  t()
 
-mean_vals=rowMeans(brain_data)
-cov_matrix=cov(t(brain_data))
+mean_vals <- rowMeans(brain_data)
+cov_matrix <- cov(t(brain_data))
 set.seed(2024)
-sample_df <- MASS::mvrnorm(n = 100, mu = mean_vals, Sigma = cov_matrix)  %>% as.data.frame()
-colnames(sample_df)=names(mean_vals)
+sample_df <- MASS::mvrnorm(n = 100, mu = mean_vals, Sigma = cov_matrix) %>% as.data.frame()
+colnames(sample_df) <- names(mean_vals)
 
-sample_df$Age=sample(df.hcp$Age_in_Yrs, 100, replace = FALSE)
-sample_df$Sex=sample(df.hcp$Sex, 100, replace = FALSE)
-sample_df$BMI=sample(df.hcp$BMI, 100, replace = FALSE)
+sample_df$Age <- sample(df.hcp$Age_in_Yrs, 100, replace = FALSE)
+sample_df$Sex <- sample(df.hcp$Sex, 100, replace = FALSE)
+sample_df$BMI <- sample(df.hcp$BMI, 100, replace = FALSE)
 usethis::use_data(sample_df, overwrite = TRUE, compress = "xz")
-

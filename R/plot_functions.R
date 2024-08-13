@@ -58,7 +58,7 @@ plot_brain <- function(df2plot,
         label = sub(sufix2remove, "", .data$label)
       ) %>%
       brain_join(atlas_data) %>%
-      reposition_brain(as.formula('. ~ hemi + side'))
+      reposition_brain(as.formula(". ~ hemi + side"))
   } else if (ats == "aseg") {
     atlas_data <- getExportedValue("ggseg", "aseg") # ggseg::aseg
     df2plot <- df2plot %>%
@@ -99,4 +99,3 @@ plot_brain <- function(df2plot,
 
   return(p)
 }
-

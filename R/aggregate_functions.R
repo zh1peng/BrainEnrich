@@ -19,7 +19,7 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
                               method = c(
                                 "mean", "median", "meanabs", "meansqr",
                                 "maxmean", "ks_orig", "ks_weighted",
-                                "ks_pos_neg_sum", 
+                                "ks_pos_neg_sum",
                                 "sign_test", "rank_sum", "custom"
                               )) {
   if (is.function(method)) { # if method is a custom function

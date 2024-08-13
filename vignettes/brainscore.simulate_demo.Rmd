@@ -40,32 +40,32 @@ colnames(sample_df)
 ### 1.2. prepare brain_data for scoring
 Next, we'll prepare the brain data by selecting the relevant columns and transforming the data for scoring.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-brain_data=dplyr::select(sample_df, starts_with('L_'))%>%t()
-colnames(brain_data)=paste0('sub-',1:ncol(brain_data))
+brain_data <- dplyr::select(sample_df, starts_with("L_")) %>% t()
+colnames(brain_data) <- paste0("sub-", 1:ncol(brain_data))
 head(brain_data)
 ```
 
 ### 1.3. Load gene expression data for the Analysis
 We will now load gene expression data for the analysis. This data is based on a specific brain atlas (Desikan) and includes gene expression levels (correlation across donnors > 0.4) for the left hemisphere.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-gene_data=get_geneExp(atlas='desikan', rdonor='r0.4',hem='L')
+gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 str(gene_data)
 ```
 
 ### 1.4. Load SynGO for the Analysis
 We will load SynGO terms that will be used in the enrichment analysis. This data represents gene sets associated with various molecular functions.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-annoData=get_annoData(type='SynGO')
-geneSetList=get_geneSetList(annoData)
+annoData <- get_annoData(type = "SynGO")
+geneSetList <- get_geneSetList(annoData)
 length(geneSetList)
-print(sprintf('Number of SynGO terms: %d',length(geneSetList)))
+print(sprintf("Number of SynGO terms: %d", length(geneSetList)))
 ```
 
 #### Filter the geneSetList (not required for the analysis)
 Filtering the gene sets by size is optional and is shown here for demonstration purposes. This step is embedded in the brainenrich/brainscore function.
 ```{r echo=TRUE, eval=FALSE}
-selected.gs=filter_geneSetList(bg_genes=colnames(gene_data), geneSetList=geneSetList, minGSSize=20, maxGSSize=200)
-print(sprintf('%d MF terms have gene size ranging between 20 and 200',length(selected.gs)))
+selected.gs <- filter_geneSetList(bg_genes = colnames(gene_data), geneSetList = geneSetList, minGSSize = 20, maxGSSize = 200)
+print(sprintf("%d MF terms have gene size ranging between 20 and 200", length(selected.gs)))
 ```
 
 ## 2. Run the Simulation Analysis 
@@ -74,18 +74,20 @@ In this section, we will run the individual enrichment analysis using the prepar
 ### 2.1. Simulation analysis with randomized pred variable i.e., BMI (`sim_type ='randomize_pred'`)
 As the gsScore is already cacualted, randomize the pred variable offers litter inforamtion regarding how well our methods is regarding the false positivities.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-cov_df=sample_df%>%dplyr::select(Age, Sex)
-pred_df=sample_df%>%dplyr::select(BMI)
-res=brainscore.simulate(pred_df=pred_df,
-                    cov_df=cov_df,
-                    brain_data=brain_data, 
-                    gene_data=gene_data, 
-                    annoData = annoData,
-                    sim_n = 5,
-                    subsample_size = 100,
-                    sim_type ='randomize_pred',
-                    cor_method='pearson', 
-                    aggre_method='mean')
+cov_df <- sample_df %>% dplyr::select(Age, Sex)
+pred_df <- sample_df %>% dplyr::select(BMI)
+res <- brainscore.simulate(
+  pred_df = pred_df,
+  cov_df = cov_df,
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  sim_n = 5,
+  subsample_size = 100,
+  sim_type = "randomize_pred",
+  cor_method = "pearson",
+  aggre_method = "mean"
+)
 head(str(res))
 ```
 The result is a list of lists, where each sublist contains the significance testing results for each term, separately for both with and without FDR correction. 1 denotes significant, 0 denotes non-significant.
@@ -94,20 +96,48 @@ The result is a list of lists, where each sublist contains the significance test
 We simulate the brain data by spinning the brain data and calculate the gene set scores and then correlate it with the pred variable.
 For statistical test, both parametric and non-parametric (based on spin_brain) are used.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-cov_df=sample_df%>%dplyr::select(Age, Sex)
-pred_df=sample_df%>%dplyr::select(BMI)
-res=brainscore.simulate(pred_df=pred_df,
-                    cov_df=cov_df,
-                    brain_data=brain_data, 
-                    gene_data=gene_data, 
-                    annoData = annoData,
-                    sim_n = 5,
-                    subsample_size = 100,
-                    sim_type ='spin_brain',
-                    cor_method='pearson', 
-                    aggre_method='mean',
-                    n_perm=10,
-                    perm_id=perm_id_dk_lh_5000)
+cov_df <- sample_df %>% dplyr::select(Age, Sex)
+pred_df <- sample_df %>% dplyr::select(BMI)
+res <- brainscore.simulate(
+  pred_df = pred_df,
+  cov_df = cov_df,
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  sim_n = 5,
+  subsample_size = 100,
+  sim_type = "spin_brain",
+  cor_method = "pearson",
+  aggre_method = "mean",
+  n_perm = 10,
+  perm_id = perm_id_dk_lh_5000
+)
+str(res)
+```
+The result is a list of lists, where each sublist contains the significance testing results for each iteration, there are results separately for (FDR or no-FDR, parametric or non-parametric). 1 denotes significant, 0 denotes non-significant.
+
+
+
+### 2.3. Simulation analysis with spin_brain (`sim_type ='resample_gene'`)
+We simulate the gene sets by resampling genes and calculate the gene set scores and then correlate it with the pred variable.
+For statistical test, both parametric and non-parametric (based on resample_gene) are used.
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+cov_df <- sample_df %>% dplyr::select(Age, Sex)
+pred_df <- sample_df %>% dplyr::select(BMI)
+res <- brainscore.simulate(
+  pred_df = pred_df,
+  cov_df = cov_df,
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  sim_n = 5,
+  subsample_size = 100,
+  sim_type = "resample_gene",
+  cor_method = "pearson",
+  aggre_method = "mean",
+  n_perm = 10,
+  perm_id = perm_id_dk_lh_5000
+)
 str(res)
 ```
 The result is a list of lists, where each sublist contains the significance testing results for each iteration, there are results separately for (FDR or no-FDR, parametric or non-parametric). 1 denotes significant, 0 denotes non-significant.

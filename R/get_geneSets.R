@@ -56,25 +56,28 @@ get_annoData <- function(type = c(
   # Define GitHub URL for downloading the file
   url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/inst/extdata/geneSets/", type, ".rds")
 
-if (!file.exists(GeneSetsRDS)) {
-  message(sprintf("File not found locally. Downloading from GitHub... %s", url))
-  message("If the download is slow, download manually.")
-  message(sprintf("and save files as %s", GeneSetsRDS))
-  
-  GeneSetsDir <- dirname(GeneSetsRDS)
-  if (!dir.exists(GeneSetsDir)) {
-    dir.create(GeneSetsDir, recursive = TRUE)
+  if (!file.exists(GeneSetsRDS)) {
+    message(sprintf("File not found locally. Downloading from GitHub... %s", url))
+    message("If the download is slow, download manually.")
+    message(sprintf("and save files as %s", GeneSetsRDS))
+
+    GeneSetsDir <- dirname(GeneSetsRDS)
+    if (!dir.exists(GeneSetsDir)) {
+      dir.create(GeneSetsDir, recursive = TRUE)
+    }
+    options(timeout = 600)
+    tryCatch(
+      {
+        download.file(url, GeneSetsRDS, method = "libcurl")
+        message("File successfully downloaded.")
+      },
+      error = function(e) {
+        message("Download failed. Please copy and paste the following URL into your browser:")
+        message(url)
+        message(sprintf("and save the file to the following folder: %s", GeneSetsDir))
+      }
+    )
   }
-  options(timeout = 600)
-  tryCatch({
-    download.file(url, GeneSetsRDS, method = "libcurl")
-    message("File successfully downloaded.")
-  }, error = function(e) {
-    message("Download failed. Please copy and paste the following URL into your browser:")
-    message(url)
-    message(sprintf("and save the file to the following folder: %s", GeneSetsDir))
-  })
-}
 
   message("Loading annotation data...")
   annoData <- readRDS(GeneSetsRDS)

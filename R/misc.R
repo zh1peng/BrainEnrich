@@ -1,5 +1,4 @@
-
-#'@importFrom stats pt
+#' @importFrom stats pt
 cor2p <- function(r, n) {
   t <- (r * sqrt(n - 2)) / sqrt(1 - r^2)
   p <- 2 * (1 - pt(abs(t), (n - 2)))
