@@ -18,6 +18,7 @@
 #' @param seed An integer specifying the seed for reproducibility of spinning brain. Default is NULL.
 #' @param matchcoexp_tol A numeric value specifying the tolerance for matching co-expression in 'coexp_matched' null model. Default is 0.05.
 #' @param matchcoexp_max_iter An integer specifying the maximum iterations for matching co-expression in 'coexp_matched' null model. Default is 1000000.
+#' @param verbose A logical specifying whether to print messages. Default is TRUE.
 #' @return A data frame containing the gene set scores with regions as rows and gene sets as columns.
 #' @export
 brainscore <- function(brain_data,
@@ -35,7 +36,8 @@ brainscore <- function(brain_data,
                        coord.r = NULL,
                        seed = NULL,
                        matchcoexp_tol = 0.05,
-                       matchcoexp_max_iter = 1000000) {
+                       matchcoexp_max_iter = 1000000,
+                       verbose = TRUE) {
   # Check inputs
   stopifnot(is.environment(annoData))
   stopifnot(identical(rownames(gene_data), rownames(brain_data)))
@@ -55,30 +57,46 @@ brainscore <- function(brain_data,
   }
 
   # Calculate gene-brain correlations
-  message("Calculating gene-brain correlations...")
+  if (verbose) {
+    message("Calculating gene-brain correlations...")
+  }
   geneList <- corr_brain_gene(gene_data = gene_data, brain_data = brain_data, method = cor_method)
 
   # Generate gene set list from annotation data
-  message("Generating gene set list from annotation data...")
+  if (verbose) {
+    message("Generating gene set list from annotation data...")
+  }
   geneSetList <- get_geneSetList(annoData)
 
   # Filter gene set list
-  message("Filtering gene set list...")
+  if (verbose) {
+    message("Filtering gene set list...")
+  }
   selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
-  message("Number of gene sets left: ", length(selected.gs))
+  if (verbose) {
+    message("Number of gene sets left: ", length(selected.gs))
+  }
   if (null_model == "none") {
-    message("Aggregating gene set scores...")
+    if (verbose) {
+      message("Aggregating gene set scores...")
+    }
     gs.score <- aggregate_geneSetList(geneList, selected.gs, method = aggre_method, n_cores = n_cores)
   } else if (null_model == "spin_brain") {
-    message("Generating null brain data with spin_brain model...")
+    if (verbose) {
+      message("Generating null brain data with spin_brain model...")
+    }
     if (is.null(perm_id)) {
       perm_id <- rotate_parcellation(coord.l = coord.l, coord.r = coord.r, nrot = n_perm, seed = seed)
     }
-    message("Aggregating gene set scores in spin_brain mode...")
+    if (verbose) {
+      message("Aggregating gene set scores in spin_brain mode...")
+    }
     progress_interval <- max(1, round(n_perm / 10))
     gs.score <- lapply(1:n_perm, function(idx) {
       if (idx %% progress_interval == 0) {
-        message(paste("Processing permutation", idx, "of", n_perm, "..."))
+        if (verbose) {
+          message(paste("Processing permutation", idx, "of", n_perm, "..."))
+        }
       }
       null_brain_data <- brain_data[perm_id[, idx], , drop = FALSE]
       rownames(null_brain_data) <- rownames(brain_data)
@@ -87,11 +105,15 @@ brainscore <- function(brain_data,
       return(gs_score.null)
     })
   } else if (null_model == "resample_gene") {
-    message("Aggregating gene set scores in resample_gene mode...")
+    if (verbose) {
+      message("Aggregating gene set scores in resample_gene mode...")
+    }
     progress_interval <- max(1, round(n_perm / 10))
     gs.score <- lapply(1:n_perm, function(idx) {
       if (idx %% progress_interval == 0) {
-        message(paste("Processing permutation", idx, "of", n_perm, "..."))
+        if (verbose) {
+          message(paste("Processing permutation", idx, "of", n_perm, "..."))
+        }
       }
       geneList.null <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
       rownames(geneList.null) <- rownames(geneList)
@@ -99,7 +121,9 @@ brainscore <- function(brain_data,
       return(gs_score.null)
     })
   } else if (null_model == "coexp_matched") {
-    message("Generating null gene list with coexp_matched model...")
+    if (verbose) {
+      message("Generating null gene list with coexp_matched model...")
+    }
     sampled_gs <- resample_geneSetList_matching_coexp(gene_data, selected.gs, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
 
     if (is.null(sampled_gs)) {
@@ -109,11 +133,15 @@ brainscore <- function(brain_data,
     if (!identical(names(geneSetList), names(sampled_gs))) {
       stop("geneSetList and sampled_geneSetList are not matched.")
     }
-    message("Aggregating gene set scores in coexp_matched mode...")
+    if (verbose) {
+      message("Aggregating gene set scores in coexp_matched mode...")
+    }
     progress_interval <- max(1, round(n_perm / 10))
     gs.score <- lapply(1:n_perm, function(idx) {
       if (idx %% progress_interval == 0) {
-        message(paste("Processing permutation", idx, "of", n_perm, "..."))
+        if (verbose) {
+          message(paste("Processing permutation", idx, "of", n_perm, "..."))
+        }
       }
       sampled_gs_iter <- lapply(sampled_gs, function(x) x[[idx]])
       gs_score.null <- aggregate_geneSetList(geneList, sampled_gs_iter, method = aggre_method, n_cores = n_cores)

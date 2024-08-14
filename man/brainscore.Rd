@@ -21,7 +21,8 @@ brainscore(
   coord.r = NULL,
   seed = NULL,
   matchcoexp_tol = 0.05,
-  matchcoexp_max_iter = 1e+06
+  matchcoexp_max_iter = 1e+06,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -56,6 +57,8 @@ brainscore(
 \item{matchcoexp_tol}{A numeric value specifying the tolerance for matching co-expression in 'coexp_matched' null model. Default is 0.05.}
 
 \item{matchcoexp_max_iter}{An integer specifying the maximum iterations for matching co-expression in 'coexp_matched' null model. Default is 1000000.}
+
+\item{verbose}{A logical specifying whether to print messages. Default is TRUE.}
 }
 \value{
 A data frame containing the gene set scores with regions as rows and gene sets as columns.

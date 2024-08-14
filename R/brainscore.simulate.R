@@ -114,7 +114,8 @@ brainscore.simulate <- function(pred_df,
       maxGSSize = maxGSSize,
       n_cores = n_cores,
       n_perm = n_perm,
-      perm_id = perm_id
+      perm_id = perm_id,
+      verbose = FALSE
     )
 
 
@@ -131,7 +132,8 @@ brainscore.simulate <- function(pred_df,
         null_model = "none",
         minGSSize = minGSSize,
         maxGSSize = maxGSSize,
-        n_cores = n_cores
+        n_cores = n_cores,
+        verbose = FALSE
       )
       dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
 
@@ -236,7 +238,8 @@ brainscore.simulate <- function(pred_df,
       minGSSize = minGSSize,
       maxGSSize = maxGSSize,
       n_cores = n_cores,
-      n_perm = n_perm
+      n_perm = n_perm,
+      verbose = FALSE
     )
 
     for (sim_i in 1:sim_n) {
