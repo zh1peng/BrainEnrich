@@ -16,4 +16,5 @@
 ^vignettes$
 ^.*\.Rmd$
 ^.*\.Rnw$
+.pdf$
 
