@@ -1,5 +1,5 @@
 ---
-title: "Enrichment analysis of derived group-level statistics"
+title: "Enrichment analysis of derived individual-level statistics"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{brainenrich}

@@ -1,5 +1,5 @@
 ---
-title: "Enrichment analysis of derived group-level statistics"
+title: "Simulation analysis of brainscore"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{brainenrich}
@@ -28,7 +28,7 @@ library(ggplot2)
 ```
 
 ## 1. Prepare Data for the Analysis
-In this section, we will prepare the data needed for enrichment analysis. The data is simulated from the HCP dataset, and we'll be using various pre-defined gene sets from GO-MF and brain data for analysis.
+In this section, we will prepare the data needed for enrichment analysis. The data is simulated from the HCP dataset, and we'll be using various pre-defined gene sets from SynGO and brain data for analysis.
 
 ### 1.1. Load sample data frame. The data is simulated from HCP data.
 The data is simulated from HCP data. Let's load and inspect it.
@@ -69,10 +69,9 @@ print(sprintf("%d MF terms have gene size ranging between 20 and 200", length(se
 ```
 
 ## 2. Run the Simulation Analysis 
-In this section, we will run the individual enrichment analysis using the prepared data.
-
+In this section, we will run the enrichment analysis using the prepared data. We permute the data in different ways and subsample it to examine the false positive rate.
 ### 2.1. Simulation analysis with randomized pred variable i.e., BMI (`sim_type ='randomize_pred'`)
-As the gsScore is already cacualted, randomize the pred variable offers litter inforamtion regarding how well our methods is regarding the false positivities.
+Note: Since the gene set scores are already calculated, randomizing the predictor variable (BMI) offers limited information regarding the false positive rate of individual scoring.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 cov_df <- sample_df %>% dplyr::select(Age, Sex)
 pred_df <- sample_df %>% dplyr::select(BMI)
@@ -91,10 +90,10 @@ res <- brainscore.simulate(
 head(str(res))
 ```
 The result is a list of lists, where each sublist contains the significance testing results for each term, separately for both with and without FDR correction. 1 denotes significant, 0 denotes non-significant.
+For demonstration purposes, we have used a small number of iterations (sim_n = 5) and one subsample size (subsample_size = 100). In practice, we recommend using a larger number of iterations (i.e. 1000) and various subsample sizes (e.g., 50, 100, 150, 200) for a more robust analysis.
 
 ### 2.2. Simulation analysis with spin_brain (`sim_type ='spin_brain'`)
-We simulate the brain data by spinning the brain data and calculate the gene set scores and then correlate it with the pred variable.
-For statistical test, both parametric and non-parametric (based on spin_brain) are used.
+We simulate the brain data by spinning it and then calculate the gene set scores before correlating them with the predictor variable. Both parametric and non-parametric tests (based on spin_brain) are used.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 cov_df <- sample_df %>% dplyr::select(Age, Sex)
 pred_df <- sample_df %>% dplyr::select(BMI)
@@ -114,13 +113,12 @@ res <- brainscore.simulate(
 )
 str(res)
 ```
-The result is a list of lists, where each sublist contains the significance testing results for each iteration, there are results separately for (FDR or no-FDR, parametric or non-parametric). 1 denotes significant, 0 denotes non-significant.
-
+The result is a list of lists, where each sublist contains the significance testing results for each iteration. There are results separately for (FDR or no-FDR, parametric or non-parametric). 1 denotes significant, 0 denotes non-significant.
+For demonstration purposes, we have used a small number of iterations (sim_n = 5), one subsample size (subsample_size = 100) and small permutation numer (n_perm=10). In practice, we recommend using a larger number of iterations (i.e. 1000), various subsample sizes (e.g., 50, 100, 150, 200) and more permutation times (e.g., perm_n=5000)for a more robust analysis.
 
 
 ### 2.3. Simulation analysis with spin_brain (`sim_type ='resample_gene'`)
-We simulate the gene sets by resampling genes and calculate the gene set scores and then correlate it with the pred variable.
-For statistical test, both parametric and non-parametric (based on resample_gene) are used.
+We simulate the gene sets by resampling genes and then calculate the gene set scores before correlating them with the predictor variable. Both parametric and non-parametric tests (based on resample_gene) are used.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 cov_df <- sample_df %>% dplyr::select(Age, Sex)
 pred_df <- sample_df %>% dplyr::select(BMI)
@@ -135,9 +133,9 @@ res <- brainscore.simulate(
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",
-  n_perm = 10,
-  perm_id = perm_id_dk_lh_5000
+  n_perm = 10
 )
 str(res)
 ```
-The result is a list of lists, where each sublist contains the significance testing results for each iteration, there are results separately for (FDR or no-FDR, parametric or non-parametric). 1 denotes significant, 0 denotes non-significant.
+The result is a list of lists, where each sublist contains the significance testing results for each iteration. There are results separately for (FDR or no-FDR, parametric or non-parametric). 1 denotes significant, 0 denotes non-significant.
+For demonstration purposes, we have used a small number of iterations (sim_n = 5), one subsample size (subsample_size = 100) and small permutation numer (n_perm=10). In practice, we recommend using a larger number of iterations (i.e. 1000), various subsample sizes (e.g., 50, 100, 150, 200) and more permutation times (e.g., perm_n=5000)for a more robust analysis.
