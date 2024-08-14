@@ -85,6 +85,8 @@ packageVersion("clusterProfiler")
 get_Reactome_DATA <- getFromNamespace("get_Reactome_DATA", "ReactomePA")
 annoData <- get_Reactome_DATA("human")
 # saveRDS(annoData, file = "extdata/geneSets/Reactome.rds", compress = "xz")
+annoData <- readRDS()
+packageVersion("ReactomePA")
 ```
 
 # SynGO (how to make annoDat from xlsx)
@@ -247,6 +249,24 @@ annoData <- build_Anno(TERM2GENE, TERM2NAME)
 #   attributes(mappedSymbol) <- NULL
 #   return(unname(mappedSymbol))
 # }
+```
+
+
+```{r, include = TRUE, eval=FALSE}
+BiocManager::install("AnnotationHub")
+BiocManager::install("MeSHDbi")
+library(AnnotationHub)
+library(MeSHDbi)
+ah <- AnnotationHub(localHub=TRUE) # localHub=TRUE if you have downloaded the data
+hsa <- query(ah, c("MeSHDb", "Homo sapiens"))
+file_hsa <- hsa[[1]]
+db <- MeSHDbi::MeSHDb(file_hsa)
+get_MeSH_data <- getFromNamespace('get_MeSH_data','meshes')
+MeSH_DATA <- get_MeSH_data(db, 'gendoo', 'F')
+saveRDS(MeSH_DATA, file = "inst/extdata/geneSets/test.rds", compress = "xz")
+testList=get_geneSetList(MeSH_DATA)
+str(testList)
+get_termDescription("D000126", MeSH_DATA)
 ```
 
 
