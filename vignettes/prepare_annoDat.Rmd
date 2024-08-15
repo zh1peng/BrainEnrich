@@ -34,8 +34,39 @@ library(clusterProfiler)
 library(DOSE)
 library(ReactomePA)
 library(reactome.db)
+library(BrainEnrich)
 build_Anno <- getFromNamespace("build_Anno", "DOSE")
 ```
+
+As we may need to convert geneID to symbols, we first define helper functions for doing so
+```{r, include = FALSE}
+symbol_annoData <- function (annoData){
+  require(org.Hs.eg.db)
+  tmp=split_Anno(annoData)
+  path2gene=tmp$path2gene
+  path2name=tmp$path2name
+  geneIDs=path2gene$geneID
+  entrez_ids <- AnnotationDbi::keys(org.Hs.eg.db, keytype = "ENTREZID")
+  matching_ids <- geneIDs %in% entrez_ids
+  percentage_match <- sum(matching_ids) / length(geneIDs) * 100
+  threshold <- 90  # For example, 80% match
+  is_mostly_entrez <- percentage_match >= threshold
+  if (is_mostly_entrez) {
+    gene_symbols <- mapIds(org.Hs.eg.db, keys = geneIDs, column = "SYMBOL", keytype = "ENTREZID", multiVals = "first")
+  } else {
+   stop("The gene IDs are not mostly ENTREZID. Attempting to convert to ENTREZID...")
+  }
+  if (length(gene_symbols) != length(geneIDs)) {
+    stop("Failed to convert gene IDs in the data frame to SYMBOL.")
+  }
+  path2gene$geneID <- gene_symbols
+  path2gene <- path2gene[!(is.na(path2gene$geneID) | path2gene$geneID == ""), ]
+  build_Anno <- getFromNamespace("build_Anno", "DOSE")
+  annoData <- build_Anno(path2gene, path2name)
+  return(annoData)
+}
+```
+
 # Gene ontology (GO) gene sets
 ```{r include=T, eval=F}
 get_GO_data <- getFromNamespace("get_GO_data", "clusterProfiler")
@@ -56,17 +87,50 @@ packageVersion("org.Hs.eg.db")
 ```{r include=T, eval=F}
 get_DGN_data <- getFromNamespace("get_DGN_data", "DOSE")
 annoData <- get_DGN_data()
+test1=get_geneSetList(annoData)
+str(test1)
+get_termDescription("C0001546", annoData)
+annoData <- symbol_annoData(annoData)
+test2=get_geneSetList(annoData)
+str(test2)
+
 saveRDS(annoData, file = "inst/extdata/geneSets/DGN.rds", compress = "xz")
 packageVersion("DOSE")
+packageVersion("AnnotationDbi")
 ```
 
-# KEGG
+# KEGG modules
 ```{r include=T, eval=F}
 prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
-annoData <- prepare_KEGG("hsa", "MKEGG", "kegg")
-# saveRDS(annoData, file = "extdata/geneSets/KEGG.rds", compress = "xz")
+annoData <- prepare_KEGG("hsa", "MKEGG", "ncbi-geneid")
+test1=get_geneSetList(annoData)
+str(test1)
+
+annoData<-symbol_annoData(annoData)
+test2=get_geneSetList(annoData)
+str(test2)
+get_termDescription("M00124",annoData)
+saveRDS(annoData, file = "inst/extdata/geneSets/MKEGG.rds", compress = "xz")
+
 packageVersion("clusterProfiler")
 ```
+
+
+# KEGG pathways
+```{r include=T, eval=F}
+prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
+annoData <- prepare_KEGG("hsa", "KEGG", "ncbi-geneid")
+test1=get_geneSetList(annoData)
+str(test1)
+
+annoData<-symbol_annoData(annoData)
+test2=get_geneSetList(annoData)
+str(test2)
+get_termDescription("hsa03008",annoData)
+saveRDS(annoData, file = "inst/extdata/geneSets/KEGG.rds", compress = "xz")
+packageVersion("clusterProfiler")
+```
+
 
 # WikiPathways
 ```{r include=T, eval=F}
@@ -76,7 +140,15 @@ TERM2GENE <- wpdata$WPID2GENE
 TERM2NAME <- wpdata$WPID2NAME
 build_Anno <- getFromNamespace("build_Anno", "DOSE")
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-# saveRDS(annoData, file = "extdata/geneSets/WikiPathways.rds", compress = "xz")
+
+test1=get_geneSetList(annoData)
+str(test1)
+
+annoData<-symbol_annoData(annoData)
+test2=get_geneSetList(annoData)
+str(test2)
+get_termDescription("WP2338",annoData)
+saveRDS(annoData, file = "inst/extdata/geneSets/WikiPathways.rds", compress = "xz")
 packageVersion("clusterProfiler")
 ```
 
@@ -84,8 +156,14 @@ packageVersion("clusterProfiler")
 ```{r include=T, eval=F}
 get_Reactome_DATA <- getFromNamespace("get_Reactome_DATA", "ReactomePA")
 annoData <- get_Reactome_DATA("human")
-# saveRDS(annoData, file = "extdata/geneSets/Reactome.rds", compress = "xz")
-annoData <- readRDS()
+test1=get_geneSetList(annoData)
+str(test1)
+
+annoData<-symbol_annoData(annoData)
+test2=get_geneSetList(annoData)
+str(test2)
+get_termDescription("R-HSA-1059683",annoData)
+saveRDS(annoData, file = "inst/extdata/geneSets/Reactome.rds", compress = "xz")
 packageVersion("ReactomePA")
 ```
 
@@ -134,6 +212,7 @@ annoData <- build_Anno(TERM2GENE, TERM2NAME)
 # CellTypes Seidlitz2020 (how to prepare annoData with a csv file)
 ### Seidlitz, J., Nadig, A., Liu, S., Bethlehem, R. A., Vértes, P. E., Morgan, S. E., ... & Raznahan, A. (2020). Transcriptomic and cellular decoding of regional brain vulnerability to neurogenetic disorders. Nature communications, 11(1), 3358.
 ```{r include=T, eval=F}
+library(dplyr)
 # Define URL for Seidlitz2020
 url <- "https://github.com/jms290/PolySyn_MSNs/blob/master/Data/AHBA/celltypes_PSP.csv?raw=true"
 
@@ -154,15 +233,28 @@ TERM2GENE <- read.csv(temp_file) %>%
   dplyr::mutate(term = class) %>%
   filter(gene != "") %>%
   dplyr::select(term, gene)
+
+key_dict <- c('Astro'='Astrocytes',
+              'Endo'='Endothelial',
+              'Micro'='Microglial',
+              'OPC'='Oligodendrocyte Progenitors',
+              'Neuro-Ex'='Excitatory Neurons',
+              'Neuro-In'='Inhibitory Neurons',
+              'Oligo'='Oligodendrocytes')
+
 TERM2NAME <- TERM2GENE %>%
-  dplyr::mutate(description = term) %>%
+  dplyr::mutate(description =dplyr::recode(term, !!!key_dict)) %>% 
   dplyr::select(term, description)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-# saveRDS(annoData, file = "extdata/geneSets/CellTypes_Seidlitz2020.rds", compress = "xz")
+test1=get_geneSetList(annoData)
+str(test1)
+get_termDescription(term="Astro", annoData)
+
+saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Seidlitz2020.rds", compress = "xz")
 ```
 
 
-# CellTypes Lake2018 (how to prepare annoData with a gmt file)
+# CellTypes Lake2018 (how to prepare annoData from a gmt file)
 ### Lake, B. B., Chen, S., Sos, B. C., Fan, J., Kaeser, G. E., Yung, Y. C., ... & Zhang, K. (2018). Integrative single-cell analysis of transcriptional and epigenetic states in the human adult brain. Nature biotechnology, 36(1), 70-80.
 ```{r include=T, eval=F}
 # Define URL for Lake2018
@@ -185,11 +277,68 @@ TERM2GENE <- suppressWarnings({
     filter(gene != "") %>%
     dplyr::select(term, gene)
 })
+
+key_dict <- c(
+  # Excitatory Neurons
+  'Ex1' = 'Excitatory Neurons 1',
+  'Ex2' = 'Excitatory Neurons 2',
+  'Ex3a' = 'Excitatory Neurons 3a',
+  'Ex3b' = 'Excitatory Neurons 3b',
+  'Ex3c' = 'Excitatory Neurons 3c',
+  'Ex3d' = 'Excitatory Neurons 3d',
+  'Ex3e' = 'Excitatory Neurons 3e',
+  'Ex4' = 'Excitatory Neurons 4',
+  'Ex5a' = 'Excitatory Neurons 5a',
+  'Ex5b' = 'Excitatory Neurons 5b',
+  'Ex6a' = 'Excitatory Neurons 6a',
+  'Ex6b' = 'Excitatory Neurons 6b',
+  'Ex8' = 'Excitatory Neurons 8',
+
+  # Granule Cells (Cerebellar)
+  'Gran' = 'Cerebellar Granule Cells',
+  
+  # Inhibitory Neurons
+  'In1a' = 'Inhibitory Neurons 1a',
+  'In1b' = 'Inhibitory Neurons 1b',
+  'In1c' = 'Inhibitory Neurons 1c',
+  'In2' = 'Inhibitory Neurons 2',
+  'In3' = 'Inhibitory Neurons 3',
+  'In4a' = 'Inhibitory Neurons 4a',
+  'In4b' = 'Inhibitory Neurons 4b',
+  'In6a' = 'Inhibitory Neurons 6a',
+  'In6b' = 'Inhibitory Neurons 6b',
+  'In7' = 'Inhibitory Neurons 7',
+  'In8' = 'Inhibitory Neurons 8',
+
+  # Purkinje Cells (Cerebellar Neurons)
+  'Purk1' = 'Purkinje Cells 1',
+  'Purk2' = 'Purkinje Cells 2',
+
+  # Non-Neuronal Cells
+  'End' = 'Endothelial Cells',
+  'Per' = 'Pericytes/Smooth Muscle Cells',
+  'Ast' = 'Astrocytes',
+  'Ast_Cer' = 'Cerebellar Astrocytes',
+  'Oli' = 'Oligodendrocytes',
+  'OPC' = 'Oligodendrocyte Progenitor Cells',
+  'OPC_Cer' = 'Cerebellar OPCs',
+  'Mic' = 'Microglia'
+)
+
+
+
+
 TERM2NAME <- TERM2GENE %>%
-  dplyr::mutate(description = term) %>%
+  dplyr::mutate(description = dplyr::recode(term, !!!key_dict)) %>%
   dplyr::select(term, description)
+unique(TERM2NAME)
+
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-# saveRDS(annoData, file = "extdata/geneSets/CellTypes_Lake2018.rds", compress = "xz")
+test1=get_geneSetList(annoData)
+str(test1)
+get_termDescription(term="Ast", annoData)
+
+saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Lake2018.rds", compress = "xz")
 ```
 
 # CellTypes Martins2021 (how to prepare annoData with a gmt file)
@@ -213,11 +362,26 @@ TERM2GENE <- suppressWarnings({
     filter(gene != "") %>%
     dplyr::select(term, gene)
 })
+
+key_dict <- c(
+  'Astro' = 'Astrocytes',
+  'Endo' = 'Endothelial Cells',
+  'Microglia' = 'Microglial Cells',
+  'Neuro_Exc' = 'Excitatory Neurons',
+  'Neuro_Inb' = 'Inhibitory Neurons',
+  'Oligo' = 'Oligodendrocytes',
+  'OPC' = 'Oligodendrocyte Progenitor Cells'
+)
+
 TERM2NAME <- TERM2GENE %>%
-  dplyr::mutate(description = term) %>%
+  dplyr::mutate(description = dplyr::recode(term, !!!key_dict)) %>%
   dplyr::select(term, description)
+unique(TERM2NAME)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
-# saveRDS(annoData, file = "extdata/geneSets/CellTypes_Martins2021.rds", compress = "xz")
+test1=get_geneSetList(annoData)
+str(test1)
+get_termDescription(term="Astro", annoData)
+saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Martins2021.rds", compress = "xz")
 ```
 
 
@@ -257,14 +421,14 @@ BiocManager::install("AnnotationHub")
 BiocManager::install("MeSHDbi")
 library(AnnotationHub)
 library(MeSHDbi)
-ah <- AnnotationHub(localHub=TRUE) # localHub=TRUE if you have downloaded the data
+ah <- AnnotationHub(cache="C:/Users/Zhipeng/AppData/Local/Temp/Rtmpe24TtF/BiocFileCache",localHub=TRUE) # localHub=TRUE if you have downloaded the data
 hsa <- query(ah, c("MeSHDb", "Homo sapiens"))
 file_hsa <- hsa[[1]]
 db <- MeSHDbi::MeSHDb(file_hsa)
 get_MeSH_data <- getFromNamespace('get_MeSH_data','meshes')
-MeSH_DATA <- get_MeSH_data(db, 'gendoo', 'F')
+MeSH_DATA <- get_MeSH_data(db, 'gendoo', 'C')
 saveRDS(MeSH_DATA, file = "inst/extdata/geneSets/test.rds", compress = "xz")
-testList=get_geneSetList(MeSH_DATA)
+testList=BrainEnrich::get_geneSetList(MeSH_DATA)
 str(testList)
 get_termDescription("D000126", MeSH_DATA)
 ```
