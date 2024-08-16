@@ -6,7 +6,9 @@
 \usage{
 get_annoData(
   type = c("CellTypes_Lake2018", "CellTypes_Martins2021", "CellTypes_Seidlitz2020",
-    "DGN", "GO_BP", "GO_CC", "GO_MF", "KEGG", "Reactome", "SynGO", "WikiPathways")
+    "DGN", "GO_BP", "GO_CC", "GO_MF", "KEGG", "Reactome", "SynGO", "WikiPathways",
+    "MeSH_A", "MeSH_B", "MeSH_C", "MeSH_D", "MeSH_E", "MeSH_F", "MeSH_G", "MeSH_H",
+    "MeSH_I", "MeSH_J", "MeSH_K", "MeSH_L", "MeSH_M", "MeSH_N", "MeSH_Z")
 )
 }
 \arguments{
@@ -23,6 +25,21 @@ get_annoData(
 \item{"Reactome"}{Reactome gene sets}
 \item{"SynGO"}{SynGO gene sets}
 \item{"WikiPathways"}{WikiPathways gene sets}
+\item{"MeSH_A"}{MeSH category A gene sets}
+\item{"MeSH_B"}{MeSH category B gene sets}
+\item{"MeSH_C"}{MeSH category C gene sets}
+\item{"MeSH_D"}{MeSH category D gene sets}
+\item{"MeSH_E"}{MeSH category E gene sets}
+\item{"MeSH_F"}{MeSH category F gene sets}
+\item{"MeSH_G"}{MeSH category G gene sets}
+\item{"MeSH_H"}{MeSH category H gene sets}
+\item{"MeSH_I"}{MeSH category I gene sets}
+\item{"MeSH_J"}{MeSH category J gene sets}
+\item{"MeSH_K"}{MeSH category K gene sets}
+\item{"MeSH_L"}{MeSH category L gene sets}
+\item{"MeSH_M"}{MeSH category M gene sets}
+\item{"MeSH_N"}{MeSH category N gene sets}
+\item{"MeSH_Z"}{MeSH category Z gene sets}
 }}
 }
 \value{

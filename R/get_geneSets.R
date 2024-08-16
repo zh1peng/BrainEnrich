@@ -16,6 +16,21 @@
 #'     \item{"Reactome"}{Reactome gene sets}
 #'     \item{"SynGO"}{SynGO gene sets}
 #'     \item{"WikiPathways"}{WikiPathways gene sets}
+#'     \item{"MeSH_A"}{MeSH category A gene sets}
+#'     \item{"MeSH_B"}{MeSH category B gene sets}
+#'     \item{"MeSH_C"}{MeSH category C gene sets}
+#'     \item{"MeSH_D"}{MeSH category D gene sets}
+#'     \item{"MeSH_E"}{MeSH category E gene sets}
+#'     \item{"MeSH_F"}{MeSH category F gene sets}
+#'     \item{"MeSH_G"}{MeSH category G gene sets}
+#'     \item{"MeSH_H"}{MeSH category H gene sets}
+#'     \item{"MeSH_I"}{MeSH category I gene sets}
+#'     \item{"MeSH_J"}{MeSH category J gene sets}
+#'     \item{"MeSH_K"}{MeSH category K gene sets}
+#'     \item{"MeSH_L"}{MeSH category L gene sets}
+#'     \item{"MeSH_M"}{MeSH category M gene sets}
+#'     \item{"MeSH_N"}{MeSH category N gene sets}
+#'     \item{"MeSH_Z"}{MeSH category Z gene sets}
 #'   }
 #' @importFrom utils download.file
 #' @return A data frame containing the annotation data.
@@ -27,45 +42,39 @@
 #' }
 get_annoData <- function(type = c(
                            "CellTypes_Lake2018", "CellTypes_Martins2021", "CellTypes_Seidlitz2020",
-                           "DGN", "GO_BP", "GO_CC", "GO_MF", "KEGG", "Reactome", "SynGO", "WikiPathways"
+                           "DGN", "GO_BP", "GO_CC", "GO_MF", "KEGG", "Reactome", "SynGO", "WikiPathways",
+                           "MeSH_A", "MeSH_B", "MeSH_C", "MeSH_D", "MeSH_E", "MeSH_F", "MeSH_G",
+                           "MeSH_H", "MeSH_I", "MeSH_J", "MeSH_K", "MeSH_L", "MeSH_M", "MeSH_N", "MeSH_Z"
                          )) {
   type <- match.arg(type)
 
-  # Define local file path
-
-
   # Determine the package installation directory
   package_dir <- find.package("BrainEnrich")
-  # Specify the path for the new 'extdata' directory
+  # Specify the path for the 'extdata' directory
   extdata_dir <- file.path(package_dir, "extdata")
-  # Create the 'extdata' directory if it does not exist
+
+  # Create the 'extdata' and 'geneSets' directories if they do not exist
   if (!dir.exists(extdata_dir)) {
     dir.create(extdata_dir)
   }
 
-
   gene_set_dir <- file.path(extdata_dir, "geneSets")
-
   if (!dir.exists(gene_set_dir)) {
     dir.create(gene_set_dir)
   }
-  GeneSetsRDS <- file.path(gene_set_dir, paste0(type, ".rds"))
 
-  # Ensure the gene_set_dir directory exists
+  # Define the local file path for the gene set
+  GeneSetsRDS <- file.path(gene_set_dir, paste0(type, ".rds"))
 
   # Define GitHub URL for downloading the file
   url <- paste0("https://github.com/zh1peng/BrainEnrich/raw/master/inst/extdata/geneSets/", type, ".rds")
 
+  # Download the file if it does not exist locally
   if (!file.exists(GeneSetsRDS)) {
     message(sprintf("File not found locally. Downloading from GitHub... %s", url))
     message("If the download is slow, download manually.")
     message(sprintf("and save files as %s", GeneSetsRDS))
 
-    GeneSetsDir <- dirname(GeneSetsRDS)
-    if (!dir.exists(GeneSetsDir)) {
-      dir.create(GeneSetsDir, recursive = TRUE)
-    }
-    options(timeout = 600)
     tryCatch(
       {
         download.file(url, GeneSetsRDS, method = "libcurl")
@@ -74,7 +83,7 @@ get_annoData <- function(type = c(
       error = function(e) {
         message("Download failed. Please copy and paste the following URL into your browser:")
         message(url)
-        message(sprintf("and save the file to the following folder: %s", GeneSetsDir))
+        message(sprintf("and save the file to the following folder: %s", gene_set_dir))
       }
     )
   }
@@ -153,7 +162,7 @@ filter_geneSetList <- function(bg_genes, geneSetList, minGSSize, maxGSSize) {
 #'
 #' @param Anno_clusterProfiler_Env An environment containing annotation data, including 
 #'        `PATHID2EXTID` and `PATHID2NAME`, created by the `build_Anno` function.
-#'
+#' @importFrom utils stack
 #' @return A list with two components:
 #' \describe{
 #'   \item{path2gene}{A data frame with two columns: `pathID` and `geneID`, representing 

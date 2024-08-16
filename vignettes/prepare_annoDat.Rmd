@@ -65,6 +65,36 @@ symbol_annoData <- function (annoData){
   annoData <- build_Anno(path2gene, path2name)
   return(annoData)
 }
+
+
+# #' Convert Entrez IDs to Gene Symbols
+# #'
+# #' This function converts a vector of Entrez IDs to gene symbols using the org.Hs.eg.db annotation package.
+# #'
+# #' @param entrezid A vector of Entrez IDs to be converted to gene symbols.
+# #' @return A vector of gene symbols corresponding to the input Entrez IDs.
+# #' @importFrom AnnotationDbi mapIds
+# #' @export
+# entrezid2symbol <- function(entrezid) {
+#   # Ensure input is character vector
+#   entrezid <- as.character(entrezid)
+
+#   # Map Entrez IDs to gene symbols
+#   mappedSymbol <- suppressMessages(
+#     mapIds(
+#       x = org.Hs.eg.db,
+#       keys = entrezid,
+#       keytype = "ENTREZID",
+#       column = "SYMBOL",
+#       multiVals = "first"
+#     )
+#   )
+#   # Remove NA values and attributes
+#   mappedSymbol <- na.omit(mappedSymbol)
+#   attributes(mappedSymbol) <- NULL
+#   return(unname(mappedSymbol))
+# }
+
 ```
 
 # Gene ontology (GO) gene sets
@@ -88,11 +118,11 @@ packageVersion("org.Hs.eg.db")
 get_DGN_data <- getFromNamespace("get_DGN_data", "DOSE")
 annoData <- get_DGN_data()
 test1=get_geneSetList(annoData)
-str(test1)
+str(head(test1))
 get_termDescription("C0001546", annoData)
 annoData <- symbol_annoData(annoData)
 test2=get_geneSetList(annoData)
-str(test2)
+str(head(test2))
 
 saveRDS(annoData, file = "inst/extdata/geneSets/DGN.rds", compress = "xz")
 packageVersion("DOSE")
@@ -104,11 +134,11 @@ packageVersion("AnnotationDbi")
 prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
 annoData <- prepare_KEGG("hsa", "MKEGG", "ncbi-geneid")
 test1=get_geneSetList(annoData)
-str(test1)
+str(head(test1))
 
 annoData<-symbol_annoData(annoData)
 test2=get_geneSetList(annoData)
-str(test2)
+str(head(test2))
 get_termDescription("M00124",annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/MKEGG.rds", compress = "xz")
 
@@ -121,11 +151,11 @@ packageVersion("clusterProfiler")
 prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
 annoData <- prepare_KEGG("hsa", "KEGG", "ncbi-geneid")
 test1=get_geneSetList(annoData)
-str(test1)
+str(head(test1))
 
 annoData<-symbol_annoData(annoData)
 test2=get_geneSetList(annoData)
-str(test2)
+str(head(test2))
 get_termDescription("hsa03008",annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/KEGG.rds", compress = "xz")
 packageVersion("clusterProfiler")
@@ -142,11 +172,11 @@ build_Anno <- getFromNamespace("build_Anno", "DOSE")
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
 
 test1=get_geneSetList(annoData)
-str(test1)
+str(head(test1))
 
 annoData<-symbol_annoData(annoData)
 test2=get_geneSetList(annoData)
-str(test2)
+str(head(test2))
 get_termDescription("WP2338",annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/WikiPathways.rds", compress = "xz")
 packageVersion("clusterProfiler")
@@ -157,11 +187,11 @@ packageVersion("clusterProfiler")
 get_Reactome_DATA <- getFromNamespace("get_Reactome_DATA", "ReactomePA")
 annoData <- get_Reactome_DATA("human")
 test1=get_geneSetList(annoData)
-str(test1)
+str(head(test1))
 
 annoData<-symbol_annoData(annoData)
 test2=get_geneSetList(annoData)
-str(test2)
+str(head(test2))
 get_termDescription("R-HSA-1059683",annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/Reactome.rds", compress = "xz")
 packageVersion("ReactomePA")
@@ -247,7 +277,7 @@ TERM2NAME <- TERM2GENE %>%
   dplyr::select(term, description)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
 test1=get_geneSetList(annoData)
-str(test1)
+str(head(test1))
 get_termDescription(term="Astro", annoData)
 
 saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Seidlitz2020.rds", compress = "xz")
@@ -335,7 +365,7 @@ unique(TERM2NAME)
 
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
 test1=get_geneSetList(annoData)
-str(test1)
+str(head(test1))
 get_termDescription(term="Ast", annoData)
 
 saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Lake2018.rds", compress = "xz")
@@ -379,59 +409,99 @@ TERM2NAME <- TERM2GENE %>%
 unique(TERM2NAME)
 annoData <- build_Anno(TERM2GENE, TERM2NAME)
 test1=get_geneSetList(annoData)
-str(test1)
+str(head(test1))
 get_termDescription(term="Astro", annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Martins2021.rds", compress = "xz")
 ```
 
 
-```{r, include = FALSE, eval=FALSE}
-# #' Convert Entrez IDs to Gene Symbols
-# #'
-# #' This function converts a vector of Entrez IDs to gene symbols using the org.Hs.eg.db annotation package.
-# #'
-# #' @param entrezid A vector of Entrez IDs to be converted to gene symbols.
-# #' @return A vector of gene symbols corresponding to the input Entrez IDs.
-# #' @importFrom AnnotationDbi mapIds
-# #' @export
-# entrezid2symbol <- function(entrezid) {
-#   # Ensure input is character vector
-#   entrezid <- as.character(entrezid)
 
-#   # Map Entrez IDs to gene symbols
-#   mappedSymbol <- suppressMessages(
-#     mapIds(
-#       x = org.Hs.eg.db,
-#       keys = entrezid,
-#       keytype = "ENTREZID",
-#       column = "SYMBOL",
-#       multiVals = "first"
-#     )
-#   )
-#   # Remove NA values and attributes
-#   mappedSymbol <- na.omit(mappedSymbol)
-#   attributes(mappedSymbol) <- NULL
-#   return(unname(mappedSymbol))
-# }
+
+# MeSH
+First we define a function to prepare the MeSH data
+```{r, include = TRUE, eval=FALSE}
+get_MeSH_data <- function(MeSH.hsa.db, MeSH.db, database, category) {
+    category <- toupper(category)
+    categories <- c("A", "B", "C", "D",
+                    "E", "F", "G", "H",
+                    "I", "J", "K", "L",
+                    "M", "N", "V", "Z")
+
+    if (!all(category %in% categories)) {
+        stop("please check your 'category' parameter...")
+    }
+
+    mesh <- AnnotationDbi::select(MeSH.hsa.db, keys=database, columns = c("GENEID", "MESHID","MESHCATEGORY"), keytype = "SOURCEDB")
+    mesh <- mesh[ mesh[,3] %in% category, ]
+    mesh2gene <- mesh[, c(2,1)]
+    mesh2name <- AnnotationDbi::select(MeSH.db, keys=unique(mesh2gene[,1]), columns=c('MESHID', 'MESHTERM'), keytype='MESHID')
+    build_Anno(mesh2gene, mesh2name)
+}
 ```
-
 
 ```{r, include = TRUE, eval=FALSE}
 BiocManager::install("AnnotationHub")
 BiocManager::install("MeSHDbi")
+
 library(AnnotationHub)
 library(MeSHDbi)
+
+# prepare MeSH.hsa.db (it is a gene-MeSH db)
 ah <- AnnotationHub(cache="C:/Users/Zhipeng/AppData/Local/Temp/Rtmpe24TtF/BiocFileCache",localHub=TRUE) # localHub=TRUE if you have downloaded the data
 hsa <- query(ah, c("MeSHDb", "Homo sapiens"))
 file_hsa <- hsa[[1]]
-db <- MeSHDbi::MeSHDb(file_hsa)
-get_MeSH_data <- getFromNamespace('get_MeSH_data','meshes')
-MeSH_DATA <- get_MeSH_data(db, 'gendoo', 'C')
-saveRDS(MeSH_DATA, file = "inst/extdata/geneSets/test.rds", compress = "xz")
-testList=BrainEnrich::get_geneSetList(MeSH_DATA)
-str(testList)
-get_termDescription("D000126", MeSH_DATA)
+MeSH.hsa.db <- MeSHDbi::MeSHDb(file_hsa)
+
+# prepare MeSH.db (it is a name db)
+ah <- AnnotationHub(localHub=TRUE)
+#cache="C:/Users/Zhipeng/AppData/Local/R/cache/R/AnnotationHub/205c177937a_98389"
+dbfile1 <- query(ah, c("MeSHDb", "MeSH.db"))[[1]]
+MeSH.db <- MeSHDbi::MeSHDb(dbfile1)
+
+annoData <- get_MeSH_data(MeSH.hsa.db=MeSH.hsa.db, MeSH.db=MeSH.db, database='gene2pubmed', category='F')
+test1=get_geneSetList(annoData)
+str(head(test1))
+get_termDescription(term="D003071", annoData)
+
+annoData <- symbol_annoData(annoData)
+test2=get_geneSetList(annoData)
+str(head(test2))
+length(test2)
+saveRDS(annoData, file = "inst/extdata/geneSets/test.rds", compress = "xz")
 ```
+After figure out for one category, we can make it a loop for gene2pubmed
+```{r, include = TRUE, eval=FALSE}
+for (cat_i in c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "V", "Z")) {
+    message('Preparing category: ', cat_i)
+    # Fetching the MeSH data for the specified category
+    annoData <- get_MeSH_data(MeSH.hsa.db = MeSH.hsa.db, MeSH.db = MeSH.db, database = 'gene2pubmed', category = cat_i)
+    geneSetList <- get_geneSetList(annoData)
+    if (length(geneSetList) == 0) {
+        message('No gene set found for category: ', cat_i)
+    } else {
+        message('Converting gene IDs to gene symbols for category: ', cat_i)
+        annoData <- symbol_annoData(annoData)
+        message('Saving annoData for category: ', cat_i)
+        saveRDS(annoData, file = paste0("inst/extdata/geneSets/MeSH_", cat_i, ".rds"), compress = "xz")
+    }
+}
+```
+
+
+
+test1=get_geneSetList(annoData)
+str(head(test1))
+get_termDescription(term="D003071", annoData)
+
+annoData <- symbol_annoData(annoData)
+test2=get_geneSetList(annoData)
+str(head(test2))
+length(test2)
+saveRDS(annoData, file = "inst/extdata/geneSets/test.rds", compress = "xz")
+
+
+```
+
 
 
 # render me
