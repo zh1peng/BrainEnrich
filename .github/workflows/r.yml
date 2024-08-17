@@ -23,9 +23,9 @@ jobs:
     strategy:
       matrix:
         config:
-          - {os: ubuntu-latest, r: '4.3.1'}
-          - {os: macOS-latest, r: '4.3.1'}
-          - {os: windows-latest, r: '4.3.1'}
+          - {os: ubuntu-latest, r-version: 'release'}
+          - {os: macOS-latest, r-version: '4.3.1'}
+          - {os: windows-latest, r-version: '4.3.1'}
 
     steps:
       - uses: actions/checkout@v4
