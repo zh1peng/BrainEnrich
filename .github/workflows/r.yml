@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         config:
-          - {os: ubuntu-latest, r-version: 'release'}
+          r-version: ['3.6.3', '4.1.1']
 
     steps:
       - uses: actions/checkout@v4
