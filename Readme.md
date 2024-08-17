@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.com/zh1peng/BrainEnrich.svg?branch=main)](https://travis-ci.com/zh1peng/BrainEnrich)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/zh1peng/BrainEnrich?branch=main&svg=true)](https://ci.appveyor.com/project/zh1peng/BrainEnrich)
-
+[![R](https://github.com/zh1peng/BrainEnrich/actions/workflows/r.yml/badge.svg?event=status)](https://github.com/zh1peng/BrainEnrich/actions/workflows/r.yml)
 
 # BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment 🧠🧬
 
