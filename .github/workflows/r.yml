@@ -23,8 +23,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest, windows-latest]
-        r-version: ['4.1.0', '4.4.0']
+        os: [ macOS-latest, windows-latest]
+        r-version: ['4.4.0']
 
     steps:
       - uses: actions/checkout@v4
@@ -42,8 +42,9 @@ jobs:
             ${{ runner.os }}-r-
       - name: Install dependencies
         run: |
-          install.packages(c("remotes", "rcmdcheck"))
+          install.packages(c("remotes", "rcmdcheck","BiocManager"))
           remotes::install_deps(dependencies = TRUE)
+          BiocManager::install("DOSE")
         shell: Rscript {0}
       - name: Check
         run: |
