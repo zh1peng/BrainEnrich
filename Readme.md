@@ -1,4 +1,4 @@
-[![R4.4-CMD-check](https://github.com/zh1peng/BrainEnrich/actions/workflows/R4.4-CMD-check.yml/badge.svg)](https://github.com/zh1peng/BrainEnrich/actions/workflows/R4.4-CMD-check.yml)
+[![R-4.4-build](https://github.com/zh1peng/BrainEnrich/actions/workflows/R-4.4-build.yml/badge.svg)](https://github.com/zh1peng/BrainEnrich/actions/workflows/R-4.4-build.yml)
 
 # BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment 🧠🧬
 
