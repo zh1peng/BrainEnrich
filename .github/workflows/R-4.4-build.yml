@@ -6,7 +6,7 @@
 # See https://github.com/r-lib/actions/tree/master/examples#readme for
 # additional example workflows available for the R community.
 
-name: R4.4-CMD-check
+name: R-4.4-build
 
 on:
   push:
@@ -23,7 +23,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [unbuntu-latest macOS-latest, windows-latest]
+        os: [unbuntu-latest, macOS-latest, windows-latest]
         r-version: ['4.4.0']
 
     steps:
