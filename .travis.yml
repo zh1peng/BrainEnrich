@@ -4,11 +4,23 @@ r:
   - release
 
 
-install:
-  - Rscript -e 'install.packages("BiocManager")'
-  - Rscript -e 'BiocManager::install(c("DOSE", "clusterProfiler", "org.Hs.eg.db"))'
-  - Rscript -e 'install.packages("devtools")'
-  - Rscript -e 'devtools::install_github("zh1peng/BrainEnrich")'
+os:
+  - linux
 
+cache: packages
 
-warnings_are_errors: false
+before_install:
+  - Rscript -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")'
+  - Rscript -e 'remotes::install_deps(dependencies = TRUE)'
+
+script:
+  - R CMD build .
+  - R CMD check *tar.gz --no-manual --as-cran
+
+after_failure:
+  - ./travis-tool.sh dump_logs
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always
