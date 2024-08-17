@@ -23,7 +23,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [unbuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
         r-version: ['4.4.0']
 
     steps:
@@ -51,7 +51,7 @@ jobs:
            if (!requireNamespace("rcmdcheck", quietly = TRUE)) {
                 install.packages("rcmdcheck")
               }
-           rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
+           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error")
         shell: Rscript {0}
 
 
