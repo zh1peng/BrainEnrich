@@ -51,8 +51,6 @@ usethis::use_mit_license()
 usethis::use_citation()
 usethis::use_agpl3_license()
 
-uesthis::check_travis() # Check travis
-
 
 usethis::use_pkgdown()
 usethis::edit_r_environ()
