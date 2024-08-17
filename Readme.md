@@ -1,4 +1,4 @@
-[![R](https://github.com/zh1peng/BrainEnrich/actions/workflows/r.yml/badge.svg?event=status)](https://github.com/zh1peng/BrainEnrich/actions/workflows/r.yml)
+[![Rcheck](https://github.com/zh1peng/BrainEnrich/actions/workflows/r.yml/badge.svg?event=status)](https://github.com/zh1peng/BrainEnrich/actions/workflows/r.yml)
 
 # BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment 🧠🧬
 
