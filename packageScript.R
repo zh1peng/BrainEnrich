@@ -56,10 +56,12 @@ usethis::use_pkgdown()
 usethis::edit_r_environ()
 usethis::browse_github_pat()
 
+usethis::use_pkgdown_github_pages()
+
 usethis::use_pkgdown()
 pkgdown::build_site()
 pkgdown::deploy_to_branch()
-usethis::use_pkgdown_github_pages()
+
 
 usethis::use_github_action('check-standard')
 # prepare example data
