@@ -2,3 +2,10 @@ url: ~
 template:
   bootstrap: 5
 
+articles:
+  - title: "How to use brainenrich"
+    contents:
+      - "vignettes/brainenrich_demo.html"
+  - title: "How to prepare gene sets (annoData)"
+    contents:
+      - "vignettes/prepare_annoDat.html"

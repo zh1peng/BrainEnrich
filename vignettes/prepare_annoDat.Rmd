@@ -488,23 +488,12 @@ for (cat_i in c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
 ```
 
 
-
-test1=get_geneSetList(annoData)
-str(head(test1))
-get_termDescription(term="D003071", annoData)
-
-annoData <- symbol_annoData(annoData)
-test2=get_geneSetList(annoData)
-str(head(test2))
-length(test2)
-saveRDS(annoData, file = "inst/extdata/geneSets/test.rds", compress = "xz")
-
-
-```
-
-
-
 # render me
 ```{r include=F, eval=FALSE}
-knitr::knit("vignettes/prepare_annoDat.Rmd")
+rmd_path <- "E:/xhmhc/BrainEnrich/vignettes"
+rmarkdown::render(
+  input = file.path(rmd_path, "prepare_annoDat.Rmd"),
+  output_format = "html_document",
+  output_file = file.path(rmd_path, "prepare_annoDat.html")
+)
 ```
