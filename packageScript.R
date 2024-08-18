@@ -61,7 +61,7 @@ pkgdown::build_site()
 pkgdown::deploy_to_branch()
 usethis::use_pkgdown_github_pages()
 
-usethis::use_github_action()
+usethis::use_github_action('check-standard')
 # prepare example data
 
 

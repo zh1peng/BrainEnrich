@@ -1,5 +1,6 @@
 [![R-4.4-build](https://github.com/zh1peng/BrainEnrich/actions/workflows/R-4.4-build.yml/badge.svg)](https://github.com/zh1peng/BrainEnrich/actions/workflows/R-4.4-build.yml)
 [![Codecov test coverage](https://codecov.io/gh/zh1peng/BrainEnrich/graph/badge.svg)](https://app.codecov.io/gh/zh1peng/BrainEnrich)
+[![R-CMD-check](https://github.com/zh1peng/BrainEnrich/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/zh1peng/BrainEnrich/actions/workflows/R-CMD-check.yaml)
 
 # BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment 🧠🧬
 
