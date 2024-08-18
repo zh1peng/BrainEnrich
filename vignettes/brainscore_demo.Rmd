@@ -102,7 +102,7 @@ gsScore.spin <- brainscore(
   minGSSize = 20,
   maxGSSize = 200,
   null_model = "spin_brain",
-  n_perm = 10,
+  n_perm = 5,
   perm_id = perm_id_dk_lh_5000
 )
 str(head(gsScore.spin, 5), 1)
@@ -121,7 +121,7 @@ gsScore.resample <- brainscore(
   minGSSize = 20,
   maxGSSize = 200,
   null_model = "resample_gene",
-  n_perm = 10
+  n_perm = 5
 )
 str(head(gsScore.resample, 5), 1)
 ```
