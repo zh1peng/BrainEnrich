@@ -39,4 +39,4 @@ Imports:
 Depends: 
     R (>= 4.0.0)
 LazyData: true
-URL: https://github.com/zh1peng/BrainEnrich
+URL: https://github.com/zh1peng/BrainEnrich, https://zh1peng.github.io/BrainEnrich/
