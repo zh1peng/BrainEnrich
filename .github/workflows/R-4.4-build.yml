@@ -59,6 +59,7 @@ jobs:
 
       - name: Check
         run: |
+           remotes::install_github("ggseg/ggseg")
            rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error")
         shell: Rscript {0}
 
