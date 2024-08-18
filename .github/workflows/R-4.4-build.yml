@@ -34,7 +34,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libudunits2-dev
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libudunits2-dev gdal-bin libgdal-dev libgeos-dev libproj-dev libxml2-dev libv8-dev
 
       - name: Set up R ${{ matrix.r-version }}
         uses: r-lib/actions/setup-r@v2
