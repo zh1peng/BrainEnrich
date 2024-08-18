@@ -68,7 +68,7 @@ resample_gene <- function(geneList.true, n_perm = 5000) {
 #' @references
 #' Wei, Y., de Lange, S. C., Pijnenburg, R., Scholtens, L. H., Ardesch, D. J., Watanabe, K., Posthuma, D., & van den Heuvel, M. P. (2022).
 #' Statistical testing in transcriptomic-neuroimaging studies: A how-to and evaluation of methods assessing spatial and gene specificity.
-#' Human Brain Mapping, 43(3), 885–901. \url{https://doi.org/10.1002/hbm.25711}
+#' Human Brain Mapping, 43(3), 885–901. \doi 10.1002/hbm.25711
 resample_geneSetList_matching_coexp <- function(gene_data, geneSetList, tol = 0.01, max_iter = 1000000, n_perm = 5000, n_cores = 1) {
   if (!ask_user_continue("Resampling gene sets with coexpression matched will take a long time.")) {
     cat("Operation aborted by the user.\n")
@@ -126,7 +126,7 @@ resample_geneSetList_matching_coexp <- function(gene_data, geneSetList, tol = 0.
 #' @references
 #' Wei, Y., de Lange, S. C., Pijnenburg, R., Scholtens, L. H., Ardesch, D. J., Watanabe, K., Posthuma, D., & van den Heuvel, M. P. (2022).
 #' Statistical testing in transcriptomic-neuroimaging studies: A how-to and evaluation of methods assessing spatial and gene specificity.
-#' Human Brain Mapping, 43(3), 885–901. \url{https://doi.org/10.1002/hbm.25711}
+#' Human Brain Mapping, 43(3), 885–901. \doi 10.1002/hbm.25711
 
 
 sample_gs_matching_coexp <- function(gs, coexp_matrix, tol = 0.01, max_iter = 1000000, n_target = 5000) {

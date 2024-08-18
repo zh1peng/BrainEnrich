@@ -74,7 +74,11 @@ devtools::build_vignettes()
 
 usethis::use_github_action("lint")
 
+
+usethis::gh_token_help()
 usethis::use_github_action()
+usethis::use_github_action('test-coverage')
+usethis::use_pkgdown_github_pages()
 
 devtools::install_github("zh1peng/BrainEnrich")
 
