@@ -234,8 +234,10 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
 #' @export
 aggregate_geneSetList <- function(geneList, geneSetList, method, n_cores = 1) {
   # Determine the number of cores to use
-  if (n_cores == 0 | n_cores > detectCores() - 1) {
-    n_cores <- detectCores() - 1
+  if (n_cores == 0) {
+    n_cores <- max(detectCores() - 1, 1)  # Use all cores minus one, but ensure at least 1 core is used
+  } else {
+    n_cores <- min(n_cores, detectCores())  # Ensure n_cores does not exceed the number of available cores
   }
 
   # Initialize a cluster of workers
@@ -290,9 +292,12 @@ aggregate_geneSetList_matching_coexp <- function(geneList.true,
     stop("geneSetList and sampled_geneSetList are not matched.")
   }
 
+
   # Determine the number of cores to use
-  if (n_cores == 0 | n_cores > detectCores() - 1) {
-    n_cores <- detectCores() - 1
+  if (n_cores == 0) {
+    n_cores <- max(detectCores() - 1, 1)  # Use all cores minus one, but ensure at least 1 core is used
+  } else {
+    n_cores <- min(n_cores, detectCores())  # Ensure n_cores does not exceed the number of available cores
   }
 
 
