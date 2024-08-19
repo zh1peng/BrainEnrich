@@ -101,7 +101,11 @@ brainscore <- function(brain_data,
       null_brain_data <- brain_data[perm_id[, idx], , drop = FALSE]
       rownames(null_brain_data) <- rownames(brain_data)
       geneList.null <- corr_brain_gene(gene_data = gene_data, brain_data = null_brain_data, method = cor_method)
-      gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
+      if (verbose == FALSE) {
+        gs_score.null <- suppressMessages(aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores))
+      } else {
+        gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
+      }
       return(gs_score.null)
     })
   } else if (null_model == "resample_gene") {
@@ -117,7 +121,11 @@ brainscore <- function(brain_data,
       }
       geneList.null <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
       rownames(geneList.null) <- rownames(geneList)
-      gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
+      if (verbose == FALSE) {
+          gs_score.null <- suppressMessages(aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores))
+        } else {
+          gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
+        }
       return(gs_score.null)
     })
   } else if (null_model == "coexp_matched") {
