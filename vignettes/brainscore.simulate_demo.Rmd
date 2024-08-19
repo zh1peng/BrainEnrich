@@ -1,6 +1,7 @@
 ---
 title: "Simulation analysis of brainscore"
 output: rmarkdown::html_vignette
+  mathjax: "default"
 vignette: >
   %\VignetteIndexEntry{Simulation analysis of brainscore}
   %\VignetteEngine{knitr::rmarkdown}
