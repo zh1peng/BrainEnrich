@@ -1,8 +1,8 @@
 ---
-title: "How to prepare annoDat for the analysis"
+title: "How to prepare gene sets (annoDat) for the analysis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{prepare_annoDat}
+  %\VignetteIndexEntry{How to prepare gene sets (annoDat) for the analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

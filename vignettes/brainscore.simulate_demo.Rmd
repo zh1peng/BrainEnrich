@@ -2,7 +2,7 @@
 title: "Simulation analysis of brainscore"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{brainenrich}
+  %\VignetteIndexEntry{Simulation analysis of brainscore}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

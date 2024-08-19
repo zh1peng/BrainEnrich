@@ -1,8 +1,8 @@
 ---
-title: "Enrichment analysis of derived group-level statistics"
+title: "Enrichment analysis of group-level IDPs"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{brainenrich}
+  %\VignetteIndexEntry{Enrichment analysis of group-level IDPs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
