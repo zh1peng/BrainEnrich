@@ -83,8 +83,24 @@ get_geneExp <- function(atlas = c("desikan", "schaefer100", "schaefer200", "scha
 
 
   # Read the CSV file
-  gene.df <- read.csv_bzip2(GeneExpCSV, stringsAsFactors = FALSE, check.names = FALSE)
+  message('Reading gene expression data...')
 
+  gene.df <- tryCatch({
+  # Attempt to read the CSV file
+  read.csv_bzip2(GeneExpCSV, stringsAsFactors = FALSE, check.names = FALSE)
+}, error = function(e) {
+  # If an error occurs (e.g., file is corrupted), handle it here
+  message("Error reading the compressed CSV file: ", conditionMessage(e))
+  message("The file might be incomplete or corrupted. Removing the file.")
+  
+  # Attempt to remove the corrupted file
+  if (file.exists(GeneExpCSV)) {
+    file.remove(GeneExpCSV)
+  }
+  
+  # Stop execution and raise an error
+  stop("Failed to read the CSV file. The file has been removed. Please try again.")
+})
   # Filter based on hemisphere
   if (hem %in% c("L", "R")) {
     gene.df <- dplyr::filter(gene.df, grepl(search_pattern, .data$Region))

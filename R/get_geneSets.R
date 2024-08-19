@@ -102,7 +102,7 @@ get_annoData <- function(type = c(
     file.remove(GeneSetsRDS)
   }
   # Stop execution and raise an error
-  stop("Failed to read the RDS file. The file has been removed. Please try loading again.")
+  stop("Failed to read the RDS file. The file has been removed. Please try again.")
 })
 
   return(annoData)
