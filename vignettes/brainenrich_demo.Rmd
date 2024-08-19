@@ -1,7 +1,6 @@
 ---
 title: "Enrichment analysis of group-level IDPs"
 output: rmarkdown::html_vignette
-  mathjax: "default"
 vignette: >
   %\VignetteIndexEntry{Enrichment analysis of group-level IDPs}
   %\VignetteEngine{knitr::rmarkdown}

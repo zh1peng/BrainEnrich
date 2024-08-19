@@ -1,7 +1,6 @@
 ---
 title: "How to prepare gene sets (annoDat) for the analysis"
 output: rmarkdown::html_vignette
-  mathjax: "default"
 vignette: >
   %\VignetteIndexEntry{How to prepare gene sets (annoDat) for the analysis}
   %\VignetteEngine{knitr::rmarkdown}
