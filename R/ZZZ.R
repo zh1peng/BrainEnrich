@@ -1,6 +1,6 @@
-.onLoad <- function(libname, pkgname) {
-  ensure_bioc_packages()
-}
+# .onLoad <- function(libname, pkgname) {
+#   ensure_bioc_packages()
+# }
 
 
 .onAttach <- function(libname, pkgname) {
@@ -18,16 +18,16 @@
 }
 
 
-# Ensure Bioconductor Dependencies are Installed
-#' @importFrom utils install.packages
-ensure_bioc_packages <- function() {
-  if (!requireNamespace("BiocManager", quietly = TRUE)) {
-    install.packages("BiocManager")
-  }
-  bioc_packages <- c("DOSE")
-  for (pkg in bioc_packages) {
-    if (!requireNamespace(pkg, quietly = TRUE)) {
-      BiocManager::install(pkg)
-    }
-  }
-}
+# # Ensure Bioconductor Dependencies are Installed
+# #' @importFrom utils install.packages
+# ensure_bioc_packages <- function() {
+#   if (!requireNamespace("BiocManager", quietly = TRUE)) {
+#     install.packages("BiocManager")
+#   }
+#   bioc_packages <- c("DOSE")
+#   for (pkg in bioc_packages) {
+#     if (!requireNamespace(pkg, quietly = TRUE)) {
+#       BiocManager::install(pkg)
+#     }
+#   }
+# }
