@@ -63,7 +63,8 @@ brainscore.simulate <- function(pred_df,
       null_model = "none",
       minGSSize = minGSSize,
       maxGSSize = maxGSSize,
-      n_cores = n_cores
+      n_cores = n_cores,
+      verbose = FALSE
     )
     dependent_df <- data.frame(gsScore, check.names = FALSE)
 
