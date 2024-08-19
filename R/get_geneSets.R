@@ -155,43 +155,43 @@ filter_geneSetList <- function(bg_genes, geneSetList, minGSSize, maxGSSize) {
 
 #' Split Annotation Data
 #'
-#' This function extracts and reconstructs the `path2gene` and `path2name` data frames 
-#' from an annotation environment created by the `build_Anno` function. It retrieves 
-#' and organizes pathway IDs and associated gene IDs, as well as pathway names, into 
+#' This function extracts and reconstructs the `path2gene` and `path2name` data frames
+#' from an annotation environment created by the `build_Anno` function. It retrieves
+#' and organizes pathway IDs and associated gene IDs, as well as pathway names, into
 #' two separate data frames.
 #'
-#' @param Anno_clusterProfiler_Env An environment containing annotation data, including 
+#' @param Anno_clusterProfiler_Env An environment containing annotation data, including
 #'        `PATHID2EXTID` and `PATHID2NAME`, created by the `build_Anno` function.
 #' @importFrom utils stack
 #' @return A list with two components:
 #' \describe{
-#'   \item{path2gene}{A data frame with two columns: `pathID` and `geneID`, representing 
+#'   \item{path2gene}{A data frame with two columns: `pathID` and `geneID`, representing
 #'   the relationship between pathway IDs and gene IDs.}
-#'   \item{path2name}{A data frame with two columns: `pathID` and `pathName`, representing 
-#'   the mapping between pathway IDs and their corresponding names. If `PATHID2NAME` is not 
+#'   \item{path2name}{A data frame with two columns: `pathID` and `pathName`, representing
+#'   the mapping between pathway IDs and their corresponding names. If `PATHID2NAME` is not
 #'   present in the environment, this component will be `NULL`.}
 #' }
 #' @export
 split_Anno <- function(Anno_clusterProfiler_Env) {
-    if (!exists("PATHID2EXTID", envir = Anno_clusterProfiler_Env) ||
-        !exists("EXTID2PATHID", envir = Anno_clusterProfiler_Env)) {
-        stop("The environment does not contain the required objects.")
-    }
-    PATHID2EXTID <- get("PATHID2EXTID", envir = Anno_clusterProfiler_Env)
-    PATHID2NAME <- get("PATHID2NAME", envir = Anno_clusterProfiler_Env, inherits = TRUE)
-    
-    # Reconstruct path2gene from PATHID2EXTID
-    path2gene <- stack(PATHID2EXTID)
-    path2gene <- path2gene[, c(2, 1)]
-    colnames(path2gene) <- c("pathID", "geneID")
+  if (!exists("PATHID2EXTID", envir = Anno_clusterProfiler_Env) ||
+    !exists("EXTID2PATHID", envir = Anno_clusterProfiler_Env)) {
+    stop("The environment does not contain the required objects.")
+  }
+  PATHID2EXTID <- get("PATHID2EXTID", envir = Anno_clusterProfiler_Env)
+  PATHID2NAME <- get("PATHID2NAME", envir = Anno_clusterProfiler_Env, inherits = TRUE)
 
-    # Reconstruct path2name from PATHID2NAME
-    if (!is.null(PATHID2NAME)) {
-        path2name <- stack(PATHID2NAME)
-        path2name <- path2name[, c(2, 1)]
-        colnames(path2name) <- c("pathID", "pathName")
-    } else {
-        path2name <- NULL
-    }
-    return(list(path2gene = path2gene, path2name = path2name))
+  # Reconstruct path2gene from PATHID2EXTID
+  path2gene <- stack(PATHID2EXTID)
+  path2gene <- path2gene[, c(2, 1)]
+  colnames(path2gene) <- c("pathID", "geneID")
+
+  # Reconstruct path2name from PATHID2NAME
+  if (!is.null(PATHID2NAME)) {
+    path2name <- stack(PATHID2NAME)
+    path2name <- path2name[, c(2, 1)]
+    colnames(path2name) <- c("pathID", "pathName")
+  } else {
+    path2name <- NULL
+  }
+  return(list(path2gene = path2gene, path2name = path2name))
 }
