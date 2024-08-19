@@ -54,6 +54,7 @@ brainscore.simulate <- function(pred_df,
 
   if (sim_type == "randomize_pred") {
     pred_df.sim <- pred_df
+    message("=========Preparing true scores =========")
     gsScore <- brainscore(
       brain_data = brain_data,
       gene_data = gene_data,
@@ -103,6 +104,7 @@ brainscore.simulate <- function(pred_df,
     if (dim(perm_id)[2] < sim_n) {
       stop("The number of simulation must be less than or equal to the number of columns in 'perm_id'.")
     }
+    message(paste("=========Preparing the null scores of the spin_brain mode:", n_perm, "========="))
     # To boost efficiency we can put this part outside the sim loop
     gsScoreList.null <- brainscore(
       brain_data = brain_data,
@@ -229,6 +231,8 @@ brainscore.simulate <- function(pred_df,
     geneList <- corr_brain_gene(gene_data = gene_data, brain_data = brain_data, method = cor_method)
     geneSetList <- get_geneSetList(annoData)
     selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
+    
+    message(paste("=========Preparing the null scores of the resample_gene mode:", n_perm, "========="))
     gsScoreList.null <- brainscore(
       brain_data = brain_data,
       gene_data = gene_data,
