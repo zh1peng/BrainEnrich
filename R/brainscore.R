@@ -154,5 +154,9 @@ brainscore <- function(brain_data,
     names(gs.score) <- paste0("null_", 1:n_perm)
   }
 
+  # Add attributes to geneList
+  attr(gs.score, "type") <- null_model
+  attr(gs.score, "cor_method") <- cor_method
+  attr(gs.score, "aggre_method") <- aggre_method
   return(gs.score)
 }
