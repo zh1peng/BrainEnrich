@@ -89,21 +89,24 @@ get_annoData <- function(type = c(
   }
 
   message("Loading annotation data...")
-  annoData <- tryCatch({
-  # Attempt to read the RDS file
-  readRDS(GeneSetsRDS)
-}, error = function(e) {
-  # If an error occurs (e.g., file is corrupted), handle it here
-  message("Error reading the RDS file: ", conditionMessage(e))
-  message("The file might be incomplete or corrupted. Removing the file.")
-  
-  # Attempt to remove the corrupted file
-  if (file.exists(GeneSetsRDS)) {
-    file.remove(GeneSetsRDS)
-  }
-  # Stop execution and raise an error
-  stop("Failed to read the RDS file. The file has been removed. Please try again.")
-})
+  annoData <- tryCatch(
+    {
+      # Attempt to read the RDS file
+      readRDS(GeneSetsRDS)
+    },
+    error = function(e) {
+      # If an error occurs (e.g., file is corrupted), handle it here
+      message("Error reading the RDS file: ", conditionMessage(e))
+      message("The file might be incomplete or corrupted. Removing the file.")
+
+      # Attempt to remove the corrupted file
+      if (file.exists(GeneSetsRDS)) {
+        file.remove(GeneSetsRDS)
+      }
+      # Stop execution and raise an error
+      stop("Failed to read the RDS file. The file has been removed. Please try again.")
+    }
+  )
 
   return(annoData)
 }

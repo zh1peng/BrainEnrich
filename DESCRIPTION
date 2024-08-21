@@ -31,7 +31,6 @@ Imports:
     ggseg,
     parameters,
     pls,
-    BiocManager,
     methods,
     stats,
     data.table,

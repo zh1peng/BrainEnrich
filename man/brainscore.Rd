@@ -15,7 +15,7 @@ brainscore(
   minGSSize = 10,
   maxGSSize = 200,
   n_cores = 0,
-  n_perm = 5000,
+  n_perm = NULL,
   perm_id = NULL,
   coord.l = NULL,
   coord.r = NULL,
@@ -44,7 +44,7 @@ brainscore(
 
 \item{n_cores}{An integer specifying the number of cores to use for parallel processing. Default is 0 (no parallel processing).}
 
-\item{n_perm}{An integer specifying the number of permutations for null models. Default is 5000.}
+\item{n_perm}{An integer specifying the number of permutations for null models. Default is NULL (for "none" type).}
 
 \item{perm_id}{A matrix of permutation indices for 'spin_brain' null model. Default is NULL. Either perm_id or any of coord.l or coord.r must be provided if choosing spin_brain mode.}
 

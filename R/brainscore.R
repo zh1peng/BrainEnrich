@@ -40,7 +40,6 @@ brainscore <- function(brain_data,
                        matchcoexp_tol = 0.05,
                        matchcoexp_max_iter = 1000000,
                        verbose = TRUE) {
-  
   # Check inputs
   stopifnot(is.environment(annoData))
   stopifnot(identical(rownames(gene_data), rownames(brain_data)))
@@ -59,7 +58,7 @@ brainscore <- function(brain_data,
     perm_id <- perm_id[, 1:n_perm]
   }
 
-  if (null_model == 'none'){
+  if (null_model == "none") {
     n_perm <- NULL
   }
 
@@ -81,7 +80,7 @@ brainscore <- function(brain_data,
     message("Filtering gene set list...")
   }
   selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
-  
+
   if (verbose) {
     message("Number of gene sets left: ", length(selected.gs))
   }
@@ -99,7 +98,6 @@ brainscore <- function(brain_data,
       message("Aggregating gene set scores...")
     }
     gs.score <- aggregate_geneSetList(geneList, selected.gs, method = aggre_method, n_cores = n_cores)
-  
   } else if (null_model == "spin_brain") {
     if (verbose) {
       message("Generating null brain data with spin_brain model...")
@@ -121,12 +119,11 @@ brainscore <- function(brain_data,
       null_brain_data <- brain_data[perm_id[, idx], , drop = FALSE]
       rownames(null_brain_data) <- rownames(brain_data)
       geneList.null <- corr_brain_gene(gene_data = gene_data, brain_data = null_brain_data, method = cor_method)
-      gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method,n_cores = 1)
+      gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = 1)
       return(gs_score.null)
     }, cl = cl)
 
     if (!is.null(cl)) stopCluster(cl)
-
   } else if (null_model == "resample_gene") {
     if (verbose) {
       message("Aggregating gene set scores in resample_gene mode...")
@@ -146,7 +143,6 @@ brainscore <- function(brain_data,
     }, cl = cl)
 
     if (!is.null(cl)) stopCluster(cl)
-
   } else if (null_model == "coexp_matched") {
     if (verbose) {
       message("Generating null gene list with coexp_matched model...")

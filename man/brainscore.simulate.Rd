@@ -10,6 +10,7 @@ brainscore.simulate(
   brain_data,
   gene_data,
   annoData,
+  gsScoreList.null = NULL,
   sim_n = 1000,
   subsample_size = 100,
   sim_type = c("randomize_pred", "spin_brain", "resample_gene"),
@@ -19,8 +20,8 @@ brainscore.simulate(
   minGSSize = 10,
   maxGSSize = 200,
   n_cores = 0,
-  n_perm = 5000,
-  perm_id = NULL
+  perm_id = NULL,
+  n_perm = 1000
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ brainscore.simulate(
 \item{gene_data}{Data frame of gene expression data.}
 
 \item{annoData}{Environment containing annotation data.}
+
+\item{gsScoreList.null}{Precomputed list of gene set scores for the null model by brainscore/brainscore.hpc function. Default is NULL.}
 
 \item{sim_n}{Integer specifying the number of simulations. Default is 1000.}
 
@@ -54,9 +57,9 @@ Other options include 'median', 'meanabs', 'meansqr', 'maxmean',
 
 \item{n_cores}{Integer specifying the number of cores to use for parallel processing. Default is 0.}
 
-\item{n_perm}{Integer specifying the number of permutations. Default is 5000.}
-
 \item{perm_id}{Optional permutation ID.}
+
+\item{n_perm}{Integer specifying the number of permutations. Default is 5000.}
 }
 \value{
 A list of data frames containing the results of the simulations.

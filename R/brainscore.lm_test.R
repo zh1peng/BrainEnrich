@@ -51,7 +51,7 @@ brainscore.lm_test <- function(pred_df,
                                  "mean", "median", "meanabs", "meansqr", "maxmean",
                                  "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"
                                ),
-                               null_model = c("spin_brain", "resample_gene", "coexp_matched"), 
+                               null_model = c("spin_brain", "resample_gene", "coexp_matched"),
                                minGSSize = 10,
                                maxGSSize = 200,
                                n_cores = 0,
@@ -63,7 +63,7 @@ brainscore.lm_test <- function(pred_df,
                                threshold_type = c("sd", "percentile", "none"),
                                threshold_value = 1,
                                pvalueCutoff = 0.05,
-                               pAdjustMethod = c("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none"),
+                               pAdjustMethod = c("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none"),
                                matchcoexp_tol = 0.05,
                                matchcoexp_max_iter = 1000000,
                                gsea_obj = TRUE) {
@@ -119,16 +119,15 @@ brainscore.lm_test <- function(pred_df,
     aggre_method.precomp <- attr(gsScoreList.null, "aggre_method")
     minGSSize.precomp <- attr(gsScoreList.null, "minGSSize")
     maxGSSize.precomp <- attr(gsScoreList.null, "maxGSSize")
-    n_perm.precomp <- attr(gsScoreList.null, "n_perm") 
+    n_perm.precomp <- attr(gsScoreList.null, "n_perm")
 
     # Check all attributes at once
     if (!(identical(null_model.precomp, null_model) &&
-          identical(cor_method.precomp, cor_method) &&
-          identical(aggre_method.precomp, aggre_method) &&
-          identical(minGSSize.precomp, minGSSize) &&
-          identical(maxGSSize.precomp, maxGSSize) &&
-          identical(n_perm.precomp, n_perm))) {
-      
+      identical(cor_method.precomp, cor_method) &&
+      identical(aggre_method.precomp, aggre_method) &&
+      identical(minGSSize.precomp, minGSSize) &&
+      identical(maxGSSize.precomp, maxGSSize) &&
+      identical(n_perm.precomp, n_perm))) {
       message("Mismatches found between precomputed attributes and input variables.")
       message("Please check the following variables: null_model, cor_method, aggre_method, minGSSize, maxGSSize, n_perm.")
       stop("Please review the mismatches above.")
@@ -143,7 +142,7 @@ brainscore.lm_test <- function(pred_df,
     stat.tmp[[i]] <- simple_lm(
       dependent_df = dependent_df.null,
       pred_df = pred_df,
-      cov_df = cov_df, 
+      cov_df = cov_df,
       stat2return = "tval_list"
     )
   }

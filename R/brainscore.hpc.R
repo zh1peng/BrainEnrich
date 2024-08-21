@@ -10,7 +10,6 @@
 #' @return A list containing the gene set scores for the specific permutations handled by this job.
 #' @export
 brainscore.hpc <- function(job_id, perm_total, perm_id = NULL, output_dir = NULL, ...) {
-
   # Check if output_dir is provided and create if it doesn't exist
   if (is.null(output_dir)) {
     stop("output_dir must be specified.")
@@ -44,5 +43,3 @@ brainscore.hpc <- function(job_id, perm_total, perm_id = NULL, output_dir = NULL
   # Save results to a file in the specified output directory
   saveRDS(gs.score, file = file.path(output_dir, sprintf("brainscore_results_job_%d.rds", job_id)))
 }
-
-

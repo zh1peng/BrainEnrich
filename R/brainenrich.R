@@ -59,7 +59,7 @@ brainenrich <- function(brain_data,
                         threshold_type = c("sd", "percentile", "none"),
                         threshold_value = 1,
                         pvalueCutoff = 0.05,
-                        pAdjustMethod = c("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none"),
+                        pAdjustMethod = c("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none"),
                         matchcoexp_tol = 0.05,
                         matchcoexp_max_iter = 1000000) {
   # Check inputs

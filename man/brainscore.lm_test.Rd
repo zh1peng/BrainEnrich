@@ -10,6 +10,7 @@ brainscore.lm_test(
   brain_data,
   gene_data,
   annoData,
+  gsScoreList.null = NULL,
   cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
   aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig",
     "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
@@ -25,7 +26,8 @@ brainscore.lm_test(
   threshold_type = c("sd", "percentile", "none"),
   threshold_value = 1,
   pvalueCutoff = 0.05,
-  pAdjustMethod = "fdr",
+  pAdjustMethod = c("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",
+    "none"),
   matchcoexp_tol = 0.05,
   matchcoexp_max_iter = 1e+06,
   gsea_obj = TRUE
@@ -41,6 +43,8 @@ brainscore.lm_test(
 \item{gene_data}{Data frame of gene expression data.}
 
 \item{annoData}{Environment containing annotation data.}
+
+\item{gsScoreList.null}{Precomputed list of gene set scores for the null model by brainscore/brainscore.hpc function. Default is NULL.}
 
 \item{cor_method}{Character string specifying the correlation method. Default is 'pearson'.
 Other options include 'spearman', 'pls1c', 'pls1w', 'custom'.}
@@ -75,13 +79,13 @@ Other options include 'percentile'.}
 
 \item{pvalueCutoff}{Numeric value specifying the p-value cutoff for significant results. Default is 0.05.}
 
-\item{pAdjustMethod}{Character string specifying the method for p-value adjustment. Default is 'fdr'.}
+\item{pAdjustMethod}{Character string specifying the method ("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "none") for p-value adjustment. Default is 'fdr'. see p.adjust for more details.}
 
 \item{matchcoexp_tol}{Numeric value specifying the tolerance for matched coexpression. Default is 0.05.}
 
 \item{matchcoexp_max_iter}{Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.}
 
-\item{gsea_obj}{Logical specifying whether to return a GSEA object otherwise only a table will be return. Default is TRUE.}
+\item{gsea_obj}{Logical specifying whether to return a GSEA object otherwise only a table will be returned. Default is TRUE.}
 }
 \value{
 A data frame containing the results of the linear model test, including p-values, adjusted p-values,

@@ -243,11 +243,11 @@ aggregate_geneSetList <- function(geneList, geneSetList, method, n_cores = 1) {
   if (n_cores == 1) {
     cl <- NULL
   } else {
-  cl <- makeCluster(n_cores)
-  # Export necessary variables to the cluster
-  clusterExport(cl, c("geneList", "aggregate_geneSet", "geneSetList", "method"),
-    envir = environment()
-  )
+    cl <- makeCluster(n_cores)
+    # Export necessary variables to the cluster
+    clusterExport(cl, c("geneList", "aggregate_geneSet", "geneSetList", "method"),
+      envir = environment()
+    )
   }
   # Parallelize the processing using pblapply for progress bar
   allgs.scores <- pblapply(seq_along(geneSetList), function(i) {
