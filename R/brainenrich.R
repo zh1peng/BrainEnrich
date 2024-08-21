@@ -20,7 +20,7 @@
 #' @param coord.l A matrix of left hemisphere coordinates. Default is NULL.
 #' @param coord.r A matrix of right hemisphere coordinates. Default is NULL.
 #' @param seed An integer specifying the seed for reproducibility of spinning brain. Default is NULL.
-#' @param n_cores An integer specifying the number of cores to use. Default is 0.
+#' @param n_cores An integer specifying the number of cores to use. Default is 0 (use all cores - 1).
 #' @param minGSSize An integer specifying the minimum gene set size. Default is 10.
 #' @param maxGSSize An integer specifying the maximum gene set size. Default is 200.
 #' @param threshold_type A character string specifying the threshold type for core genes.
@@ -87,6 +87,7 @@ brainenrich <- function(brain_data,
   aggre_method <- match.arg(aggre_method)
   null_model <- match.arg(null_model)
   threshold_type <- match.arg(threshold_type)
+  pAdjustMethod <- match.arg(pAdjustMethod)
 
   # Perform analysis
   message("Calculating true gene-brain correlations...")

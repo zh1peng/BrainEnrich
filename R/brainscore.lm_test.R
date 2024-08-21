@@ -72,6 +72,7 @@ brainscore.lm_test <- function(pred_df,
   aggre_method <- match.arg(aggre_method)
   null_model <- match.arg(null_model)
   threshold_type <- match.arg(threshold_type)
+  pAdjustMethod <- match.arg(pAdjustMethod)
 
   message("=========Empirical model======")
   # Generate true gene set scores

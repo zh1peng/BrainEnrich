@@ -20,7 +20,7 @@
 #'                     'ks_orig', 'ks_weighted', 'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.
 #' @param minGSSize Integer specifying the minimum gene set size. Default is 10.
 #' @param maxGSSize Integer specifying the maximum gene set size. Default is 200.
-#' @param n_cores Integer specifying the number of cores to use for parallel processing. Default is 0.
+#' @param n_cores Integer specifying the number of cores to use for parallel processing. Default is 0 (use all cores -1).
 #' @param n_perm Integer specifying the number of permutations. Default is 5000.
 #' @param perm_id Optional permutation ID.
 #' @importFrom dplyr case_when select rename %>%
@@ -82,7 +82,7 @@ brainscore.simulate <- function(pred_df,
     if (!is.null(cl)) {
       clusterExport(cl, c("subsample_size", "pred_df", "dependent_df", "cov_df", "simple_lm", "sim_n"), envir = environment())
     }
-
+    message("Simulation with randomize_pred model...")
     results_list <- pblapply(1:sim_n, function(sim_i) {
       pred_df.sim[[1]] <- sample(pred_df[[1]])
       sim_results <- list()
@@ -128,7 +128,7 @@ brainscore.simulate <- function(pred_df,
     # To boost efficiency we can put this part outside the sim loop
 
     if (is.null(gsScoreList.null)) {
-      warning("gsScoreList.null is NULL. Running brainscore to compute null model. This may take long time!")
+      message("gsScoreList.null is NULL. Running brainscore to compute null model. This may take long time!")
       gsScoreList.null <- brainscore(
         brain_data = brain_data,
         gene_data = gene_data,
@@ -166,6 +166,7 @@ brainscore.simulate <- function(pred_df,
       }
     }
 
+    message("Simulation with spin_brain model...")
     if (n_cores == 0) {
       n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
     } else {
@@ -180,7 +181,6 @@ brainscore.simulate <- function(pred_df,
         "pred_df", "cov_df", "simple_lm", "brainscore"
       ), envir = environment())
     }
-
     results_list <- pblapply(1:sim_n, function(sim_i) {
       sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
       rownames(sim.brain_data) <- rownames(brain_data)
@@ -290,7 +290,7 @@ brainscore.simulate <- function(pred_df,
     selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
 
     if (is.null(gsScoreList.null)) {
-      warning("gsScoreList.null is NULL. Running brainscore to compute null model. This may take long time!")
+      message("gsScoreList.null is NULL. Running brainscore to compute null model. This may take long time!")
       gsScoreList.null <- brainscore(
         brain_data = brain_data,
         gene_data = gene_data,
@@ -326,7 +326,7 @@ brainscore.simulate <- function(pred_df,
         message("Using precomputed gsScoreList.null.")
       }
     }
-
+    message("Simulation with spin_brain model...")
     if (n_cores == 0) {
       n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
     } else {
@@ -427,6 +427,6 @@ brainscore.simulate <- function(pred_df,
   }
 
   if (!is.null(cl)) stopCluster(cl)
-
+ message("Simulation completed.")
   return(results_list)
 }

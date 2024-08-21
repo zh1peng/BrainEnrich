@@ -52,13 +52,13 @@ gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 str(gene_data)
 ```
 
-### 1.4. Load GO MF for the Analysis
+### 1.4. Load SynGO for the Analysis
 We will load GO MF terms that will be used in the enrichment analysis. This data represents gene sets associated with various molecular functions.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-annoData <- get_annoData(type = "GO_MF")
+annoData <- get_annoData(type = "SynGO")
 geneSetList <- get_geneSetList(annoData)
 length(geneSetList)
-print(sprintf("Number of MF terms: %d", length(geneSetList)))
+print(sprintf("Number of SynGO terms: %d", length(geneSetList)))
 ```
 
 #### Filter the geneSetList (not required for the analysis)
@@ -152,6 +152,31 @@ res <- brainscore.lm_test(
 res.df <- as.data.frame(res)
 ```
 For demonstration purposes, we only performed 10 permutations and set minGSSize to 50. In practice, you may need to perform more permutations (e.g., 5000) for a more reliable p-value.
+
+
+### 2.5. Perform linear regression between the gsScore and the brain data using precomputed null scores
+As an alternative to the previous step, you can use precomputed null scores to perform linear regression tests between the gsScore and the brain data.
+Generating null brain scores can be time consuming, especially when the number of permutations is high. Therefore, we recommend using precomputed null scores for the analysis.
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+res1 <- brainscore.lm_test(
+  pred_df = pred_df,
+  cov_df = cov_df,
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  gsScoreList.null = gsScore.spin,
+  cor_method = "pearson",
+  aggre_method = "mean",
+  n_cores = 0,
+  minGSSize = 20,
+  maxGSSize = 200,
+  null_model = "spin_brain",
+  n_perm = 5,
+  pvalueCutoff = 0.8
+)
+```
+The attribute of the gsScoreList.null should be the same as your input of the function for these variables:
+cor_method, aggre_method, minGSSize, maxGSSize, null_model, n_perm, if not, that means the gsScoreList.null is not usable for the currrent setup.
 
 ## 3. Visualization
 This section covers the visualization of the results.

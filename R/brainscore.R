@@ -10,7 +10,7 @@
 #' @param null_model A character string specifying the null model. Default is 'none'. Other options include 'spin_brain', 'resample_gene', 'coexp_matched'.
 #' @param minGSSize An integer specifying the minimum gene set size. Default is 10.
 #' @param maxGSSize An integer specifying the maximum gene set size. Default is 200.
-#' @param n_cores An integer specifying the number of cores to use for parallel processing. Default is 0 (no parallel processing).
+#' @param n_cores An integer specifying the number of cores to use for parallel processing for the permutation. Default is 0 (use all cores - 1).
 #' @param n_perm An integer specifying the number of permutations for null models. Default is NULL (for "none" type).
 #' @param perm_id A matrix of permutation indices for 'spin_brain' null model. Default is NULL. Either perm_id or any of coord.l or coord.r must be provided if choosing spin_brain mode.
 #' @param coord.l A matrix of coordinates for the left hemisphere for 'spin_brain' null model. Default is NULL.

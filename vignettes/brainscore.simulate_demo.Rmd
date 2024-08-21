@@ -120,7 +120,48 @@ str(res)
 The result is a list of lists, where each sublist contains the significance testing results for each iteration. There are results separately for (FDR or no-FDR, parametric or non-parametric). 1 denotes significant, 0 denotes non-significant.
 For demonstration purposes, we have used a small number of iterations (sim_n = 5), one subsample size (subsample_size = 100) and small permutation numer (n_perm=10). In practice, we recommend using a larger number of iterations (i.e. 1000), various subsample sizes (e.g., 50, 100, 150, 200) and more permutation times (e.g., perm_n=5000)for a more robust analysis.
 
-### 2.3. Simulation analysis with spin_brain (`sim_type ='resample_gene'`)
+### 2.3. Simulation analysis with spin_brain (`sim_type ='spin_brain'`) and pre-calculated null gsScore
+As generate the null gsScore is time-consuming, we can use the pre-calculated null gsScore to speed up the analysis.
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+# pre-calculate the null gsScore
+gsScore.spin_brain <- brainscore(
+            brain_data = brain_data,
+            gene_data = gene_data,
+            annoData = annoData,
+            null_model = "spin_brain",
+            n_perm = 10,
+            perm_id = perm_id_dk_lh_5000,
+            minGSSize = 20,
+            maxGSSize = 200
+)
+
+cov_df <- sample_df %>% dplyr::select(Age, Sex)
+pred_df <- sample_df %>% dplyr::select(BMI)
+res <- brainscore.simulate(
+  pred_df = pred_df,
+  cov_df = cov_df,
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  gsScoreList.null = gsScore.spin_brain,
+  sim_n = 5,
+  subsample_size = 100,
+  sim_type = "spin_brain",
+  cor_method = "pearson",
+  aggre_method = "mean",
+  n_perm = 10,
+  perm_id = perm_id_dk_lh_5000,
+  minGSSize = 20,
+  maxGSSize = 200
+)
+str(res)
+```
+To ensure that the gsScore.spin_brain was generated with the same parameters and can be used in the function,
+the attribute of gsScore.spin_brain should match the following argument of the brainscore.simulate: 
+cor_method, aggre_method, n_perm, perm_id, minGSSize, maxGSSize.
+
+
+### 2.5. Simulation analysis with resample_gene (`sim_type ='resample_gene'`)
 We simulate the gene sets by resampling genes and then calculate the gene set scores before correlating them with the predictor variable. Both parametric and non-parametric tests (based on resample_gene) are used.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 cov_df <- sample_df %>% dplyr::select(Age, Sex)
@@ -144,3 +185,38 @@ str(res)
 ```
 The result is a list of lists, where each sublist contains the significance testing results for each iteration. There are results separately for (FDR or no-FDR, parametric or non-parametric). 1 denotes significant, 0 denotes non-significant.
 For demonstration purposes, we have used a small number of iterations (sim_n = 5), one subsample size (subsample_size = 100) and small permutation numer (n_perm=10). In practice, we recommend using a larger number of iterations (i.e. 1000), various subsample sizes (e.g., 50, 100, 150, 200) and more permutation times (e.g., perm_n=5000)for a more robust analysis.
+
+
+### 2.6. Simulation analysis with resample_gene (`sim_type ='resample_gene'`) and pre-calculated null gsScore
+As generate the null gsScore is time-consuming, we can use the pre-calculated null gsScore to speed up the analysis.
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+# pre-calculate the null gsScore
+gsScore.resample_gene <- brainscore(
+            brain_data = brain_data,
+            gene_data = gene_data,
+            annoData = annoData,
+            null_model = "resample_gene",
+            n_perm = 10,
+            minGSSize = 20,
+            maxGSSize = 200
+)
+
+cov_df <- sample_df %>% dplyr::select(Age, Sex)
+pred_df <- sample_df %>% dplyr::select(BMI)
+res <- brainscore.simulate(
+  pred_df = pred_df,
+  cov_df = cov_df,
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  gsScoreList.null = gsScore.resample_gene,
+  sim_n = 5,
+  subsample_size = 100,
+  sim_type = "resample_gene",
+  cor_method = "pearson",
+  aggre_method = "mean",
+  n_perm = 10,
+  minGSSize = 20,
+  maxGSSize = 200
+)
+```
