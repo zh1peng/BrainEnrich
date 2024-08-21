@@ -8,6 +8,7 @@
 #' @param brain_data Data frame of brain imaging data.
 #' @param gene_data Data frame of gene expression data.
 #' @param annoData Environment containing annotation data.
+#' @param gsScoreList.null Precomputed list of gene set scores for the null model by brainscore/brainscore.hpc function. Default is NULL.
 #' @param cor_method Character string specifying the correlation method. Default is 'pearson'.
 #'                   Other options include 'spearman', 'pls1c', 'pls1w', 'custom'.
 #' @param aggre_method Character string specifying the aggregation method. Default is 'mean'.
@@ -27,10 +28,10 @@
 #'                       Other options include 'percentile'.
 #' @param threshold_value Numeric value specifying the threshold level. Default is 1.
 #' @param pvalueCutoff Numeric value specifying the p-value cutoff for significant results. Default is 0.05.
-#' @param pAdjustMethod Character string specifying the method for p-value adjustment. Default is 'fdr'.
+#' @param pAdjustMethod Character string specifying the method ("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "none") for p-value adjustment. Default is 'fdr'. see p.adjust for more details.
 #' @param matchcoexp_tol Numeric value specifying the tolerance for matched coexpression. Default is 0.05.
 #' @param matchcoexp_max_iter Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.
-#' @param gsea_obj Logical specifying whether to return a GSEA object otherwise only a table will be return. Default is TRUE.
+#' @param gsea_obj Logical specifying whether to return a GSEA object otherwise only a table will be returned. Default is TRUE.
 #' @importFrom stats p.adjust
 #' @importFrom utils getFromNamespace
 #' @importFrom purrr list_transpose
@@ -44,12 +45,13 @@ brainscore.lm_test <- function(pred_df,
                                brain_data,
                                gene_data,
                                annoData,
+                               gsScoreList.null = NULL,
                                cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
                                aggre_method = c(
                                  "mean", "median", "meanabs", "meansqr", "maxmean",
                                  "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"
                                ),
-                               null_model = c("spin_brain", "resample_gene", "coexp_matched"), # score in null setting?
+                               null_model = c("spin_brain", "resample_gene", "coexp_matched"), 
                                minGSSize = 10,
                                maxGSSize = 200,
                                n_cores = 0,
@@ -61,7 +63,7 @@ brainscore.lm_test <- function(pred_df,
                                threshold_type = c("sd", "percentile", "none"),
                                threshold_value = 1,
                                pvalueCutoff = 0.05,
-                               pAdjustMethod = "fdr",
+                               pAdjustMethod = c("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none"),
                                matchcoexp_tol = 0.05,
                                matchcoexp_max_iter = 1000000,
                                gsea_obj = TRUE) {
@@ -71,7 +73,7 @@ brainscore.lm_test <- function(pred_df,
   null_model <- match.arg(null_model)
   threshold_type <- match.arg(threshold_type)
 
-  message("=========Emprical model======")
+  message("=========Empirical model======")
   # Generate true gene set scores
   gsScore.true <- brainscore(
     brain_data = brain_data,
@@ -90,32 +92,59 @@ brainscore.lm_test <- function(pred_df,
 
   message("=========Null model======")
   # Generate null gene set scores
-  gsScoreList.null <- brainscore(
-    brain_data = brain_data,
-    gene_data = gene_data,
-    annoData = annoData,
-    cor_method = cor_method,
-    aggre_method = aggre_method,
-    null_model = null_model,
-    minGSSize = minGSSize,
-    maxGSSize = maxGSSize,
-    n_cores = n_cores,
-    n_perm = n_perm,
-    perm_id = perm_id,
-    coord.l = coord.l,
-    coord.r = coord.r,
-    seed = seed,
-    matchcoexp_tol = matchcoexp_tol,
-    matchcoexp_max_iter = matchcoexp_max_iter
-  )
+  if (is.null(gsScoreList.null)) {
+    message("Computing null model...")
+    gsScoreList.null <- brainscore(
+      brain_data = brain_data,
+      gene_data = gene_data,
+      annoData = annoData,
+      cor_method = cor_method,
+      aggre_method = aggre_method,
+      null_model = null_model,
+      minGSSize = minGSSize,
+      maxGSSize = maxGSSize,
+      n_cores = n_cores,
+      n_perm = n_perm,
+      perm_id = perm_id,
+      coord.l = coord.l,
+      coord.r = coord.r,
+      seed = seed,
+      matchcoexp_tol = matchcoexp_tol,
+      matchcoexp_max_iter = matchcoexp_max_iter
+    )
+  } else {
+    # Check attributes of the precomputed null model
+    null_model.precomp <- attr(gsScoreList.null, "null_model")
+    cor_method.precomp <- attr(gsScoreList.null, "cor_method")
+    aggre_method.precomp <- attr(gsScoreList.null, "aggre_method")
+    minGSSize.precomp <- attr(gsScoreList.null, "minGSSize")
+    maxGSSize.precomp <- attr(gsScoreList.null, "maxGSSize")
+    n_perm.precomp <- attr(gsScoreList.null, "n_perm") 
+
+    # Check all attributes at once
+    if (!(identical(null_model.precomp, null_model) &&
+          identical(cor_method.precomp, cor_method) &&
+          identical(aggre_method.precomp, aggre_method) &&
+          identical(minGSSize.precomp, minGSSize) &&
+          identical(maxGSSize.precomp, maxGSSize) &&
+          identical(n_perm.precomp, n_perm))) {
+      
+      message("Mismatches found between precomputed attributes and input variables.")
+      message("Please check the following variables: null_model, cor_method, aggre_method, minGSSize, maxGSSize, n_perm.")
+      stop("Please review the mismatches above.")
+    } else {
+      message("Using precomputed null model")
+    }
+  }
 
   stat.tmp <- list()
-  for (i in 1:length(gsScoreList.null)) {
+  for (i in seq_along(gsScoreList.null)) {
     dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
     stat.tmp[[i]] <- simple_lm(
       dependent_df = dependent_df.null,
       pred_df = pred_df,
-      cov_df = cov_df, stat2return = "tval_list"
+      cov_df = cov_df, 
+      stat2return = "tval_list"
     )
   }
   stat.null <- list_transpose(stat.tmp)
@@ -146,7 +175,6 @@ brainscore.lm_test <- function(pred_df,
     res$np.qval <- qvals
     res$null_model <- null_model
   }
-
 
   # Filter significant results
   message("Filtering significant results...")

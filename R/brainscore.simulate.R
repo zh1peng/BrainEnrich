@@ -8,6 +8,7 @@
 #' @param brain_data Data frame of brain imaging data.
 #' @param gene_data Data frame of gene expression data.
 #' @param annoData Environment containing annotation data.
+#' @param gsScoreList.null Precomputed list of gene set scores for the null model by brainscore/brainscore.hpc function. Default is NULL.
 #' @param sim_n Integer specifying the number of simulations. Default is 1000.
 #' @param subsample_size Integer or vector specifying the subsample sizes. Default is 100.
 #' @param sim_type Character string specifying the simulation type. Default is 'randomize_pred'.
@@ -31,6 +32,7 @@ brainscore.simulate <- function(pred_df,
                                 brain_data,
                                 gene_data,
                                 annoData,
+                                gsScoreList.null = NULL,
                                 sim_n = 1000,
                                 subsample_size = 100,
                                 sim_type = c("randomize_pred", "spin_brain", "resample_gene"),
@@ -42,19 +44,20 @@ brainscore.simulate <- function(pred_df,
                                 minGSSize = 10,
                                 maxGSSize = 200,
                                 n_cores = 0,
-                                n_perm = 5000,
-                                perm_id = NULL) {
+                                perm_id = NULL,
+                                n_perm=1000) {
   # Match arguments
   sim_type <- match.arg(sim_type)
   cor_method <- match.arg(cor_method)
   aggre_method <- match.arg(aggre_method)
 
-  # Initialize results list
-  results_list <- list()
+
+
+
 
   if (sim_type == "randomize_pred") {
+    message("Running randomize_pred simulation.")
     pred_df.sim <- pred_df
-    message("=========Preparing true scores =========")
     gsScore <- brainscore(
       brain_data = brain_data,
       gene_data = gene_data,
@@ -69,9 +72,20 @@ brainscore.simulate <- function(pred_df,
     )
     dependent_df <- data.frame(gsScore, check.names = FALSE)
 
-    for (sim_i in 1:sim_n) {
-      message(paste("=========Processing simulation:", sim_i, "/", sim_n, "========="))
+   if (n_cores == 0) {
+      n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
+    } else {
+      n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
+    }
+
+    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
+    if (!is.null(cl)) {
+      clusterExport(cl, c("subsample_size","pred_df","dependent_df","cov_df","simple_lm","sim_n"), envir = environment())
+    }
+
+    results_list <- pblapply(1:sim_n, function(sim_i) {
       pred_df.sim[[1]] <- sample(pred_df[[1]])
+      sim_results <- list()
       for (size_i in seq_along(subsample_size)) {
         size2use <- subsample_size[size_i]
         sampled_idx <- sample(1:nrow(dependent_df), size = size2use, replace = FALSE)
@@ -97,142 +111,189 @@ brainscore.simulate <- function(pred_df,
             !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
             !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig
           )
-        results_list[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
+        sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
-    }
+      return(sim_results)
+    }, cl = cl)
+    results_list <- do.call(c, results_list)
+
+
   } else if (sim_type == "spin_brain") {
+    message("Running spin_brain simulation.")
+    if (is.null(perm_id)) {
+      stop("Permutation ID must be provided for spin_brain simulation.")
+    }
     if (dim(perm_id)[2] < sim_n) {
       stop("The number of simulation must be less than or equal to the number of columns in 'perm_id'.")
     }
-    message(paste("=========Preparing the null scores of the spin_brain mode:", n_perm, "========="))
+    
     # To boost efficiency we can put this part outside the sim loop
-    gsScoreList.null <- brainscore(
-      brain_data = brain_data,
-      gene_data = gene_data,
-      annoData = annoData,
-      cor_method = cor_method,
-      aggre_method = aggre_method,
-      null_model = "spin_brain",
-      minGSSize = minGSSize,
-      maxGSSize = maxGSSize,
-      n_cores = n_cores,
-      n_perm = n_perm,
-      perm_id = perm_id,
-      verbose = FALSE
-    )
 
-
-    for (sim_i in 1:sim_n) {
-      message(paste("=========Processing simulation:", sim_i, "/", sim_n, "========="))
-      sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
-      rownames(sim.brain_data) <- rownames(brain_data)
-      gsScore.true <- brainscore(
-        brain_data = sim.brain_data,
+    if (is.null(gsScoreList.null)) {
+      warning("gsScoreList.null is NULL. Running brainscore to compute null model. This may take long time!")
+      gsScoreList.null <- brainscore(
+        brain_data = brain_data,
         gene_data = gene_data,
         annoData = annoData,
         cor_method = cor_method,
         aggre_method = aggre_method,
-        null_model = "none",
+        null_model = "spin_brain",
         minGSSize = minGSSize,
         maxGSSize = maxGSSize,
         n_cores = n_cores,
+        n_perm = n_perm,
+        perm_id = perm_id,
         verbose = FALSE
       )
-      dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
+    } else {
+    null_model.precomp <- attr(gsScoreList.null, "null_model")
+    cor_method.precomp <- attr(gsScoreList.null, "cor_method")
+    aggre_method.precomp <- attr(gsScoreList.null, "aggre_method")
+    minGSSize.precomp <- attr(gsScoreList.null, "minGSSize")
+    maxGSSize.precomp <- attr(gsScoreList.null, "maxGSSize")
+    n_perm.precomp <- attr(gsScoreList.null, "n_perm") 
 
-      ## to boost the efficiency we can put this part outside the sim loop, otherwise for each sim_i we will have to re-calculate the null model for n_perm times
-      # gsScoreList.null <- brainscore(
-      #   brain_data = sim.brain_data,
-      #   gene_data = gene_data,
-      #   annoData = annoData,
-      #   cor_method = cor_method,
-      #   aggre_method = aggre_method,
-      #   null_model = "spin_brain",
-      #   minGSSize = minGSSize,
-      #   maxGSSize = maxGSSize,
-      #   n_cores = n_cores,
-      #   n_perm = n_perm,
-      #   perm_id = perm_id
-      # )
-
-      for (size_i in seq_along(subsample_size)) {
-        size2use <- subsample_size[size_i]
-        sampled_idx <- sample(1:nrow(dependent_df.true), size = size2use, replace = FALSE)
-        res <- simple_lm(
-          dependent_df = dependent_df.true[sampled_idx, , drop = FALSE],
-          pred_df = pred_df[sampled_idx, , drop = FALSE],
-          cov_df = cov_df[sampled_idx, , drop = FALSE],
-          stat2return = "pval"
-        )
-
-        stat.true <- simple_lm(
-          dependent_df = dependent_df.true[sampled_idx, , drop = FALSE],
-          pred_df = pred_df[sampled_idx, , drop = FALSE],
-          cov_df = cov_df[sampled_idx, , drop = FALSE],
-          stat2return = "tval_list"
-        )
-        stat.tmp <- list()
-        for (i in 1:length(gsScoreList.null)) {
-          dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
-          stat.tmp[[i]] <- simple_lm(
-            dependent_df = dependent_df.null[sampled_idx, , drop = FALSE],
-            pred_df = pred_df[sampled_idx, , drop = FALSE],
-            cov_df = cov_df[sampled_idx, , drop = FALSE],
-            stat2return = "tval_list"
-          )
-        }
-        stat.null <- list_transpose(stat.tmp)
-        np_pval <- calculate_pvals(stat.true, stat.null, method = "standard")
-        np_p.adj <- p.adjust(np_pval, method = "fdr")
-
-        check_names <- all(
-          names(stat.true) == names(stat.null),
-          names(stat.null) == names(np_pval),
-          names(np_pval) == names(np_p.adj),
-          names(np_p.adj) == res$Dependent_vars
-        )
-        if (!check_names) {
-          stop("The names of the results are not consistent.")
-        } else {
-          res$p.adj <- p.adjust(res$pval, method = "fdr")
-          res$np_pval <- np_pval
-          res$np_p.adj <- np_p.adj
-        }
-        sampled_res <- res %>%
-          dplyr::mutate(
-            nofdr_ifsig = case_when(
-              .data$pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            fdr_ifsig = case_when(
-              .data$p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            np_nofdr_ifsig = case_when(
-              .data$np_pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            np_fdr_ifsig = case_when(
-              .data$np_p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            )
-          ) %>%
-          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
-          dplyr::rename(
-            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
-            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,
-            !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_nofdr_ifsig,
-            !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := .data$np_fdr_ifsig
-          )
-        results_list[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
-      }
+    # Check all attributes at once
+    if (!(identical(null_model.precomp, sim_type) &&
+          identical(cor_method.precomp, cor_method) &&
+          identical(aggre_method.precomp, aggre_method) &&
+          identical(minGSSize.precomp, minGSSize) &&
+          identical(maxGSSize.precomp, maxGSSize) &&
+          identical(n_perm.precomp, n_perm))) {
+      
+      message("Mismatches found between precomputed attributes and input variables.")
+      message("Please check the following variables: null_model, cor_method, aggre_method, minGSSize, maxGSSize, n_perm.")
+      stop("Please review the mismatches above.")
+    } else {
+      message("Using precomputed gsScoreList.null.")
     }
+
+    }
+    
+  if (n_cores == 0) {
+      n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
+    } else {
+      n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
+    }
+
+    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
+    if (!is.null(cl)) {
+      clusterExport(cl, c("sim_n","subsample_size","brain_data","gene_data","perm_id","annoData",
+      "cor_method","aggre_method","minGSSize","maxGSSize","gsScoreList.null",
+       "pred_df","cov_df","simple_lm","brainscore"), envir = environment())
+  }
+
+results_list <- pblapply(1:sim_n, function(sim_i) {
+  sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
+  rownames(sim.brain_data) <- rownames(brain_data)
+  
+  gsScore.true <- brainscore(
+    brain_data = sim.brain_data,
+    gene_data = gene_data,
+    annoData = annoData,
+    cor_method = cor_method,
+    aggre_method = aggre_method,
+    null_model = "none",
+    minGSSize = minGSSize,
+    maxGSSize = maxGSSize,
+    n_cores = 1, # use 1 core for this as it is already within a parallel loop
+    verbose = FALSE
+  )
+  
+  dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
+  
+  sim_results <- list()
+  
+  for (size_i in seq_along(subsample_size)) {
+    size2use <- subsample_size[size_i]
+    sampled_idx <- sample(1:nrow(dependent_df.true), size = size2use, replace = FALSE)
+    
+    res <- simple_lm(
+      dependent_df = dependent_df.true[sampled_idx, , drop = FALSE],
+      pred_df = pred_df[sampled_idx, , drop = FALSE],
+      cov_df = cov_df[sampled_idx, , drop = FALSE],
+      stat2return = "pval"
+    )
+    
+    stat.true <- simple_lm(
+      dependent_df = dependent_df.true[sampled_idx, , drop = FALSE],
+      pred_df = pred_df[sampled_idx, , drop = FALSE],
+      cov_df = cov_df[sampled_idx, , drop = FALSE],
+      stat2return = "tval_list"
+    )
+    
+    stat.tmp <- lapply(1:length(gsScoreList.null), function(i) {
+      dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
+      simple_lm(
+        dependent_df = dependent_df.null[sampled_idx, , drop = FALSE],
+        pred_df = pred_df[sampled_idx, , drop = FALSE],
+        cov_df = cov_df[sampled_idx, , drop = FALSE],
+        stat2return = "tval_list"
+      )
+    })
+    
+    stat.null <- list_transpose(stat.tmp)
+    np_pval <- calculate_pvals(stat.true, stat.null, method = "standard")
+    np_p.adj <- p.adjust(np_pval, method = "fdr")
+    
+    check_names <- all(
+      names(stat.true) == names(stat.null),
+      names(stat.null) == names(np_pval),
+      names(np_pval) == names(np_p.adj),
+      names(np_p.adj) == res$Dependent_vars
+    )
+    
+    if (!check_names) {
+      stop("The names of the results are not consistent.")
+    } else {
+      res$p.adj <- p.adjust(res$pval, method = "fdr")
+      res$np_pval <- np_pval
+      res$np_p.adj <- np_p.adj
+    }
+    
+    sampled_res <- res %>%
+      dplyr::mutate(
+        nofdr_ifsig = case_when(
+          .data$pval < 0.05 ~ 1,
+          TRUE ~ 0
+        ),
+        fdr_ifsig = case_when(
+          .data$p.adj < 0.05 ~ 1,
+          TRUE ~ 0
+        ),
+        np_nofdr_ifsig = case_when(
+          .data$np_pval < 0.05 ~ 1,
+          TRUE ~ 0
+        ),
+        np_fdr_ifsig = case_when(
+          .data$np_p.adj < 0.05 ~ 1,
+          TRUE ~ 0
+        )
+      ) %>%
+      dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
+      dplyr::rename(
+        !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
+        !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,
+        !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_nofdr_ifsig,
+        !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := .data$np_fdr_ifsig
+      )
+    
+    sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
+  }
+  
+  return(sim_results)
+}, cl = cl)
+
+# Flatten the results_list
+results_list <- do.call(c, results_list)
+
   } else if (sim_type == "resample_gene") {
     geneList <- corr_brain_gene(gene_data = gene_data, brain_data = brain_data, method = cor_method)
     geneSetList <- get_geneSetList(annoData)
     selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
     
-    message(paste("=========Preparing the null scores of the resample_gene mode:", n_perm, "========="))
+    if (is.null(gsScoreList.null)) {
+      warning("gsScoreList.null is NULL. Running brainscore to compute null model. This may take long time!")
     gsScoreList.null <- brainscore(
       brain_data = brain_data,
       gene_data = gene_data,
@@ -242,102 +303,133 @@ brainscore.simulate <- function(pred_df,
       null_model = "resample_gene",
       minGSSize = minGSSize,
       maxGSSize = maxGSSize,
-      n_cores = n_cores,
+      n_cores = 1,
       n_perm = n_perm,
       verbose = FALSE
     )
+    } else {
+    null_model.precomp <- attr(gsScoreList.null, "null_model")
+    cor_method.precomp <- attr(gsScoreList.null, "cor_method")
+    aggre_method.precomp <- attr(gsScoreList.null, "aggre_method")
+    minGSSize.precomp <- attr(gsScoreList.null, "minGSSize")
+    maxGSSize.precomp <- attr(gsScoreList.null, "maxGSSize")
+    n_perm.precomp <- attr(gsScoreList.null, "n_perm") 
 
-    for (sim_i in 1:sim_n) {
-      message(paste("=========Processing simulation:", sim_i, "/", sim_n, "========="))
-      sim.geneList <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
-      rownames(sim.geneList) <- rownames(geneList)
-      sim.gsScore <- aggregate_geneSetList(sim.geneList, selected.gs, method = aggre_method, n_cores = n_cores)
-      dependent_df.true <- data.frame(sim.gsScore, check.names = FALSE)
-      ## To boost efficiency we can put this part outside the sim loop, otherwise for each sim_i we will have to re-calculate the null model for n_perm times
-      # message("Aggregating gene set scores in resample_gene mode...")
-      # progress_interval <- max(1, round(n_perm / 10))
-      # gsScoreList.null <- lapply(1:n_perm, function(idx) {
-      #   if (idx %% progress_interval == 0) {
-      #     message(paste("Processing permutation", idx, "of", n_perm, "..."))
-      #   }
-      #   geneList.null <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
-      #   rownames(geneList.null) <- rownames(geneList)
-      #   gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
-      #   return(gs_score.null)
-      # })
-
-      for (size_i in seq_along(subsample_size)) {
-        size2use <- subsample_size[size_i]
-        sampled_idx <- sample(1:nrow(dependent_df.true), size = size2use, replace = FALSE)
-        res <- simple_lm(
-          dependent_df = dependent_df.true[sampled_idx, , drop = FALSE],
-          pred_df = pred_df[sampled_idx, , drop = FALSE],
-          cov_df = cov_df[sampled_idx, , drop = FALSE],
-          stat2return = "pval"
-        )
-        stat.true <- simple_lm(
-          dependent_df = dependent_df.true[sampled_idx, , drop = FALSE],
-          pred_df = pred_df[sampled_idx, , drop = FALSE],
-          cov_df = cov_df[sampled_idx, , drop = FALSE],
-          stat2return = "tval_list"
-        )
-        stat.tmp <- list()
-        for (i in seq_along(gsScoreList.null)) {
-          dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
-          stat.tmp[[i]] <- simple_lm(
-            dependent_df = dependent_df.null[sampled_idx, , drop = FALSE],
-            pred_df = pred_df[sampled_idx, , drop = FALSE],
-            cov_df = cov_df[sampled_idx, , drop = FALSE],
-            stat2return = "tval_list"
-          )
-        }
-        stat.null <- list_transpose(stat.tmp)
-        np_pval <- calculate_pvals(stat.true, stat.null, method = "standard")
-        np_p.adj <- p.adjust(np_pval, method = "fdr")
-
-        check_names <- all(
-          names(stat.true) == names(stat.null),
-          names(stat.null) == names(np_pval),
-          names(np_pval) == names(np_p.adj),
-          names(np_p.adj) == res$Dependent_vars
-        )
-        if (!check_names) {
-          stop("The names of the results are not consistent.")
-        } else {
-          res$p.adj <- p.adjust(res$pval, method = "fdr")
-          res$np_pval <- np_pval
-          res$np_p.adj <- np_p.adj
-        }
-        sampled_res <- res %>%
-          dplyr::mutate(
-            nofdr_ifsig = case_when(
-              .data$pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            fdr_ifsig = case_when(
-              .data$p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            np_nofdr_ifsig = case_when(
-              .data$np_pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            np_fdr_ifsig = case_when(
-              .data$np_p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            )
-          ) %>%
-          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
-          rename(
-            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
-            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,
-            !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_nofdr_ifsig,
-            !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := .data$np_fdr_ifsig
-          )
-        results_list[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
-      }
+    # Check all attributes at once
+    if (!(identical(null_model.precomp, sim_type) &&
+          identical(cor_method.precomp, cor_method) &&
+          identical(aggre_method.precomp, aggre_method) &&
+          identical(minGSSize.precomp, minGSSize) &&
+          identical(maxGSSize.precomp, maxGSSize) &&
+          identical(n_perm.precomp, n_perm))) {
+      
+      message("Mismatches found between precomputed attributes and input variables.")
+      message("Please check the following variables: null_model, cor_method, aggre_method, minGSSize, maxGSSize, n_perm.")
+      stop("Please review the mismatches above.")
+    } else {
+      message("Using precomputed gsScoreList.null.")
     }
+
+    }
+    
+  if (n_cores == 0) {
+      n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
+    } else {
+      n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
+    }
+
+    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
+    if (!is.null(cl)) {
+      clusterExport(cl, c("sim_n","subsample_size","geneList","selected.gs", "gsScoreList.null",
+        "aggre_method", "pred_df","cov_df","aggregate_geneSetList"), envir = environment())
   }
+
+  results_list <- pblapply(1:sim_n, function(sim_i) {
+  sim.geneList <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
+  rownames(sim.geneList) <- rownames(geneList)
+  sim.gsScore <- aggregate_geneSetList(sim.geneList, selected.gs, method = aggre_method, n_cores = 1)
+  dependent_df.true <- data.frame(sim.gsScore, check.names = FALSE)
+
+  sim_results <- list()
+
+  for (size_i in seq_along(subsample_size)) {
+    size2use <- subsample_size[size_i]
+    sampled_idx <- sample(1:nrow(dependent_df.true), size = size2use, replace = FALSE)
+    res <- simple_lm(
+      dependent_df = dependent_df.true[sampled_idx, , drop = FALSE],
+      pred_df = pred_df[sampled_idx, , drop = FALSE],
+      cov_df = cov_df[sampled_idx, , drop = FALSE],
+      stat2return = "pval"
+    )
+    stat.true <- simple_lm(
+      dependent_df = dependent_df.true[sampled_idx, , drop = FALSE],
+      pred_df = pred_df[sampled_idx, , drop = FALSE],
+      cov_df = cov_df[sampled_idx, , drop = FALSE],
+      stat2return = "tval_list"
+    )
+    stat.tmp <- lapply(seq_along(gsScoreList.null), function(i) {
+      dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
+      simple_lm(
+        dependent_df = dependent_df.null[sampled_idx, , drop = FALSE],
+        pred_df = pred_df[sampled_idx, , drop = FALSE],
+        cov_df = cov_df[sampled_idx, , drop = FALSE],
+        stat2return = "tval_list"
+      )
+    })
+    stat.null <- list_transpose(stat.tmp)
+    np_pval <- calculate_pvals(stat.true, stat.null, method = "standard")
+    np_p.adj <- p.adjust(np_pval, method = "fdr")
+
+    check_names <- all(
+      names(stat.true) == names(stat.null),
+      names(stat.null) == names(np_pval),
+      names(np_pval) == names(np_p.adj),
+      names(np_p.adj) == res$Dependent_vars
+    )
+    if (!check_names) {
+      stop("The names of the results are not consistent.")
+    } else {
+      res$p.adj <- p.adjust(res$pval, method = "fdr")
+      res$np_pval <- np_pval
+      res$np_p.adj <- np_p.adj
+    }
+    sampled_res <- res %>%
+      dplyr::mutate(
+        nofdr_ifsig = case_when(
+          .data$pval < 0.05 ~ 1,
+          TRUE ~ 0
+        ),
+        fdr_ifsig = case_when(
+          .data$p.adj < 0.05 ~ 1,
+          TRUE ~ 0
+        ),
+        np_nofdr_ifsig = case_when(
+          .data$np_pval < 0.05 ~ 1,
+          TRUE ~ 0
+        ),
+        np_fdr_ifsig = case_when(
+          .data$np_p.adj < 0.05 ~ 1,
+          TRUE ~ 0
+        )
+      ) %>%
+      dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
+      dplyr::rename(
+        !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
+        !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,
+        !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_nofdr_ifsig,
+        !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := .data$np_fdr_ifsig
+      )
+    sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
+  }
+
+  return(sim_results)
+}, cl = cl)
+
+# Flatten the results_list
+results_list <- do.call(c, results_list)
+  }
+
+  if (!is.null(cl)) stopCluster(cl)
 
   return(results_list)
 }

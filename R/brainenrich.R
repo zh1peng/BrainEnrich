@@ -27,8 +27,8 @@
 #'                   Default is 'sd'. Other option is 'percentile'.
 #' @param threshold_value A numeric value specifying the threshold value for core genes. Default is 1.
 #' @param pvalueCutoff A numeric value specifying the p-value cutoff for output. Default is 0.05.
-#' @param pAdjustMethod A character string specifying the method for p-value adjustment.
-#'                      Default is 'fdr'.
+#' @param pAdjustMethod A character string specifying the method ("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none") for p-value adjustment.
+#'                      Default is 'fdr'. see p.adjust for more details.
 #' @param matchcoexp_tol A numeric value specifying the tolerance for matched co-expression.
 #'                       Lower value means better matching but will take much more iterations. Default is 0.05.
 #' @param matchcoexp_max_iter An integer specifying the maximum number of iterations
@@ -59,7 +59,7 @@ brainenrich <- function(brain_data,
                         threshold_type = c("sd", "percentile", "none"),
                         threshold_value = 1,
                         pvalueCutoff = 0.05,
-                        pAdjustMethod = "fdr",
+                        pAdjustMethod = c("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none"),
                         matchcoexp_tol = 0.05,
                         matchcoexp_max_iter = 1000000) {
   # Check inputs

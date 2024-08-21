@@ -204,7 +204,6 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
     stop("Invalid aggregation method name")
   )
 
-
   if (!is.function(aggre_func)) {
     stop("Invalid method name")
   }
@@ -241,13 +240,15 @@ aggregate_geneSetList <- function(geneList, geneSetList, method, n_cores = 1) {
   }
 
   # Initialize a cluster of workers
+  if (n_cores == 1) {
+    cl <- NULL
+  } else {
   cl <- makeCluster(n_cores)
-
   # Export necessary variables to the cluster
   clusterExport(cl, c("geneList", "aggregate_geneSet", "geneSetList", "method"),
     envir = environment()
   )
-
+  }
   # Parallelize the processing using pblapply for progress bar
   allgs.scores <- pblapply(seq_along(geneSetList), function(i) {
     gs <- geneSetList[[i]]
@@ -255,7 +256,9 @@ aggregate_geneSetList <- function(geneList, geneSetList, method, n_cores = 1) {
   }, cl = cl)
 
   # Stop the cluster after processing
-  stopCluster(cl)
+  if (!is.null(cl)) {
+    stopCluster(cl)
+  }
   names(allgs.scores) <- names(geneSetList)
   return(allgs.scores)
 }

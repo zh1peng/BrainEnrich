@@ -11,7 +11,7 @@
 #' @param minGSSize An integer specifying the minimum gene set size. Default is 10.
 #' @param maxGSSize An integer specifying the maximum gene set size. Default is 200.
 #' @param n_cores An integer specifying the number of cores to use for parallel processing. Default is 0 (no parallel processing).
-#' @param n_perm An integer specifying the number of permutations for null models. Default is 5000.
+#' @param n_perm An integer specifying the number of permutations for null models. Default is NULL (for "none" type).
 #' @param perm_id A matrix of permutation indices for 'spin_brain' null model. Default is NULL. Either perm_id or any of coord.l or coord.r must be provided if choosing spin_brain mode.
 #' @param coord.l A matrix of coordinates for the left hemisphere for 'spin_brain' null model. Default is NULL.
 #' @param coord.r A matrix of coordinates for the right hemisphere for 'spin_brain' null model. Default is NULL.
@@ -20,6 +20,8 @@
 #' @param matchcoexp_max_iter An integer specifying the maximum iterations for matching co-expression in 'coexp_matched' null model. Default is 1000000.
 #' @param verbose A logical specifying whether to print messages. Default is TRUE.
 #' @return A data frame containing the gene set scores with regions as rows and gene sets as columns.
+#' @import pbapply
+#' @import parallel
 #' @export
 brainscore <- function(brain_data,
                        gene_data,
@@ -30,7 +32,7 @@ brainscore <- function(brain_data,
                        minGSSize = 10,
                        maxGSSize = 200,
                        n_cores = 0,
-                       n_perm = 5000,
+                       n_perm = NULL,
                        perm_id = NULL,
                        coord.l = NULL,
                        coord.r = NULL,
@@ -38,6 +40,7 @@ brainscore <- function(brain_data,
                        matchcoexp_tol = 0.05,
                        matchcoexp_max_iter = 1000000,
                        verbose = TRUE) {
+  
   # Check inputs
   stopifnot(is.environment(annoData))
   stopifnot(identical(rownames(gene_data), rownames(brain_data)))
@@ -56,6 +59,11 @@ brainscore <- function(brain_data,
     perm_id <- perm_id[, 1:n_perm]
   }
 
+  if (null_model == 'none'){
+    n_perm <- NULL
+  }
+
+
   # Calculate gene-brain correlations
   if (verbose) {
     message("Calculating gene-brain correlations...")
@@ -73,14 +81,25 @@ brainscore <- function(brain_data,
     message("Filtering gene set list...")
   }
   selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
+  
   if (verbose) {
     message("Number of gene sets left: ", length(selected.gs))
   }
+
+  if (null_model != "none") {
+    if (n_cores == 0) {
+      n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
+    } else {
+      n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
+    }
+  }
+
   if (null_model == "none") {
     if (verbose) {
       message("Aggregating gene set scores...")
     }
     gs.score <- aggregate_geneSetList(geneList, selected.gs, method = aggre_method, n_cores = n_cores)
+  
   } else if (null_model == "spin_brain") {
     if (verbose) {
       message("Generating null brain data with spin_brain model...")
@@ -91,62 +110,69 @@ brainscore <- function(brain_data,
     if (verbose) {
       message("Aggregating gene set scores in spin_brain mode...")
     }
-    progress_interval <- max(1, round(n_perm / 10))
-    gs.score <- lapply(1:n_perm, function(idx) {
-      if (idx %% progress_interval == 0) {
-        if (verbose) {
-          message(paste("Processing permutation", idx, "of", n_perm, "..."))
-        }
-      }
+
+    # Initialize a cluster of workers
+    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
+    if (!is.null(cl)) {
+      clusterExport(cl, c("brain_data", "gene_data", "n_perm", "perm_id", "aggregate_geneSet", "corr_brain_gene", "aggre_method", "selected.gs", "cor_method"), envir = environment())
+    }
+
+    gs.score <- pblapply(1:n_perm, function(idx) {
       null_brain_data <- brain_data[perm_id[, idx], , drop = FALSE]
       rownames(null_brain_data) <- rownames(brain_data)
       geneList.null <- corr_brain_gene(gene_data = gene_data, brain_data = null_brain_data, method = cor_method)
-      gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
+      gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method,n_cores = 1)
       return(gs_score.null)
-    })
+    }, cl = cl)
+
+    if (!is.null(cl)) stopCluster(cl)
+
   } else if (null_model == "resample_gene") {
     if (verbose) {
       message("Aggregating gene set scores in resample_gene mode...")
     }
-    progress_interval <- max(1, round(n_perm / 10))
-    gs.score <- lapply(1:n_perm, function(idx) {
-      if (idx %% progress_interval == 0) {
-        if (verbose) {
-          message(paste("Processing permutation", idx, "of", n_perm, "..."))
-        }
-      }
+
+    # Initialize a cluster of workers
+    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
+    if (!is.null(cl)) {
+      clusterExport(cl, c("n_perm", "geneList", "aggregate_geneSet", "aggre_method", "selected.gs"), envir = environment())
+    }
+
+    gs.score <- pblapply(1:n_perm, function(idx) {
       geneList.null <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
       rownames(geneList.null) <- rownames(geneList)
-      gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
+      gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = 1)
       return(gs_score.null)
-    })
+    }, cl = cl)
+
+    if (!is.null(cl)) stopCluster(cl)
+
   } else if (null_model == "coexp_matched") {
     if (verbose) {
       message("Generating null gene list with coexp_matched model...")
     }
-    sampled_gs <- resample_geneSetList_matching_coexp(gene_data, selected.gs, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
+    sampled_gs <- resample_geneSetList_matching_coexp(gene_data, selected.gs, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm)
 
-    if (is.null(sampled_gs)) {
-      stop("NULL sampled_gs returned.")
-    }
+    if (is.null(sampled_gs)) stop("NULL sampled_gs returned.")
+    if (!identical(names(geneSetList), names(sampled_gs))) stop("geneSetList and sampled_geneSetList are not matched.")
 
-    if (!identical(names(geneSetList), names(sampled_gs))) {
-      stop("geneSetList and sampled_geneSetList are not matched.")
-    }
     if (verbose) {
       message("Aggregating gene set scores in coexp_matched mode...")
     }
-    progress_interval <- max(1, round(n_perm / 10))
-    gs.score <- lapply(1:n_perm, function(idx) {
-      if (idx %% progress_interval == 0) {
-        if (verbose) {
-          message(paste("Processing permutation", idx, "of", n_perm, "..."))
-        }
-      }
+
+    # Initialize a cluster of workers
+    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
+    if (!is.null(cl)) {
+      clusterExport(cl, c("n_perm", "sampled_gs", "aggregate_geneSet", "aggre_method"), envir = environment())
+    }
+
+    gs.score <- pblapply(1:n_perm, function(idx) {
       sampled_gs_iter <- lapply(sampled_gs, function(x) x[[idx]])
-      gs_score.null <- aggregate_geneSetList(geneList, sampled_gs_iter, method = aggre_method, n_cores = n_cores)
+      gs_score.null <- aggregate_geneSetList(geneList, sampled_gs_iter, method = aggre_method, n_cores = 1)
       return(gs_score.null)
-    })
+    }, cl = cl)
+
+    if (!is.null(cl)) stopCluster(cl)
   }
 
   # Add name to the list
@@ -155,8 +181,11 @@ brainscore <- function(brain_data,
   }
 
   # Add attributes to geneList
-  attr(gs.score, "type") <- null_model
+  attr(gs.score, "null_model") <- null_model
   attr(gs.score, "cor_method") <- cor_method
   attr(gs.score, "aggre_method") <- aggre_method
+  attr(gs.score, "minGSSize") <- minGSSize
+  attr(gs.score, "maxGSSize") <- maxGSSize
+  attr(gs.score, "n_perm") <- n_perm
   return(gs.score)
 }
