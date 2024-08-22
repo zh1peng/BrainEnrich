@@ -42,7 +42,7 @@ brainscore(
 
 \item{maxGSSize}{An integer specifying the maximum gene set size. Default is 200.}
 
-\item{n_cores}{An integer specifying the number of cores to use for parallel processing. Default is 0 (no parallel processing).}
+\item{n_cores}{An integer specifying the number of cores to use for parallel processing for the permutation. Default is 0 (use all cores - 1).}
 
 \item{n_perm}{An integer specifying the number of permutations for null models. Default is NULL (for "none" type).}
 

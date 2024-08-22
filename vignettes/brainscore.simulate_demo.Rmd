@@ -125,14 +125,14 @@ As generate the null gsScore is time-consuming, we can use the pre-calculated nu
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 # pre-calculate the null gsScore
 gsScore.spin_brain <- brainscore(
-            brain_data = brain_data,
-            gene_data = gene_data,
-            annoData = annoData,
-            null_model = "spin_brain",
-            n_perm = 10,
-            perm_id = perm_id_dk_lh_5000,
-            minGSSize = 20,
-            maxGSSize = 200
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  null_model = "spin_brain",
+  n_perm = 10,
+  perm_id = perm_id_dk_lh_5000,
+  minGSSize = 20,
+  maxGSSize = 200
 )
 
 cov_df <- sample_df %>% dplyr::select(Age, Sex)
@@ -192,13 +192,13 @@ As generate the null gsScore is time-consuming, we can use the pre-calculated nu
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 # pre-calculate the null gsScore
 gsScore.resample_gene <- brainscore(
-            brain_data = brain_data,
-            gene_data = gene_data,
-            annoData = annoData,
-            null_model = "resample_gene",
-            n_perm = 10,
-            minGSSize = 20,
-            maxGSSize = 200
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  null_model = "resample_gene",
+  n_perm = 10,
+  minGSSize = 20,
+  maxGSSize = 200
 )
 
 cov_df <- sample_df %>% dplyr::select(Age, Sex)

@@ -427,6 +427,6 @@ brainscore.simulate <- function(pred_df,
   }
 
   if (!is.null(cl)) stopCluster(cl)
- message("Simulation completed.")
+  message("Simulation completed.")
   return(results_list)
 }

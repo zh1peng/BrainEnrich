@@ -1,0 +1,171 @@
+---
+title: "Precompute null gene set scores on HPC with slurm"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Precompute null gene set scores on HPC with slurm}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# 1. Installation of the BrainEnrich package
+```{r setup, eval=TRUE}
+# Install remotes if you haven't already
+if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+BiocManager::install("DOSE")
+# Install brainEnrich from GitHub
+remotes::install_github("zh1peng/BrainEnrich")
+```
+
+# 2. Download gene_data and annoData to the package
+We only need to do this once, and they will be available for all the nodes in the HPC.
+If you download them during the slurm job, it might cause the job to fail due to the sequential download of the data.
+The first node is trying to download the data, and the other nodes are trying to access the data that is not yet downloaded.
+```{r}
+library(BrainEnrich)
+gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
+annoData <- get_annoData(type = "SynGO")
+```
+
+# 2. Prepare slrum script
+A script for distributed computing environments, allowing large-scale permutation tests to be split across multiple compute nodes. 
+```{r}
+# run_brainscore_hpc.R
+# Rscript run_brainscore_hpc.R <job_id> <n_perm_per_job> <perm_total> <cor_method> <aggre_method> <null_model> <minGSSize> <maxGSSize>
+# Get command-line arguments
+args <- commandArgs(trailingOnly = TRUE)
+job_id <- as.integer(args[1])
+n_perm_per_job <- as.as.integer(args[2])
+perm_total <- as.integer(args[3])
+cor_method <- args[4]
+aggre_method <- args[5]
+null_model <- args[6]
+minGSSize <- as.integer(args[7])
+maxGSSize <- as.integer(args[8])
+
+# Load your R package and any required libraries
+library(BrainEnrich)
+
+# Set other parameters
+output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_nullScores"
+perm_id <- perm_id_dk_lh_5000
+
+data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
+
+# Load the necessary data
+df.hcp <- readRDS(file.path(data_path, "df.hcp.rds"))
+cov_df <- df.hcp %>% dplyr::select(Age, Sex)
+pred_df <- df.hcp %>% dplyr::select(BMI)
+brain_data <- df.hcp %>%
+  tibble::column_to_rownames("SubjID") %>%
+  dplyr::select(starts_with("L_") & ends_with("thickavg")) %>%
+  dplyr::rename_all(~ str_replace_all(., "_thickavg$", "")) %>%
+  t()
+
+# Load additional necessary data
+gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
+annoData <- get_annoData(type = "SynGO")
+
+# Update the output directory based on the input parameters
+output_dir <- file.path(
+  output_dir_base,
+  sprintf(
+    "nullScore_%s_%s_%s_%d_%d_%d",
+    null_model,
+    cor_method,
+    aggre_method,
+    minGSSize,
+    maxGSSize,
+    perm_total
+  )
+)
+
+# Call the brainscore.hpc function
+brainscore.hpc(
+  job_id = job_id,
+  n_perm_per_job = n_perm_per_job,
+  perm_total = perm_total,
+  perm_id = perm_id,
+  output_dir = output_dir,
+  pred_df = pred_df,
+  cov_df = cov_df,
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  cor_method = cor_method,
+  aggre_method = aggre_method,
+  null_model = null_model,
+  minGSSize = minGSSize,
+  maxGSSize = maxGSSize
+)
+```
+
+# 3. Prepare slurm script
+```{slrum}
+#!/bin/bash
+#SBATCH --job-name=brainscore_hpc       # Job name
+#SBATCH --output=brainscore_hpc_%A_%a.out  # Output file name with job ID and array task ID
+#SBATCH --error=brainscore_hpc_%A_%a.err   # Error file name with job ID and array task ID
+#SBATCH --time=24:00:00                 # Time limit hrs:min:sec
+#SBATCH --nodes=1                       # Number of nodes
+#SBATCH --ntasks=1                      # Number of tasks
+#SBATCH --cpus-per-task=4               # Number of CPU cores per task
+#SBATCH --mem=16G                       # Memory per node
+#SBATCH --array=1-5                     # Array range (adjust based on perm_total / n_perm_per_job)
+
+# Define variables for the script
+n_perm_per_job=5          # Number of permutations per job (adjust as needed)
+perm_total=5000           # Total number of permutations
+cor_method="pearson"      # Correlation method
+aggre_method="mean"       # Aggregation method
+null_model="spin_brain"   # Null model
+minGSSize=20              # Minimum gene set size
+maxGSSize=200             # Maximum gene set size
+
+# Run the R script with the appropriate arguments
+Rscript run_brainscore_hpc.R $SLURM_ARRAY_TASK_ID $n_perm_per_job $perm_total $cor_method $aggre_method $null_model $minGSSize $maxGSSize
+```
+
+# 4. Submit the job
+```{bash}
+sbatch run_brainscore_hpc.slurm
+```
+
+# 5. collect the results
+```{r}
+output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_nullScores"
+
+perm_total <- 5000 # Total number of permutations
+cor_method <- "pearson" # Correlation method
+aggre_method <- "mean" # Aggregation method
+null_model <- "spin_brain" # Null model
+minGSSize <- 20 # Minimum gene set size
+maxGSSize <- 200 # Maximum gene set size
+
+output_dir <- file.path(
+  output_dir_base,
+  sprintf(
+    "nullScore_%s_%s_%s_%d_%d_%d",
+    null_model,
+    cor_method,
+    aggre_method,
+    minGSSize,
+    maxGSSize,
+    perm_total
+  )
+)
+save_name <- sprintf("nullScore_%s_%s_%s_%d_%d_%d", null_model, cor_method, aggre_method, minGSSize, maxGSSize, perm_total)
+combine.rds(output_dir = output_dir, n_rds = perm_total, save_name = save_name)
+```
+

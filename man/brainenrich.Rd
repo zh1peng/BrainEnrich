@@ -53,7 +53,7 @@ Default is 'spin_brain'. Other options include 'resample_gene',
 
 \item{maxGSSize}{An integer specifying the maximum gene set size. Default is 200.}
 
-\item{n_cores}{An integer specifying the number of cores to use. Default is 0.}
+\item{n_cores}{An integer specifying the number of cores to use. Default is 0 (use all cores - 1).}
 
 \item{n_perm}{An integer specifying the number of permutations. Default is 5000.}
 

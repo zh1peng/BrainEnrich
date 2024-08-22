@@ -55,7 +55,7 @@ Other options include 'median', 'meanabs', 'meansqr', 'maxmean',
 
 \item{maxGSSize}{Integer specifying the maximum gene set size. Default is 200.}
 
-\item{n_cores}{Integer specifying the number of cores to use for parallel processing. Default is 0.}
+\item{n_cores}{Integer specifying the number of cores to use for parallel processing. Default is 0 (use all cores -1).}
 
 \item{perm_id}{Optional permutation ID.}
 
