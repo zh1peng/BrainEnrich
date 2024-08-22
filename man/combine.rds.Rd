@@ -7,9 +7,7 @@
 combine.rds(
   output_dir,
   n_rds = NULL,
-  combine_method = c("list", "data.frame"),
-  save_combined = TRUE,
-  save_name = "combined_res.rds",
+  save_name = NULL,
   delete_originals = TRUE
 )
 }
@@ -17,14 +15,6 @@ combine.rds(
 \item{output_dir}{A character string specifying the directory where the RDS files are stored.}
 
 \item{n_rds}{An integer specifying the expected number of RDS files. If provided, the function will check if any files are missing.}
-
-\item{combine_method}{A character string specifying how to combine the results. Options are:
-\describe{
-\item{"list"}{Combine results into a list.}
-\item{"data.frame"}{Combine results into a single data frame.}
-}}
-
-\item{save_combined}{A logical indicating whether to save the combined results as an RDS file. Default is TRUE.}
 
 \item{save_name}{A character string specifying the name of the output RDS file for the combined results. Default is "combined_results.rds".}
 

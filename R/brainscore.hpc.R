@@ -51,30 +51,15 @@ brainscore.hpc <- function(job_id, n_perm_per_job = 1, perm_total, perm_id = NUL
 #'
 #' @param output_dir A character string specifying the directory where the RDS files are stored.
 #' @param n_rds An integer specifying the expected number of RDS files. If provided, the function will check if any files are missing.
-#' @param combine_method A character string specifying how to combine the results. Options are:
-#'   \describe{
-#'     \item{"list"}{Combine results into a list.}
-#'     \item{"data.frame"}{Combine results into a single data frame.}
-#'   }
 #' @param save_name A character string specifying the name of the output RDS file for the combined results. Default is "combined_results.rds".
 #' @param delete_originals A logical indicating whether to delete the original RDS files after combining. Default is TRUE.
-#' @param save_combined A logical indicating whether to save the combined results as an RDS file. Default is TRUE.
 #' @return The combined results, either as a saved RDS file or returned directly if `save_combined` is FALSE.
 #' @export
 
 combine.rds <- function(output_dir,
                         n_rds = NULL,
-                        combine_method = c("list", "data.frame"),
-                        save_combined = TRUE,
-                        save_name = "combined_res.rds",
+                        save_name = NULL,
                         delete_originals = TRUE) {
-  # Match the combine method
-  combine_method <- match.arg(combine_method)
-
-  if (is.null(n_rds) && !save_combined) {
-    stop("n_rds must be specified.")
-  }
-
   # Get a list of all RDS files in the output directory
   rds_files <- list.files(output_dir, pattern = "\\.rds$", full.names = TRUE)
 
@@ -101,29 +86,40 @@ combine.rds <- function(output_dir,
     delete_originals <- FALSE
   }
 
-  # Initialize a list to store the loaded results
+  # Initialize a list to store the loaded results and attributes
+  message("Loading RDS files...")
   all_results <- lapply(rds_files, readRDS)
 
-  # Combine the results based on the specified method
-  if (combine_method == "list") {
-    # Combine all results into a single list
-    combined_results <- do.call(c, all_results)
-  } else if (combine_method == "data.frame") {
-    # Combine all results into a single data frame
-    combined_results <- do.call(rbind, lapply(all_results, function(res) {
-      do.call(rbind, res)
-    }))
+  message("Combining results...")
+  combined_results <- do.call(c, all_results)
+
+
+
+  # Preserve and update attributes
+  if (length(all_results) > 0 && !is.null(attributes(all_results[[1]]))) {
+    attributes_to_keep <- attributes(all_results[[1]])
+    attributes_to_keep$n_perm <- length(combined_results) # Update n_perm to match the length of the combined list
+    attributes(combined_results) <- attributes_to_keep
   }
 
+  # Update the names of the combined results
+  names(combined_results) <- paste0("null_", 1:length(combined_results))
   # Optionally save the combined results as an RDS file
-  if (save_combined) {
+  if (!is.null(save_name)) {
+    # Ensure save_name ends with .rds
+    if (!grepl("\\.rds$", save_name)) {
+      save_name <- paste0(save_name, ".rds")
+    }
     combined_file_path <- file.path(output_dir, save_name)
     saveRDS(combined_results, combined_file_path)
+    message(sprintf("Combined results saved to %s.", combined_file_path))
 
     # Optionally delete the original files
     if (delete_originals) {
       file.remove(rds_files)
+      message("Original RDS files deleted.")
     }
   }
+
   return(combined_results)
 }

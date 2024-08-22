@@ -123,12 +123,12 @@ brainscore.lm_test <- function(pred_df,
     n_perm.precomp <- attr(gsScoreList.null, "n_perm")
 
     # Check all attributes at once
-    if (!(identical(null_model.precomp, null_model) &&
-      identical(cor_method.precomp, cor_method) &&
-      identical(aggre_method.precomp, aggre_method) &&
-      identical(minGSSize.precomp, minGSSize) &&
-      identical(maxGSSize.precomp, maxGSSize) &&
-      identical(n_perm.precomp, n_perm))) {
+    if (!((null_model.precomp == null_model) &&
+      (cor_method.precomp == cor_method) &&
+      (aggre_method.precomp == aggre_method) &&
+      (minGSSize.precomp == minGSSize) &&
+      (maxGSSize.precomp == maxGSSize) &&
+      (n_perm.precomp == n_perm))) {
       message("Mismatches found between precomputed attributes and input variables.")
       message("Please check the following variables: null_model, cor_method, aggre_method, minGSSize, maxGSSize, n_perm.")
       stop("Please review the mismatches above.")
