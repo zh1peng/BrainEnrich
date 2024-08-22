@@ -143,7 +143,7 @@ sbatch run_brainscore_hpc.slurm
 library(BrainEnrich)
 output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed"
 
-perm_total <- 5 # Total number of permutations
+n_jobs <- 5 # Total number of permutations
 cor_method <- "pearson" # Correlation method
 aggre_method <- "mean" # Aggregation method
 null_model <- "spin_brain" # Null model
@@ -163,6 +163,6 @@ output_dir <- file.path(
   )
 )
 save_name <- sprintf("combined_%s_%s_%s_%d_%d_%d", null_model, cor_method, aggre_method, minGSSize, maxGSSize, perm_total)
-gsScoreList.null <- combine.rds(output_dir = output_dir, n_rds = perm_total, save_name = save_name)
+gsScoreList.null <- combine.rds(output_dir = output_dir, n_rds = n_jobs, save_name = save_name,delete_originals = TRUE)
 ```
 
