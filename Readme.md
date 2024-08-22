@@ -26,15 +26,15 @@
 Once available, it can be installed from GitHub via the `devtools` package:
 
 ```r
-# Install devtools if you haven't already
-if (!requireNamespace("devtools", quietly = TRUE)) {
-      install.packages("devtools")}
+# Install remotes if you haven't already
+if (!requireNamespace("remotes", quietly = TRUE)) {
+      install.packages("remotes")}
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
     install.packages("BiocManager")
 }
 BiocManager::install("DOSE")
 # Install brainEnrich from GitHub
-devtools::install_github("zh1peng/BrainEnrich")
+remotes::install_github("zh1peng/BrainEnrich")
 ```
 
 ## Usage 📖
