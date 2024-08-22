@@ -29,7 +29,10 @@ Once available, it can be installed from GitHub via the `devtools` package:
 # Install devtools if you haven't already
 if (!requireNamespace("devtools", quietly = TRUE)) {
       install.packages("devtools")}
-
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+    install.packages("BiocManager")
+}
+BiocManager::install("DOSE")
 # Install brainEnrich from GitHub
 devtools::install_github("zh1peng/BrainEnrich")
 ```
@@ -42,11 +45,11 @@ devtools::install_github("zh1peng/BrainEnrich")
 - [x] Initialize the project 2023/11/04
 - [x] Finalize manuscript revision. 🔧
 - [x] Development of core functions🔧
-- [ ] Create detailed vignettes for each major function. 📚
-- [ ] Optimize performance for large datasets. ⚡
+- [x] Create detailed vignettes for each major function. 📚
+- [x] Optimize performance for large datasets. ⚡
 - [ ] Conduct extensive testing with real-world data. 🌏
 - [ ] Develop a comprehensive test suite. ✅
-- [ ] Set up continuous integration for automated testing. 🔄
+- [x] Set up continuous integration for automated testing. 🔄
 - [ ] Prepare documentation for public release. 📄
 
 
@@ -64,8 +67,6 @@ We use git for versioning. For the versions available, see the [tags on this rep
 
 ## License 📜
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the GNU Affero General Public (AGP) License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Acknowledgments 👏
-
-
