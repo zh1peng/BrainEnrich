@@ -4,7 +4,7 @@
 #'
 #' @param job_id An integer specifying the job ID in the Slurm array (e.g., 1 to 1000).
 #' @param n_perm_per_job An integer specifying the number of permutations to handle per job.
-#' @param perm_total An integer specifying the total number of jobs (equal to n_perm in brainscore function).
+#' @param perm_total An integer specifying the total number of permutations (equal to n_perm in the brainscore function).
 #' @param perm_id A matrix of permutation indices. This will be subset according to the job's assigned permutations.
 #' @param output_dir A character string specifying the directory where the results should be saved. If the directory does not exist, it will be created.
 #' @param ... Additional arguments passed to the brainscore function, such as brain_data, gene_data, annoData, etc.
