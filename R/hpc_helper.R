@@ -87,11 +87,11 @@ brainscore.hpc <- function(job_id, n_perm_per_job = 1, perm_total, perm_id = NUL
 job_splitter <- function(job_id,
                          n_iter_per_job = 1,
                          iter_total,
-                         subset_vars = list(),
-                         subset_total_var = NULL,
                          prefix = "res_job_",
                          output_dir = NULL,
                          FUN,
+                         subset_vars = list(),
+                         subset_total_var = NULL,
                          ...) {
   # Check if output_dir is provided and create if it doesn't exist
   if (is.null(output_dir)) {
@@ -109,11 +109,14 @@ job_splitter <- function(job_id,
   total_iter <- end_iter - start_iter + 1
 
   # Subset the variables in subset_vars for this job
+  if (!length(subset_vars) == 0) {
   subset_vars_subset <- lapply(subset_vars, function(x) x[, start_iter:end_iter, drop = FALSE])
 
   # Replace the original variables with their subsets
   names(subset_vars_subset) <- names(subset_vars)
-
+  } else {
+    subset_vars_subset <- list()
+  }
   # Prepare the argument list for FUN
   args <- c(subset_vars_subset, list(...))
 

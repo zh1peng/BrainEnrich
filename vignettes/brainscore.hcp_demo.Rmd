@@ -196,9 +196,9 @@ gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 annoData <- get_annoData(type = "SynGO")
 
 if (null_model == "spin_brain") {
-  perm_id <- perm_id_dk_lh_5000
+  subset_vars<-list(perm_id = perm_id_dk_lh_5000)
 } else {
-  perm_id <- NULL
+  subset_vars<-list()
 }
 
 # Update the output directory based on the input parameters
@@ -221,8 +221,11 @@ job_splitter(
   job_id = job_id,
   n_iter_per_job = n_iter_per_job,
   iter_total = iter_total,
-  save_name = 'res_job_'
+  prefix = 'res_job_'
   output_dir = output_dir,
+  FUN=brainscore,
+  subset_vars = subset_vars,
+  subset_total_var = 'n_perm'
   brain_data = brain_data,
   gene_data = gene_data,
   annoData = annoData,
