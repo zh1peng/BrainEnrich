@@ -36,6 +36,7 @@ The first node is trying to download the data, and the other nodes are trying to
 library(BrainEnrich)
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 annoData <- get_annoData(type = "SynGO")
+annoData <- get_annoData(type = "GO_MF")
 ```
 
 # 2. Prepare slurm script
@@ -166,11 +167,11 @@ save_name <- sprintf("combined_%s_%s_%s_%d_%d_%d", null_model, cor_method, aggre
 gsScoreList.null <- combine.rds(output_dir = output_dir, n_rds = n_jobs, save_name = save_name, delete_originals = TRUE)
 ```
 
-# 6. use job_splitter (a generic function to split jobs) to do brainscore and brainscore.simulate
+# 6. use job_splitter (a generic function to split jobs) to do brainscore
 A script for distributed computing environments, allowing large-scale permutation tests to be split across multiple compute nodes. 
 ```{r}
-# run_brainscore_hpc.R
-# Rscript run_brainscore_hpc.R <job_id> <n_perm_per_job> <perm_total> <cor_method> <aggre_method> <null_model> <minGSSize> <maxGSSize>
+# job_splitter_brainscore.R
+# Rscript job_splitter_brainscore.R <job_id> <n_iter_per_job> <iter_total> <cor_method> <aggre_method> <null_model> <gs_type> <minGSSize> <maxGSSize>
 # Get command-line arguments
 args <- commandArgs(trailingOnly = TRUE)
 job_id <- as.integer(args[1])
@@ -179,21 +180,22 @@ iter_total <- as.integer(args[3])
 cor_method <- args[4]
 aggre_method <- args[5]
 null_model <- args[6]
-minGSSize <- as.integer(args[7])
-maxGSSize <- as.integer(args[8])
+gs_type <- args[7]
+minGSSize <- as.integer(args[8])
+maxGSSize <- as.integer(args[9])
 
 # Load your R package and any required libraries
 library(BrainEnrich)
 
 # Set other parameters
-output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed"
+output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/test_job_splitter"
 data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
 
 # Load hcp brain_data
 brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
 # Load additional necessary data
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
-annoData <- get_annoData(type = "SynGO")
+annoData <- get_annoData(type = gs_type)
 
 if (null_model == "spin_brain") {
   subset_vars<-list(perm_id = perm_id_dk_lh_5000)
@@ -205,13 +207,14 @@ if (null_model == "spin_brain") {
 output_dir <- file.path(
   output_dir_base,
   sprintf(
-    "null_%s_%s_%s_%d_%d_%d",
+    "%s_%s_%s_%s_%d_%d_%d",
+    gs_type,
     null_model,
     cor_method,
     aggre_method,
     minGSSize,
     maxGSSize,
-    perm_total
+    iter_total
   )
 )
 
@@ -221,11 +224,11 @@ job_splitter(
   job_id = job_id,
   n_iter_per_job = n_iter_per_job,
   iter_total = iter_total,
-  prefix = 'res_job_'
+  prefix = 'res_job_',
   output_dir = output_dir,
   FUN=brainscore,
   subset_vars = subset_vars,
-  subset_total_var = 'n_perm'
+  subset_total_var = 'n_perm',
   brain_data = brain_data,
   gene_data = gene_data,
   annoData = annoData,
@@ -238,4 +241,109 @@ job_splitter(
 )
 ```
 
+```{slurm}
+#!/bin/bash
+#SBATCH --job-name=gsScore       # Job name
+#SBATCH --output=gsScore.out  
+#SBATCH --error=gsScore.err   
+#SBATCH --time=24:00:00                 # Time limit hrs:min:sec
+#SBATCH --nodes=1                       # Number of nodes
+#SBATCH --ntasks=1                      # Number of tasks
+#SBATCH --mem=16G                       # Memory per node
+#SBATCH --array=1-5                     # Array range (adjust based on perm_total / n_perm_per_job)
 
+# Define variables for the script
+n_iter_per_job=2          # Number of permutations per job (adjust as needed)
+iter_total=10           # Total number of permutations
+cor_method="pearson"      # Correlation method
+aggre_method="mean"       # Aggregation method
+null_model="spin_brain"   # Null model
+minGSSize=20              # Minimum gene set size
+maxGSSize=200             # Maximum gene set size
+gs_type="SynGO"           # Gene set type
+
+# Run the R script with the appropriate arguments
+cd /gpfs1/home/z/c/zcao4/BrainEnrich
+Rscript --vanilla job_splitter_brainscore.R $SLURM_ARRAY_TASK_ID $n_iter_per_job $iter_total $cor_method $aggre_method $null_model $gs_type $minGSSize $maxGSSize
+```
+
+# 7. use job_splitter (a generic function to split jobs) to do brainscore.simulate
+
+```{r}
+# job_splitter_brainscore_simulate.R
+# Rscript job_splitter_brainscore_simulate.R <job_id> <n_iter_per_job> <iter_total> <cor_method> <aggre_method> <sim_type> <gs_type> <minGSSize> <maxGSSize> <gsScoreList.null>
+# Get command-line arguments
+args <- commandArgs(trailingOnly = TRUE)
+job_id <- as.integer(args[1])
+n_iter_per_job <- as.integer(args[2])
+iter_total <- as.integer(args[3])
+cor_method <- args[4]
+aggre_method <- args[5]
+sim_type <- args[6]
+gs_type <- args[7]
+minGSSize <- as.integer(args[8])
+maxGSSize <- as.integer(args[9])
+gsScoreList.null <- args[10]
+
+# Load your R package and any required libraries
+library(BrainEnrich)
+
+# Set other parameters
+output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/test_job_splitter_sim"
+data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
+
+# Load hcp brain_data
+brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
+cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS"))  # Assuming covariates data is stored in cov_df.RDS
+pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS"))  # Assuming predictor data is stored in pred_df.RDS
+
+# Load additional necessary data
+gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
+annoData <- get_annoData(type = gs_type)
+
+if (null_model == "spin_brain") {
+  subset_vars<-list(perm_id = perm_id_dk_lh_5000)
+} else {
+  subset_vars<-list()
+}
+
+# Update the output directory based on the input parameters
+output_dir <- file.path(
+  output_dir_base,
+  sprintf(
+    "%s_%s_%s_%s_%d_%d_%d",
+    gs_type,
+    sim_type,
+    cor_method,
+    aggre_method,
+    minGSSize,
+    maxGSSize,
+    iter_total
+  )
+)
+
+# Call the job_splitter function
+job_splitter(
+  job_id = job_id,
+  n_iter_per_job = n_iter_per_job,
+  iter_total = iter_total,
+  output_dir = output_dir,
+  FUN = brainscore.simulate,
+  subset_vars = list(),  # No subset_vars required in this case
+  subset_total_var = 'sim_n',
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  pred_df = pred_df,
+  cov_df = cov_df,
+  cor_method = cor_method,
+  aggre_method = aggre_method,
+  subsample_size = c(50,100,150,200,250,300),
+  sim_type = sim_type,
+  n_cores = 1,
+  minGSSize = minGSSize,
+  maxGSSize = maxGSSize,
+  gsScoreList.null = gsScoreList.null  # This argument is now correctly placed at the end
+)
+
+```
