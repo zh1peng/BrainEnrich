@@ -163,6 +163,6 @@ output_dir <- file.path(
   )
 )
 save_name <- sprintf("combined_%s_%s_%s_%d_%d_%d", null_model, cor_method, aggre_method, minGSSize, maxGSSize, perm_total)
-gsScoreList.null <- combine.rds(output_dir = output_dir, n_rds = n_jobs, save_name = save_name,delete_originals = TRUE)
+gsScoreList.null <- combine.rds(output_dir = output_dir, n_rds = n_jobs, save_name = save_name, delete_originals = TRUE)
 ```
 
