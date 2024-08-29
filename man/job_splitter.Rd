@@ -10,9 +10,9 @@ job_splitter(
   iter_total,
   subset_vars = list(),
   subset_total_var = NULL,
+  prefix = "res_job_",
   output_dir = NULL,
   FUN,
-  save_name = "res_job_",
   ...
 )
 }
@@ -29,11 +29,10 @@ The names should correspond to the argument names in \code{FUN}.}
 \item{subset_total_var}{A character string specifying the name of the argument in \code{FUN} that corresponds to the total number of iterations.
 If provided, the total number of iterations for the current job will be assigned to this argument.}
 
+\item{prefix}{A character string specifying the base name for the saved RDS files. Default is "res_job_".
+@param FUN A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in \code{...}.}
+
 \item{output_dir}{A character string specifying the directory where the results should be saved. If the directory does not exist, it will be created.}
-
-\item{FUN}{A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in \code{...}.}
-
-\item{save_name}{A character string specifying the base name for the saved RDS files. Default is "res_job_".}
 
 \item{...}{Additional arguments passed to \code{FUN}.}
 }
@@ -48,10 +47,10 @@ It subsets the necessary variables, calls a specified function with the relevant
 \dontrun{
 # Call job_splitter, which will subset 'perm_id' and pass it to 'FUN'
 job_splitter(
-  job_id = 1, 
-  n_iter_per_job = 10, 
-  iter_total = 100, 
-  output_dir = "/path/to/output", 
+  job_id = 1,
+  n_iter_per_job = 10,
+  iter_total = 100,
+  output_dir = "/path/to/output",
   FUN = brainscore,
   subset_vars = list(perm_id = perm_id),
   subset_total_var = "n_perm",

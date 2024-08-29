@@ -58,8 +58,8 @@ brainscore.hpc <- function(job_id, n_perm_per_job = 1, perm_total, perm_id = NUL
 #' @param subset_total_var A character string specifying the name of the argument in `FUN` that corresponds to the total number of iterations.
 #'        If provided, the total number of iterations for the current job will be assigned to this argument.
 #' @param output_dir A character string specifying the directory where the results should be saved. If the directory does not exist, it will be created.
-#' @param FUN A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in `...`.
-#' @param save_name A character string specifying the base name for the saved RDS files. Default is "res_job_".
+#' @param prefix A character string specifying the base name for the saved RDS files. Default is "res_job_".
+#'  @param FUN A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in `...`.
 #' @param ... Additional arguments passed to `FUN`.
 #' @return This function does not return a value but saves the results of `FUN` to an RDS file in the specified `output_dir`.
 #' @examples
@@ -89,9 +89,9 @@ job_splitter <- function(job_id,
                          iter_total,
                          subset_vars = list(),
                          subset_total_var = NULL,
+                         prefix = "res_job_",
                          output_dir = NULL,
                          FUN,
-                         save_name = "res_job_",
                          ...) {
   # Check if output_dir is provided and create if it doesn't exist
   if (is.null(output_dir)) {
@@ -125,7 +125,7 @@ job_splitter <- function(job_id,
   # Call the specified function with the arguments
   result <- do.call(FUN, args)
   # Save results to a file in the specified output directory
-  saveRDS(result, file = file.path(output_dir, sprintf("%s%d.rds", save_name, job_id)))
+  saveRDS(result, file = file.path(output_dir, sprintf("%s%d.rds", prefix, job_id)))
 }
 
 

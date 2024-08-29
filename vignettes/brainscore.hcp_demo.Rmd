@@ -166,3 +166,73 @@ save_name <- sprintf("combined_%s_%s_%s_%d_%d_%d", null_model, cor_method, aggre
 gsScoreList.null <- combine.rds(output_dir = output_dir, n_rds = n_jobs, save_name = save_name, delete_originals = TRUE)
 ```
 
+# 6. use job_splitter (a generic function to split jobs) to do brainscore and brainscore.simulate
+A script for distributed computing environments, allowing large-scale permutation tests to be split across multiple compute nodes. 
+```{r}
+# run_brainscore_hpc.R
+# Rscript run_brainscore_hpc.R <job_id> <n_perm_per_job> <perm_total> <cor_method> <aggre_method> <null_model> <minGSSize> <maxGSSize>
+# Get command-line arguments
+args <- commandArgs(trailingOnly = TRUE)
+job_id <- as.integer(args[1])
+n_iter_per_job <- as.integer(args[2])
+iter_total <- as.integer(args[3])
+cor_method <- args[4]
+aggre_method <- args[5]
+null_model <- args[6]
+minGSSize <- as.integer(args[7])
+maxGSSize <- as.integer(args[8])
+
+# Load your R package and any required libraries
+library(BrainEnrich)
+
+# Set other parameters
+output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed"
+data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
+
+# Load hcp brain_data
+brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
+# Load additional necessary data
+gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
+annoData <- get_annoData(type = "SynGO")
+
+if (null_model == "spin_brain") {
+  perm_id <- perm_id_dk_lh_5000
+} else {
+  perm_id <- NULL
+}
+
+# Update the output directory based on the input parameters
+output_dir <- file.path(
+  output_dir_base,
+  sprintf(
+    "null_%s_%s_%s_%d_%d_%d",
+    null_model,
+    cor_method,
+    aggre_method,
+    minGSSize,
+    maxGSSize,
+    perm_total
+  )
+)
+
+
+# Call the brainscore.hpc function
+job_splitter(
+  job_id = job_id,
+  n_iter_per_job = n_iter_per_job,
+  iter_total = iter_total,
+  save_name = 'res_job_'
+  output_dir = output_dir,
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  cor_method = cor_method,
+  aggre_method = aggre_method,
+  null_model = null_model,
+  n_cores = 1,
+  minGSSize = minGSSize,
+  maxGSSize = maxGSSize
+)
+```
+
+
