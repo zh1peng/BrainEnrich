@@ -2,7 +2,8 @@
 [![Codecov test coverage](https://codecov.io/gh/zh1peng/BrainEnrich/graph/badge.svg)](https://app.codecov.io/gh/zh1peng/BrainEnrich)
 [![R-CMD-check](https://github.com/zh1peng/BrainEnrich/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/zh1peng/BrainEnrich/actions/workflows/R-CMD-check.yml)
 
-![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/zh1peng/BrainEnrich/total)
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/zh1peng/BrainEnrich/total?logo=plume&label=Download&color=%23328da8)
+![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/BrainEnrich)
 
 
 # BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment 🧠🧬
