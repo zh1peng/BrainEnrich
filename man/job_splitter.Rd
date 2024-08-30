@@ -8,11 +8,11 @@ job_splitter(
   job_id,
   n_iter_per_job = 1,
   iter_total,
-  subset_vars = list(),
-  subset_total_var = NULL,
   prefix = "res_job_",
   output_dir = NULL,
   FUN,
+  subset_vars = list(),
+  subset_total_var = NULL,
   ...
 )
 }
@@ -23,16 +23,16 @@ job_splitter(
 
 \item{iter_total}{An integer specifying the total number of iterations to be processed across all jobs.}
 
+\item{prefix}{A character string specifying the base name for the saved RDS files. Default is "res_job_".
+@param FUN A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in \code{...}.}
+
+\item{output_dir}{A character string specifying the directory where the results should be saved. If the directory does not exist, it will be created.}
+
 \item{subset_vars}{A named list of variables (typically matrices) that need to be subset according to the job's assigned iterations.
 The names should correspond to the argument names in \code{FUN}.}
 
 \item{subset_total_var}{A character string specifying the name of the argument in \code{FUN} that corresponds to the total number of iterations.
 If provided, the total number of iterations for the current job will be assigned to this argument.}
-
-\item{prefix}{A character string specifying the base name for the saved RDS files. Default is "res_job_".
-@param FUN A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in \code{...}.}
-
-\item{output_dir}{A character string specifying the directory where the results should be saved. If the directory does not exist, it will be created.}
 
 \item{...}{Additional arguments passed to \code{FUN}.}
 }
