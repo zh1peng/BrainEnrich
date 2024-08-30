@@ -149,16 +149,17 @@ brainscore.simulate <- function(pred_df,
       aggre_method.precomp <- attr(gsScoreList.null, "aggre_method")
       minGSSize.precomp <- attr(gsScoreList.null, "minGSSize")
       maxGSSize.precomp <- attr(gsScoreList.null, "maxGSSize")
-      # n_perm.precomp <- attr(gsScoreList.null, "n_perm") Here we loose assumption of n_perm for hpc process
+      n_perm.precomp <- attr(gsScoreList.null, "n_perm")
 
       # Check all attributes at once
       if (!((null_model.precomp == sim_type) &&
         (cor_method.precomp == cor_method) &&
         (aggre_method.precomp == aggre_method) &&
         (minGSSize.precomp == minGSSize) &&
-        (maxGSSize.precomp == maxGSSize))) {
+        (maxGSSize.precomp == maxGSSize) &&
+        (n_perm.precomp == n_perm))) {
         message("Mismatches found between precomputed attributes and input variables.")
-        message("Please check the following variables: null_model, cor_method, aggre_method, minGSSize, maxGSSize.")
+        message("Please check the following variables: null_model, cor_method, aggre_method, minGSSize, maxGSSize, n_perm.")
         stop("Please review the mismatches above.")
       } else {
         message("Using precomputed gsScoreList.null.")
@@ -309,16 +310,17 @@ brainscore.simulate <- function(pred_df,
       aggre_method.precomp <- attr(gsScoreList.null, "aggre_method")
       minGSSize.precomp <- attr(gsScoreList.null, "minGSSize")
       maxGSSize.precomp <- attr(gsScoreList.null, "maxGSSize")
-      #n_perm.precomp <- attr(gsScoreList.null, "n_perm") # Here we loose assumption of n_perm for hpc process
+      n_perm.precomp <- attr(gsScoreList.null, "n_perm")
 
       # Check all attributes at once
       if (!((null_model.precomp == sim_type) &&
         (cor_method.precomp == cor_method) &&
         (aggre_method.precomp == aggre_method) &&
         (minGSSize.precomp == minGSSize) &&
-        (maxGSSize.precomp == maxGSSize))) {
+        (maxGSSize.precomp == maxGSSize) &&
+        (n_perm.precomp == n_perm))) {
         message("Mismatches found between precomputed attributes and input variables.")
-        message("Please check the following variables: null_model, cor_method, aggre_method, minGSSize, maxGSSize.")
+        message("Please check the following variables: null_model, cor_method, aggre_method, minGSSize, maxGSSize, n_perm.")
         stop("Please review the mismatches above.")
       } else {
         message("Using precomputed gsScoreList.null.")
