@@ -109,7 +109,7 @@ brainscore.hpc(
 ```
 
 # 3. Prepare slurm script
-```{slurm}
+```{bash}
 #!/bin/bash
 #SBATCH --job-name=gsScore       # Job name
 #SBATCH --output=gsScore.log    
@@ -238,7 +238,7 @@ brainscore.hpc(
 )
 ```
 
-```{slurm}
+```{bash}
 #!/bin/bash
 #SBATCH --job-name=gsScore       # Job name
 #SBATCH --output=gsScore.out  
@@ -249,7 +249,7 @@ brainscore.hpc(
 #SBATCH --mem=16G                       # Memory per node
 #SBATCH --array=1-1000                     # Array range (adjust based on perm_total / n_perm_per_job)
 
-# Define variables for the script
+
 # Define variables for the script
 n_iter_per_job=5          # Number of permutations per job (adjust as needed)
 iter_total=5000           # Total number of permutations
@@ -271,6 +271,93 @@ for gs_type in "${gs_types[@]}"; do
   done
 done
 ```
+
+if there are some job failed, you can do this to rerun the failed jobs
+```{bash}
+#!/bin/bash
+#SBATCH --job-name=gsScore_retry       # Job name
+#SBATCH --output=gsScore_retry_%A_%a.out     # Standard output log
+#SBATCH --error=gsScore_retry_%A_%a.err      # Standard error log
+#SBATCH --time=10:00:00                # Time limit hrs:min:sec
+#SBATCH --nodes=1                      # Number of nodes
+#SBATCH --ntasks=1                     # Number of tasks
+#SBATCH --mem=16G                      # Memory per node
+#SBATCH --array=1-5                    # Array range to cover all indices
+
+# Define variables for the script
+n_iter_per_job=5          # Number of permutations per job (adjust as needed)
+iter_total=5000           # Total number of permutations
+cor_method="pearson"      # Correlation method
+aggre_method="mean"       # Aggregation method
+minGSSize=20              # Minimum gene set size
+maxGSSize=200             # Maximum gene set size
+null_model="resample_gene" # Null model
+gs_type="GO_MF"           # Gene set type
+
+# Define the list of missing job IDs
+job_id_list=(70 74 75 76 79)
+
+# Get the specific job ID based on the SLURM_ARRAY_TASK_ID
+job_id=${job_id_list[$SLURM_ARRAY_TASK_ID-1]}
+
+# Change directory to where your R script is located
+cd /gpfs1/home/z/c/zcao4/BrainEnrich
+
+# Run the R script for the specific jobs
+Rscript --vanilla run_brainscore_hpc.R $job_id $n_iter_per_job $iter_total $cor_method $aggre_method $null_model $gs_type $minGSSize $maxGSSize
+```
+
+collect the results from jobs
+```{r}
+library(BrainEnrich)
+
+# Set the base output directory
+input_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_brainscore"
+
+# Define the parameters of the analysis
+n_iter_per_job <- 5          # Number of iterations per job (adjust as needed)
+iter_total <- 5000           # Total number of iterations
+cor_method <- "pearson"      # Correlation method
+aggre_method <- "mean"       # Aggregation method
+minGSSize <- 20              # Minimum gene set size
+maxGSSize <- 200             # Maximum gene set size
+
+# Define an array of null models and gene set types to loop through
+null_models <- c("resample_gene", "spin_brain")
+gs_types <- c("SynGO", "GO_MF")
+
+# Loop through each combination of null model and gene set type
+for (null_model in null_models) {
+  for (gs_type in gs_types) {
+    # Construct the folder name based on the parameters
+    folder_name <- sprintf(
+      "%s_%s_%s_%s_%d_%d_%d",
+      gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total
+    )
+    
+    # Construct the full path to the folder
+    input_dir <- file.path(input_dir_base, folder_name)
+    output_dir <- input_dir_base
+    
+    # Construct the save name based on the folder name
+    save_name <- folder_name
+    
+    # Call the job_cat function to merge the RDS files in this folder
+    job_cat(
+      input_dir = input_dir,
+      output_dir = output_dir,
+      n_rds = iter_total / n_iter_per_job,
+      save_name = save_name,
+      file_pattern = "res_job_%d.rds",
+      delete_originals = TRUE,
+      preserve_attributes = TRUE,
+      result_prefix = "null_"
+    )
+  }
+}
+```
+
+
 
 # 7. use job_splitter (a generic function to split jobs) to do brainscore.simulate
 
@@ -306,10 +393,14 @@ pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS"))  # Assuming predicto
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 annoData <- get_annoData(type = gs_type)
 
-if (null_model == "spin_brain") {
+if (sim_type == "spin_brain") {
   subset_vars<-list(perm_id = perm_id_dk_lh_5000)
 } else {
   subset_vars<-list()
+}
+
+if (sim_type %in% c("resample_gene","spin_brain")){
+  gsScoreList.null <- readRDS(gsScoreList.null)
 }
 
 # Update the output directory based on the input parameters
@@ -334,7 +425,7 @@ job_splitter(
   iter_total = iter_total,
   output_dir = output_dir,
   FUN = brainscore.simulate,
-  subset_vars = list(),  # No subset_vars required in this case
+  subset_vars = subset_vars,  # No subset_vars required in this case
   subset_total_var = 'sim_n',
   brain_data = brain_data,
   gene_data = gene_data,
@@ -350,5 +441,49 @@ job_splitter(
   maxGSSize = maxGSSize,
   gsScoreList.null = gsScoreList.null  # This argument is now correctly placed at the end
 )
+
+```
+
+```{bash}
+#!/bin/bash
+#SBATCH --job-name=brainscore_sim    # Job name
+#SBATCH --output=brainscore_sim_%A_%a.out  # Standard output log
+#SBATCH --error=brainscore_sim_%A_%a.err   # Standard error log
+#SBATCH --time=10:00:00             # Time limit hrs:min:sec
+#SBATCH --nodes=1                    # Number of nodes
+#SBATCH --ntasks=1                   # Number of tasks
+#SBATCH --mem=16G                    # Memory per node
+#SBATCH --array=1-5               # Array range (adjust based on iter_total / n_iter_per_job)
+
+# Define the variables
+n_iter_per_job=2          # Number of iterations per job
+iter_total=10           # Total number of iterations
+cor_method="pearson"      # Correlation method
+aggre_method="mean"       # Aggregation method
+minGSSize=20              # Minimum gene set size
+maxGSSize=200             # Maximum gene set size
+sim_types=("randomize_pred" "spin_brain" "resample_gene")  # Simulation types
+gs_types=("SynGO")  # Gene set types
+
+# Change to the directory where the R script is located
+cd /gpfs1/home/z/c/zcao4/BrainEnrich
+
+# Loop through each combination of simulation type and gene set type
+for gs_type in "${gs_types[@]}"; do
+  for sim_type in "${sim_types[@]}"; do
+    
+    if [[ "$sim_type" == "randomize_pred" ]]; then
+      # Run the script without gsScoreList.null for randomize_pred
+      Rscript --vanilla job_splitter_brainscore_simulate.R $SLURM_ARRAY_TASK_ID $n_iter_per_job $iter_total $cor_method $aggre_method $sim_type $gs_type $minGSSize $maxGSSize ""
+    else
+      # Set the gsScoreList.null file path based on the current analysis parameters
+      gsScoreList_null="/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_brainscore/${gs_type}_${sim_type}_${cor_method}_${aggre_method}_${minGSSize}_${maxGSSize}_${iter_total}.rds"
+      
+      # Run the script with gsScoreList.null for other simulation types
+      Rscript --vanilla job_splitter_brainscore_simulate.R $SLURM_ARRAY_TASK_ID $n_iter_per_job $iter_total $cor_method $aggre_method $sim_type $gs_type $minGSSize $maxGSSize $gsScoreList_null
+    fi
+    
+  done
+done
 
 ```

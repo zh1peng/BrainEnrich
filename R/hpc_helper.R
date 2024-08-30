@@ -102,17 +102,18 @@ job_splitter <- function(job_id,
 #' @return The combined results, either as a saved RDS file or returned directly if `save_combined` is FALSE.
 #' @export
 
-job_cat <- function(output_dir,
-                        n_rds = NULL,
-                        save_name = NULL,
-                        file_pattern = "res_job_%d.rds",
-                        delete_originals = TRUE,
-                        preserve_attributes = FALSE,
-                        result_prefix = NULL) {
+job_cat <- function(input_dir,
+                    output_dir = NULL,
+                    n_rds = NULL,
+                    save_name = NULL,
+                    file_pattern = "res_job_%d.rds",
+                    delete_originals = TRUE,
+                    preserve_attributes = FALSE,
+                    result_prefix = NULL) {
   
   # Set default save_name if not provided
   if (is.null(save_name)) {
-    save_name <- basename(output_dir)
+    save_name <- basename(input_dir)
   }
   
   # Ensure save_name ends with .rds
@@ -121,7 +122,7 @@ job_cat <- function(output_dir,
   }
 
   # Get a list of all RDS files in the output directory matching the pattern
-  rds_files <- list.files(output_dir, pattern = "\\.rds$", full.names = TRUE)
+  rds_files <- list.files(input_dir, pattern = "\\.rds$", full.names = TRUE)
 
   if (length(rds_files) == 0) {
     stop("No RDS files found in the specified directory.")
@@ -129,7 +130,7 @@ job_cat <- function(output_dir,
 
   # Check for missing files if n_rds is provided
   if (!is.null(n_rds)) {
-    expected_files <- sprintf(file.path(output_dir, file_pattern), 1:n_rds)
+    expected_files <- sprintf(file.path(input_dir, file_pattern), 1:n_rds)
     missing_files <- setdiff(expected_files, rds_files)
 
     if (length(missing_files) > 0) {
@@ -165,6 +166,14 @@ job_cat <- function(output_dir,
     names(combined_results) <- paste0(result_prefix, 1:length(combined_results))
   }
   # Save the combined results as an RDS file
+  if (!is.null(output_dir)) {
+    if (!dir.exists(output_dir)) {
+      message(sprintf("Output directory %s does not exist. Creating it...", output_dir))
+      dir.create(output_dir, recursive = TRUE)
+    }
+  } else {
+    output_dir <- input_dir
+  }
   combined_file_path <- file.path(output_dir, save_name)
   saveRDS(combined_results, combined_file_path)
   message(sprintf("Combined results saved to %s.", combined_file_path))
