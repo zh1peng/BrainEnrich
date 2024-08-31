@@ -439,11 +439,12 @@ job_splitter(
   n_cores = 1,
   minGSSize = minGSSize,
   maxGSSize = maxGSSize,
+  n_perm = 5000, # should match gsScoreList
   gsScoreList.null = gsScoreList.null  # This argument is now correctly placed at the end
 )
 
 ```
-
+slurm job file
 ```{bash}
 #!/bin/bash
 #SBATCH --job-name=brainscore_sim    # Job name
@@ -487,3 +488,10 @@ for gs_type in "${gs_types[@]}"; do
 done
 
 ```
+
+collect the results
+```{r}
+library(BrainEnrich)
+input_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res/SynGO_spin_brain_pearson_mean_20_200_1000"
+output_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res"
+tmp=job_cat(input_dir = input_dir, output_dir = output_dir, n_rds = 1000, delete_originals = TRUE)
