@@ -23,6 +23,16 @@ styler::style_pkg()
 devtools::build()
 devtools::install()
 
+
+devtools::test()
+usethis::use_testthat()
+usethis::use_test("get_annoData")
+usethis::use_test("get_geneSetList")
+install.packages("covr")
+covr::package_coverage()
+
+
+
 detach("package:BrainEnrich", unload = TRUE)
 library(BrainEnrich)
 
