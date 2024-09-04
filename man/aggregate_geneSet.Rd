@@ -17,8 +17,7 @@ aggregate_geneSet(
 \item{geneSet}{A vector containing names of genes in the gene set of interest.}
 
 \item{method}{A character string specifying the method to use for aggregation.
-Options include 'mean', 'median', 'meanabs', 'meansqr', 'maxmean',
-'sig_n', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_sum'. Default is 'mean'.}
+Options include 'mean', 'median', 'meanabs', 'meansqr', 'maxmean', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_sum'. Default is 'mean'.}
 }
 \value{
 Returns a numeric score based on the specified aggregation method.

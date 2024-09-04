@@ -11,7 +11,7 @@
 #' @param aggre_method A character string specifying the aggregation method.
 #'                     Default is 'mean'. Other options include 'median', 'meanabs',
 #'                     'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum',
-#'                     'local_fdr', 'sign_test', 'rank_sum', 'custom'.
+#'                    'sign_test', 'rank_sum', 'custom'.
 #' @param null_model A character string specifying the null model.
 #'                   Default is 'spin_brain'. Other options include 'resample_gene',
 #'                   'coexp_matched'.
@@ -42,11 +42,7 @@ brainenrich <- function(brain_data,
                         gene_data,
                         annoData,
                         cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
-                        aggre_method = c(
-                          "mean", "median", "meanabs", "meansqr",
-                          "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum",
-                          "local_fdr", "sign_test", "rank_sum", "custom"
-                        ),
+                        aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
                         null_model = c("spin_brain", "resample_gene", "coexp_matched"),
                         minGSSize = 10,
                         maxGSSize = 200,

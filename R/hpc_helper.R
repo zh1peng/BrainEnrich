@@ -63,10 +63,10 @@ job_splitter <- function(job_id,
 
   # Subset the variables in subset_vars for this job
   if (!length(subset_vars) == 0) {
-  subset_vars_subset <- lapply(subset_vars, function(x) x[, start_iter:end_iter, drop = FALSE])
+    subset_vars_subset <- lapply(subset_vars, function(x) x[, start_iter:end_iter, drop = FALSE])
 
-  # Replace the original variables with their subsets
-  names(subset_vars_subset) <- names(subset_vars)
+    # Replace the original variables with their subsets
+    names(subset_vars_subset) <- names(subset_vars)
   } else {
     subset_vars_subset <- list()
   }
@@ -92,9 +92,9 @@ job_splitter <- function(job_id,
 #'
 #' @param output_dir A character string specifying the directory where the RDS files are stored.
 #' @param n_rds An integer specifying the expected number of RDS files. If provided, the function will check if any files are missing.
-#' @param save_name A character string specifying the name of the output RDS file for the combined results. 
+#' @param save_name A character string specifying the name of the output RDS file for the combined results.
 #'                  If not provided, it will default to the name of the output_dir. Must end with .rds.
-#' @param file_pattern A character string specifying the pattern of the RDS files to be combined. 
+#' @param file_pattern A character string specifying the pattern of the RDS files to be combined.
 #'                     Default is "res_job_%d.rds".
 #' @param delete_originals A logical indicating whether to delete the original RDS files after combining. Default is TRUE.
 #' @param preserve_attributes A logical indicating whether to preserve and update attributes specific to brainscore output. Default is FALSE.
@@ -110,12 +110,11 @@ job_cat <- function(input_dir,
                     delete_originals = TRUE,
                     preserve_attributes = FALSE,
                     result_prefix = NULL) {
-  
   # Set default save_name if not provided
   if (is.null(save_name)) {
     save_name <- basename(input_dir)
   }
-  
+
   # Ensure save_name ends with .rds
   if (!grepl("\\.rds$", save_name)) {
     save_name <- paste0(save_name, ".rds")
@@ -162,7 +161,7 @@ job_cat <- function(input_dir,
   }
 
   # Update the names of the combined results with the user-defined prefix
-  if (!is.null(result_prefix)&& length(combined_results) > 0 && is.list(combined_results) %% is.character(result_prefix)) {
+  if (!is.null(result_prefix) && length(combined_results) > 0 && is.list(combined_results) %% is.character(result_prefix)) {
     names(combined_results) <- paste0(result_prefix, 1:length(combined_results))
   }
   # Save the combined results as an RDS file

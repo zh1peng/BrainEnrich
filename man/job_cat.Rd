@@ -5,7 +5,8 @@
 \title{Combine Results from Saved RDS Files}
 \usage{
 job_cat(
-  output_dir,
+  input_dir,
+  output_dir = NULL,
   n_rds = NULL,
   save_name = NULL,
   file_pattern = "res_job_\%d.rds",

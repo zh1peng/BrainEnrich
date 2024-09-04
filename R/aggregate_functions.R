@@ -6,8 +6,7 @@
 #' @param geneList A matrix of genes by models, with each column representing a true or null model.
 #' @param geneSet A vector containing names of genes in the gene set of interest.
 #' @param method A character string specifying the method to use for aggregation.
-#'               Options include 'mean', 'median', 'meanabs', 'meansqr', 'maxmean',
-#'               'sig_n', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_sum'. Default is 'mean'.
+#'               Options include 'mean', 'median', 'meanabs', 'meansqr', 'maxmean', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_sum'. Default is 'mean'.
 #' @importFrom stats median p.adjust
 #' @importFrom methods new
 #' @return Returns a numeric score based on the specified aggregation method.
@@ -16,12 +15,7 @@
 #'
 aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
                               geneSet, # one geneSet of interest
-                              method = c(
-                                "mean", "median", "meanabs", "meansqr",
-                                "maxmean", "ks_orig", "ks_weighted",
-                                "ks_pos_neg_sum",
-                                "sign_test", "rank_sum", "custom"
-                              )) {
+                              method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom")) {
   if (is.function(method)) { # if method is a custom function
     aggre_func <- method
     method <- "custom"

@@ -444,6 +444,7 @@ job_splitter(
 )
 
 ```
+
 slurm job file
 ```{bash}
 #!/bin/bash
@@ -486,7 +487,6 @@ for gs_type in "${gs_types[@]}"; do
     
   done
 done
-
 ```
 
 collect the results
@@ -495,3 +495,4 @@ library(BrainEnrich)
 input_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res/SynGO_spin_brain_pearson_mean_20_200_1000"
 output_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res"
 tmp=job_cat(input_dir = input_dir, output_dir = output_dir, n_rds = 1000, delete_originals = TRUE)
+```

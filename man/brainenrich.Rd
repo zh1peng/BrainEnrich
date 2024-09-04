@@ -10,7 +10,7 @@ brainenrich(
   annoData,
   cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
   aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig",
-    "ks_weighted", "ks_pos_neg_sum", "local_fdr", "sign_test", "rank_sum", "custom"),
+    "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
   null_model = c("spin_brain", "resample_gene", "coexp_matched"),
   minGSSize = 10,
   maxGSSize = 200,
@@ -43,7 +43,7 @@ Default is 'pearson'. Other options include 'spearman', 'pls1c',
 \item{aggre_method}{A character string specifying the aggregation method.
 Default is 'mean'. Other options include 'median', 'meanabs',
 'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum',
-'local_fdr', 'sign_test', 'rank_sum', 'custom'.}
+'sign_test', 'rank_sum', 'custom'.}
 
 \item{null_model}{A character string specifying the null model.
 Default is 'spin_brain'. Other options include 'resample_gene',

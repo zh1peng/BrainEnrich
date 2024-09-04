@@ -47,10 +47,7 @@ brainscore.lm_test <- function(pred_df,
                                annoData,
                                gsScoreList.null = NULL,
                                cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
-                               aggre_method = c(
-                                 "mean", "median", "meanabs", "meansqr", "maxmean",
-                                 "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"
-                               ),
+                               aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
                                null_model = c("spin_brain", "resample_gene", "coexp_matched"),
                                minGSSize = 10,
                                maxGSSize = 200,
