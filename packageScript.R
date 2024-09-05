@@ -19,6 +19,7 @@ devtools::has_devel()
 
 devtools::document()
 #devtools::check()
+devtools::check(run_tests = FALSE)
 styler::style_pkg()
 devtools::build()
 devtools::install()

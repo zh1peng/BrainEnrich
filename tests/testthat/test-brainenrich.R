@@ -1,5 +1,5 @@
 library(testthat)
-library(mockery)
+
 
 # Prepare mock data for testing
 
@@ -9,8 +9,6 @@ data(brain_data)
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.6", hem = "L")
 # Example annotation data (using get_annoData function)
 annoData <- get_annoData("SynGO")
-geneSetList <- get_geneSetList(annoData)
-geneSetList.filtered <- filter_geneSetList(colnames(gene_data), geneSetList, minGSSize = 20, maxGSSize = 200)
 
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (spin brain + perm id)", {
@@ -89,13 +87,14 @@ res<-brainenrich(
 
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (co-exp matched)", {
-
+pkgload::load_all()
+  # Mock readline function to simulate user input
 mock_readline <- function(prompt) {
-    return("Y")  # Simulate user input as "Y"
-  }
+      return("Y")  # Simulate user input as "Y"
+    } 
 
-with_mock(
-  readline = mock_readline,
+# Need to add readline <- NULL in package
+local_mocked_bindings(readline = mock_readline)
   # Perform analysis with valid inputs
 res<-brainenrich(
   brain_data = brain_data,
@@ -113,17 +112,12 @@ res<-brainenrich(
   matchcoexp_tol = 0.8,
   matchcoexp_max_iter = 1000,
 )
-)
+
+
   # Test that the result is a gseaResult object
   expect_s4_class(res, "gseaResult")
 })
-sampled_gs <- resample_geneSetList_matching_coexp(gene_data, 
-geneSetList.filtered, 
-tol = 0.8, 
-max_iter = 1000, 
-n_perm = 2, 
-n_cores = 0)
-seq_along(geneSetList.filtered)
+
 
 
 

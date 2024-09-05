@@ -39,6 +39,8 @@ read.csv_bzip2 <- function(input_csv_bz, ...) {
   return(data)
 }
 
+# for testthat local_mocked_bindings
+readline <- NULL
 
 # # # Directory containing your CSV files
 # csv_directory <- "E:/xhmhc/BrainEnrich/inst/extdata/not_compressed"

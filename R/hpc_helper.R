@@ -12,7 +12,7 @@
 #'        If provided, the total number of iterations for the current job will be assigned to this argument.
 #' @param output_dir A character string specifying the directory where the results should be saved. If the directory does not exist, it will be created.
 #' @param prefix A character string specifying the base name for the saved RDS files. Default is "res_job_".
-#'  @param FUN A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in `...`.
+#' @param FUN A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in `...`.
 #' @param ... Additional arguments passed to `FUN`.
 #' @return This function does not return a value but saves the results of `FUN` to an RDS file in the specified `output_dir`.
 #' @examples
@@ -89,7 +89,7 @@ job_splitter <- function(job_id,
 #'
 #' This function combines results from multiple saved RDS files into a single data frame or list,
 #' saves the combined results as an RDS file (optional), and checks for missing files.
-#'
+#' @param input_dir A character string specifying the directory containing the RDS files to be combined. 
 #' @param output_dir A character string specifying the directory where the RDS files are stored.
 #' @param n_rds An integer specifying the expected number of RDS files. If provided, the function will check if any files are missing.
 #' @param save_name A character string specifying the name of the output RDS file for the combined results.

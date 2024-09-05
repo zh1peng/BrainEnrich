@@ -23,10 +23,11 @@ job_splitter(
 
 \item{iter_total}{An integer specifying the total number of iterations to be processed across all jobs.}
 
-\item{prefix}{A character string specifying the base name for the saved RDS files. Default is "res_job_".
-@param FUN A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in \code{...}.}
+\item{prefix}{A character string specifying the base name for the saved RDS files. Default is "res_job_".}
 
 \item{output_dir}{A character string specifying the directory where the results should be saved. If the directory does not exist, it will be created.}
+
+\item{FUN}{A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in \code{...}.}
 
 \item{subset_vars}{A named list of variables (typically matrices) that need to be subset according to the job's assigned iterations.
 The names should correspond to the argument names in \code{FUN}.}

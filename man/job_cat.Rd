@@ -16,6 +16,8 @@ job_cat(
 )
 }
 \arguments{
+\item{input_dir}{A character string specifying the directory containing the RDS files to be combined.}
+
 \item{output_dir}{A character string specifying the directory where the RDS files are stored.}
 
 \item{n_rds}{An integer specifying the expected number of RDS files. If provided, the function will check if any files are missing.}
