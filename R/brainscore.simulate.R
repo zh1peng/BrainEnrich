@@ -300,7 +300,7 @@ brainscore.simulate <- function(pred_df,
         null_model = "resample_gene",
         minGSSize = minGSSize,
         maxGSSize = maxGSSize,
-        n_cores = 1,
+        n_cores = n_cores,
         n_perm = n_perm,
         verbose = FALSE
       )
