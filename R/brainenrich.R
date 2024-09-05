@@ -65,7 +65,7 @@ brainenrich <- function(brain_data,
     stop("For null_model 'spin_brain', 'perm_id' or at least one of 'coord.l' or 'coord.r' must be provided.")
   }
 
-  if (null_model == "spin_brain") {
+  if (null_model == "spin_brain" && !is.null(perm_id)) {
     if (n_perm > ncol(perm_id)) {
       stop("The number of permutations must be less than or equal to the number of columns in 'perm_id'.")
     } else if (n_perm < ncol(perm_id)) {{ perm_id <- perm_id[, 1:n_perm] }}
@@ -112,7 +112,7 @@ brainenrich <- function(brain_data,
     gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = n_cores)
   } else if (null_model == "coexp_matched") {
     message("Generating null gene list with coexp_matched model...")
-    sampled_gs <- resample_geneSetList_matching_coexp(gene_data, geneSetList, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
+    sampled_gs <- resample_geneSetList_matching_coexp(gene_data, selected.gs, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm, n_cores = n_cores)
     message("Aggregating true gene set scores...")
     gs_score.null <- aggregate_geneSetList_matching_coexp(geneList.true, selected.gs, sampled_gs, method = aggre_method, n_cores = n_cores)
   }

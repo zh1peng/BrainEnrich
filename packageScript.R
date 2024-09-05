@@ -28,6 +28,17 @@ devtools::test()
 usethis::use_testthat()
 usethis::use_test("get_annoData")
 usethis::use_test("get_geneSetList")
+usethis::use_test("split_Anno")
+usethis::use_test("filter_geneSetList")
+usethis::use_test("get_termDescription")
+usethis::use_test("get_geneExp")
+
+usethis::use_test("brainenrich")
+usethis::use_test("rotate_parcellation")
+
+
+
+
 install.packages("covr")
 covr::package_coverage()
 

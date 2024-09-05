@@ -32,8 +32,8 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
       stop("For 'sd', threshold_value should be between 0 and 3.")
     }
   } else if (threshold_type == "percentile") {
-    if (threshold_value < 1 || threshold_value > 99 || threshold_value %% 10 != 0) {
-      stop("For 'percentile', threshold_value should be a multiple of 10 and between 1 and 99.")
+    if (threshold_value < 1 || threshold_value > 99) {
+      stop("For 'percentile', threshold_value should be between 1 and 99.")
     }
   }
 
