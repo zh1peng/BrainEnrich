@@ -87,14 +87,17 @@ res<-brainenrich(
 
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (co-exp matched)", {
-pkgload::load_all()
   # Mock readline function to simulate user input
-mock_readline <- function(prompt) {
-      return("Y")  # Simulate user input as "Y"
-    } 
+# mock_readline <- function(prompt) {
+#       return("Y")  # Simulate user input as "Y"
+#     } 
+mock_ask_user_continue <- function(msg)
+{
+  return(TRUE)
+}
 
 # Need to add readline <- NULL in package
-local_mocked_bindings(readline = mock_readline)
+local_mocked_bindings(ask_user_continue = mock_ask_user_continue)
   # Perform analysis with valid inputs
 res<-brainenrich(
   brain_data = brain_data,

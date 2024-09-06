@@ -43,6 +43,7 @@ usethis::use_test("rotate_parcellation")
 
 install.packages("covr")
 covr::package_coverage()
+covr::codecov(token = "bf94b382-482f-4c28-9ced-e988216dde4a")
 
 
 
