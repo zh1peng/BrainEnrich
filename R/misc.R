@@ -1,12 +1,12 @@
-#' @importFrom stats pt
-cor2p <- function(r, n) {
-  t <- (r * sqrt(n - 2)) / sqrt(1 - r^2)
-  p <- 2 * (1 - pt(abs(t), (n - 2)))
-  return(p)
-}
-
-
-
+#' Ask User to Continue with Yes/No Input
+#'
+#' This function prompts the user with a message asking whether they want to continue, 
+#' and accepts either 'Y' (for Yes) or 'N' (for No) as valid inputs.
+#' The function will repeatedly ask the user for input until they enter a valid response.
+#'
+#' @param msg A character string containing the message to display to the user before the prompt.
+#' @return A logical value: `TRUE` if the user inputs 'Y' (Yes) and `FALSE` if the user inputs 'N' (No).
+#' @export
 ask_user_continue <- function(msg) {
   repeat {
     user_input <- readline(prompt = sprintf("%s. Do you want to continue? (Y/N): ", msg))
@@ -24,13 +24,14 @@ ask_user_continue <- function(msg) {
 
 
 
-# Function to compress a CSV file using bzip2
-#' @importFrom utils write.csv
-compress_csv_bzip2 <- function(input_csv) {
-  output_csv_bz <- paste0(input_csv, ".bz2")
-  data <- read.csv(input_csv, check.names = FALSE)
-  write.csv(data, bzfile(output_csv_bz), row.names = FALSE)
-}
+
+# # Function to compress a CSV file using bzip2
+# #' @importFrom utils write.csv
+# compress_csv_bzip2 <- function(input_csv) {
+#   output_csv_bz <- paste0(input_csv, ".bz2")
+#   data <- read.csv(input_csv, check.names = FALSE)
+#   write.csv(data, bzfile(output_csv_bz), row.names = FALSE)
+# }
 
 # Decompress and load a CSV file using bzip2
 #' @importFrom utils read.csv
