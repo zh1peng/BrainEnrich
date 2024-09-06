@@ -1,4 +1,3 @@
-
 data(sample_df)
 brain_data <- dplyr::select(sample_df, starts_with("L_")) %>% t()
 colnames(brain_data) <- paste0("sub-", 1:ncol(brain_data))
@@ -12,7 +11,6 @@ pred_df <- sample_df %>% dplyr::select(BMI)
 
 # Basic test of brainscore.simulate with randomize_pred
 test_that("brainscore.simulate works with randomize_pred", {
-
   # Run the simulation
   res <- brainscore.simulate(
     pred_df = pred_df,
@@ -31,15 +29,14 @@ test_that("brainscore.simulate works with randomize_pred", {
 
   # Test that the result is a list
   expect_type(res, "list")
-  
+
   # Check that the output structure is valid
   expect_length(res, 5)
-  
 })
 
 # Test with spin_brain simulation type
 test_that("brainscore.simulate works with spin_brain", {
-   data(perm_id_dk_lh_5000)
+  data(perm_id_dk_lh_5000)
   # Run the simulation
   res <- brainscore.simulate(
     pred_df = pred_df,
@@ -60,15 +57,13 @@ test_that("brainscore.simulate works with spin_brain", {
 
   # Test that the result is a list
   expect_type(res, "list")
-  
+
   # Check the result length is equal to number of simulations
   expect_length(res, 5)
-
 })
 
 # Test resample_gene simulation type
 test_that("brainscore.simulate works with resample_gene", {
-
   # Run the simulation
   res <- brainscore.simulate(
     pred_df = pred_df,
@@ -88,14 +83,11 @@ test_that("brainscore.simulate works with resample_gene", {
 
   # Test that the result is a list
   expect_type(res, "list")
-  
- 
 })
 
 
 # Test with pre-calculated null gsScore
 test_that("brainscore.simulate works with pre-calculated null gsScore", {
-
   # Pre-calculate the null gsScore
   gsScore.null <- brainscore(
     brain_data = brain_data,
@@ -129,6 +121,4 @@ test_that("brainscore.simulate works with pre-calculated null gsScore", {
 
   # Test that the result is a list
   expect_type(res, "list")
-  
- 
 })

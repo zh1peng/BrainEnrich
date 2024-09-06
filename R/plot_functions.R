@@ -62,19 +62,19 @@ plot_brain <- function(df2plot,
   } else if (ats == "aseg") {
     atlas_data <- getExportedValue("ggseg", "aseg") # ggseg::aseg
     df2plot <- df2plot %>%
-      mutate(label = recode(.data$key,
-        "SV_L_" = "Left-",
-        "SV_R_" = "Right-",
-        "thal" = "Thalamus-Proper",
-        "caud" = "Caudate",
-        "put" = "Putamen",
-        "pal" = "Pallidum",
-        "hippo" = "Hippocampus",
-        "amyg" = "Amygdala",
-        "accumb" = "Accumben-area",
-        "LatVent" = "Lateral-Ventricle"
-      )) %>%
-      filter(!.data$key %in% c("SV_L_accumb", "SV_R_accumb")) %>%
+      mutate(
+        label = sub("SV_L_", "Left-", .data$label), # Replace "SV_L_" with "Left-"
+        label = sub("SV_R_", "Right-", .data$label), # Replace "SV_R_" with "Right-"
+        label = sub("thal", "Thalamus-Proper", .data$label), # Replace "thal" with "Thalamus-Proper"
+        label = sub("caud", "Caudate", .data$label), # Replace "caud" with "Caudate"
+        label = sub("put", "Putamen", .data$label), # Replace "put" with "Putamen"
+        label = sub("pal", "Pallidum", .data$label), # Replace "pal" with "Pallidum"
+        label = sub("hippo", "Hippocampus", .data$label), # Replace "hippo" with "Hippocampus"
+        label = sub("amyg", "Amygdala", .data$label), # Replace "amyg" with "Amygdala"
+        label = sub("accumb", "Accumben-area", .data$label), # Replace "accumb" with "Accumben-area"
+        label = sub("LatVent", "Lateral-Ventricle", .data$label) # Replace "LatVent" with "Lateral-Ventricle"
+      ) %>%
+      filter(!grepl("Accumben-area", .data$label)) %>%
       brain_join(atlas_data) %>%
       filter(.data$side == "coronal")
   }

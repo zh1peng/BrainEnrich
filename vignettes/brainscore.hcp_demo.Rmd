@@ -315,12 +315,12 @@ library(BrainEnrich)
 input_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_brainscore"
 
 # Define the parameters of the analysis
-n_iter_per_job <- 5          # Number of iterations per job (adjust as needed)
-iter_total <- 5000           # Total number of iterations
-cor_method <- "pearson"      # Correlation method
-aggre_method <- "mean"       # Aggregation method
-minGSSize <- 20              # Minimum gene set size
-maxGSSize <- 200             # Maximum gene set size
+n_iter_per_job <- 5 # Number of iterations per job (adjust as needed)
+iter_total <- 5000 # Total number of iterations
+cor_method <- "pearson" # Correlation method
+aggre_method <- "mean" # Aggregation method
+minGSSize <- 20 # Minimum gene set size
+maxGSSize <- 200 # Maximum gene set size
 
 # Define an array of null models and gene set types to loop through
 null_models <- c("resample_gene", "spin_brain")
@@ -334,14 +334,14 @@ for (null_model in null_models) {
       "%s_%s_%s_%s_%d_%d_%d",
       gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total
     )
-    
+
     # Construct the full path to the folder
     input_dir <- file.path(input_dir_base, folder_name)
     output_dir <- input_dir_base
-    
+
     # Construct the save name based on the folder name
     save_name <- folder_name
-    
+
     # Call the job_cat function to merge the RDS files in this folder
     job_cat(
       input_dir = input_dir,
@@ -386,20 +386,20 @@ data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
 
 # Load hcp brain_data
 brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
-cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS"))  # Assuming covariates data is stored in cov_df.RDS
-pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS"))  # Assuming predictor data is stored in pred_df.RDS
+cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS")) # Assuming covariates data is stored in cov_df.RDS
+pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS")) # Assuming predictor data is stored in pred_df.RDS
 
 # Load additional necessary data
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 annoData <- get_annoData(type = gs_type)
 
 if (sim_type == "spin_brain") {
-  subset_vars<-list(perm_id = perm_id_dk_lh_5000)
+  subset_vars <- list(perm_id = perm_id_dk_lh_5000)
 } else {
-  subset_vars<-list()
+  subset_vars <- list()
 }
 
-if (sim_type %in% c("resample_gene","spin_brain")){
+if (sim_type %in% c("resample_gene", "spin_brain")) {
   gsScoreList.null <- readRDS(gsScoreList.null)
 }
 
@@ -425,8 +425,8 @@ job_splitter(
   iter_total = iter_total,
   output_dir = output_dir,
   FUN = brainscore.simulate,
-  subset_vars = subset_vars,  # No subset_vars required in this case
-  subset_total_var = 'sim_n',
+  subset_vars = subset_vars, # No subset_vars required in this case
+  subset_total_var = "sim_n",
   brain_data = brain_data,
   gene_data = gene_data,
   annoData = annoData,
@@ -434,15 +434,14 @@ job_splitter(
   cov_df = cov_df,
   cor_method = cor_method,
   aggre_method = aggre_method,
-  subsample_size = c(50,100,150,200,250,300),
+  subsample_size = c(50, 100, 150, 200, 250, 300),
   sim_type = sim_type,
   n_cores = 1,
   minGSSize = minGSSize,
   maxGSSize = maxGSSize,
   n_perm = 5000, # should match gsScoreList
-  gsScoreList.null = gsScoreList.null  # This argument is now correctly placed at the end
+  gsScoreList.null = gsScoreList.null # This argument is now correctly placed at the end
 )
-
 ```
 
 slurm job file
@@ -494,5 +493,5 @@ collect the results
 library(BrainEnrich)
 input_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res/SynGO_spin_brain_pearson_mean_20_200_1000"
 output_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res"
-tmp=job_cat(input_dir = input_dir, output_dir = output_dir, n_rds = 1000, delete_originals = TRUE)
+tmp <- job_cat(input_dir = input_dir, output_dir = output_dir, n_rds = 1000, delete_originals = TRUE)
 ```

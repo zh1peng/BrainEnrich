@@ -37,13 +37,25 @@ usethis::use_test("brainscore.simulate.R")
 
 usethis::use_test("brainenrich")
 usethis::use_test("rotate_parcellation")
-
-
+usethis::use_test("job_splitter")
+usethis::use_test("job_cat")
+usethis::use_test("brainscore")
+usethis::use_test("misc")
+usethis::use_test("brainscore.lm_test.R")
+usethis::use_test("plot_functions")
 
 
 install.packages("covr")
 covr::package_coverage()
 covr::codecov(token = "bf94b382-482f-4c28-9ced-e988216dde4a")
+
+
+# Report coverage for a specific function (e.g., `job_splitter`)
+coverage <- covr::function_coverage(
+  fun = job_cat,               # The function to test
+  test_file("tests/testthat/test-job_cat.R")  # The specific test file(s)
+)
+
 
 
 

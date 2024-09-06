@@ -12,24 +12,24 @@ annoData <- get_annoData("SynGO")
 
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (spin brain + perm id)", {
-data(perm_id_dk_lh_5000)
+  data(perm_id_dk_lh_5000)
   # Perform analysis with valid inputs
-res<-brainenrich(
-  brain_data = brain_data,
-  gene_data = gene_data,
-  annoData = annoData,
-  perm_id = perm_id_dk_lh_5000,
-  cor_method = "pearson",
-  aggre_method = "mean",
-  null_model = "spin_brain",
-  n_perm = 2,
-  n_cores = 2,
-  minGSSize = 20,
-  maxGSSize = 200,
-  pvalueCutoff = 50,
-  threshold_type = "sd",
-  threshold = 1
-)
+  res <- brainenrich(
+    brain_data = brain_data,
+    gene_data = gene_data,
+    annoData = annoData,
+    perm_id = perm_id_dk_lh_5000,
+    cor_method = "pearson",
+    aggre_method = "mean",
+    null_model = "spin_brain",
+    n_perm = 2,
+    n_cores = 2,
+    minGSSize = 20,
+    maxGSSize = 200,
+    pvalueCutoff = 50,
+    threshold_type = "sd",
+    threshold = 1
+  )
   # Test that the result is a gseaResult object
   expect_s4_class(res, "gseaResult")
 })
@@ -37,26 +37,26 @@ res<-brainenrich(
 
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (spin brain + coord.l)", {
-data(coord_dk_lh)
+  data(coord_dk_lh)
   # Perform analysis with valid inputs
-res<-brainenrich(
-  brain_data = brain_data,
-  gene_data = gene_data,
-  annoData = annoData,
-  coord.l = coord_dk_lh,
-  perm_id = NULL,
-  seed = 2024,
-  cor_method = "pearson",
-  aggre_method = "mean",
-  null_model = "spin_brain",
-  n_perm = 2,
-  n_cores = 2,
-  minGSSize = 20,
-  maxGSSize = 200,
-  pvalueCutoff = 50,
-  threshold_type = "sd",
-  threshold = 1
-)
+  res <- brainenrich(
+    brain_data = brain_data,
+    gene_data = gene_data,
+    annoData = annoData,
+    coord.l = coord_dk_lh,
+    perm_id = NULL,
+    seed = 2024,
+    cor_method = "pearson",
+    aggre_method = "mean",
+    null_model = "spin_brain",
+    n_perm = 2,
+    n_cores = 2,
+    minGSSize = 20,
+    maxGSSize = 200,
+    pvalueCutoff = 50,
+    threshold_type = "sd",
+    threshold = 1
+  )
   # Test that the result is a gseaResult object
   expect_s4_class(res, "gseaResult")
 })
@@ -64,21 +64,44 @@ res<-brainenrich(
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (resample gene)", {
   # Perform analysis with valid inputs
-res<-brainenrich(
-  brain_data = brain_data,
-  gene_data = gene_data,
-  annoData = annoData,
-  cor_method = "pearson",
-  aggre_method = "mean",
-  null_model = "resample_gene",
-  n_perm = 2,
-  n_cores = 0,
-  minGSSize = 20,
-  maxGSSize = 200,
-  pvalueCutoff = 1,
-  threshold_type = "percentile",
-  threshold = 80
-)
+  res <- brainenrich(
+    brain_data = brain_data,
+    gene_data = gene_data,
+    annoData = annoData,
+    cor_method = "pearson",
+    aggre_method = "mean",
+    null_model = "resample_gene",
+    n_perm = 2,
+    n_cores = 0,
+    minGSSize = 20,
+    maxGSSize = 200,
+    pvalueCutoff = 1,
+    threshold_type = "percentile",
+    threshold = 80
+  )
+  # Test that the result is a gseaResult object
+  expect_s4_class(res, "gseaResult")
+})
+
+
+
+# Test the brainenrich function
+test_that("brainenrich performs gene set analysis correctly with valid input (resample gene)", {
+  # Perform analysis with valid inputs
+  res <- brainenrich(
+    brain_data = brain_data,
+    gene_data = gene_data,
+    annoData = annoData,
+    cor_method = "pearson",
+    aggre_method = "mean",
+    null_model = "resample_gene",
+    n_perm = 2,
+    n_cores = 0,
+    minGSSize = 20,
+    maxGSSize = 200,
+    pvalueCutoff = 0.001,
+    threshold_type = "none"
+  )
   # Test that the result is a gseaResult object
   expect_s4_class(res, "gseaResult")
 })
@@ -88,33 +111,33 @@ res<-brainenrich(
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (co-exp matched)", {
   # Mock readline function to simulate user input
-# mock_readline <- function(prompt) {
-#       return("Y")  # Simulate user input as "Y"
-#     } 
-mock_ask_user_continue <- function(msg)
-{
-  return(TRUE)
-}
+  # mock_readline <- function(prompt) {
+  #       return("Y")  # Simulate user input as "Y"
+  #     }
+  pkgload::load_all()
+  mock_ask_user_continue <- function(msg) {
+    return(TRUE)
+  }
 
-# Need to add readline <- NULL in package
-local_mocked_bindings(ask_user_continue = mock_ask_user_continue)
+  # Need to add readline <- NULL in package
+  local_mocked_bindings(ask_user_continue = mock_ask_user_continue)
   # Perform analysis with valid inputs
-res<-brainenrich(
-  brain_data = brain_data,
-  gene_data = gene_data,
-  annoData = annoData,
-  cor_method = "pearson",
-  aggre_method = "mean",
-  null_model = "coexp_matched",
-  n_perm = 2,
-  n_cores = 2,
-  minGSSize = 20,
-  maxGSSize = 200,
-  pvalueCutoff = 1,
-  threshold_type = "none",
-  matchcoexp_tol = 0.8,
-  matchcoexp_max_iter = 1000,
-)
+  res <- brainenrich(
+    brain_data = brain_data,
+    gene_data = gene_data,
+    annoData = annoData,
+    cor_method = "pearson",
+    aggre_method = "mean",
+    null_model = "coexp_matched",
+    n_perm = 2,
+    n_cores = 2,
+    minGSSize = 20,
+    maxGSSize = 200,
+    pvalueCutoff = 1,
+    threshold_type = "none",
+    matchcoexp_tol = 0.8,
+    matchcoexp_max_iter = 1000,
+  )
 
 
   # Test that the result is a gseaResult object
@@ -124,17 +147,57 @@ res<-brainenrich(
 
 
 
+# Test the brainenrich function
+test_that("brainenrich performs gene set analysis correctly with valid input (co-exp matched)", {
+  # Mock readline function to simulate user input
+  # mock_readline <- function(prompt) {
+  #       return("Y")  # Simulate user input as "Y"
+  #     }
+  pkgload::load_all()
+  mock_ask_user_continue <- function(msg) {
+    return(FALSE)
+  }
+
+  # Need to add readline <- NULL in package
+  local_mocked_bindings(ask_user_continue = mock_ask_user_continue)
+  # Perform analysis with valid inputs
+
+  expect_error(res <- brainenrich(
+    brain_data = brain_data,
+    gene_data = gene_data,
+    annoData = annoData,
+    cor_method = "pearson",
+    aggre_method = "mean",
+    null_model = "coexp_matched",
+    n_perm = 2,
+    n_cores = 2,
+    minGSSize = 20,
+    maxGSSize = 200,
+    pvalueCutoff = 1,
+    threshold_type = "none",
+    matchcoexp_tol = 0.8,
+    matchcoexp_max_iter = 1000,
+  ), "Operation aborted by the user")
+})
+
+
+
+
 # Define valid cor_method and aggre_method options
 valid_cor_methods <- c("spearman", "pls1c", "pls1w")
-valid_aggre_methods <- c("median", "meanabs", "meansqr", "maxmean", 
-                         "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", 
-                         "rank_sum")
+valid_aggre_methods <- c(
+  "median", "meanabs", "meansqr", "maxmean",
+  "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test",
+  "rank_sum"
+)
 
 # Loop through all combinations of cor_method and aggre_method
 for (cor_method in valid_cor_methods) {
   for (aggre_method in valid_aggre_methods) {
-    test_that(paste0("brainenrich works with cor_method = '", cor_method, 
-                     "' and aggre_method = '", aggre_method, "'"), {
+    test_that(paste0(
+      "brainenrich works with cor_method = '", cor_method,
+      "' and aggre_method = '", aggre_method, "'"
+    ), {
       # Perform analysis with the current combination of cor_method and aggre_method
       res <- brainenrich(
         brain_data = brain_data,

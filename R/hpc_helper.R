@@ -89,7 +89,7 @@ job_splitter <- function(job_id,
 #'
 #' This function combines results from multiple saved RDS files into a single data frame or list,
 #' saves the combined results as an RDS file (optional), and checks for missing files.
-#' @param input_dir A character string specifying the directory containing the RDS files to be combined. 
+#' @param input_dir A character string specifying the directory containing the RDS files to be combined.
 #' @param output_dir A character string specifying the directory where the RDS files are stored.
 #' @param n_rds An integer specifying the expected number of RDS files. If provided, the function will check if any files are missing.
 #' @param save_name A character string specifying the name of the output RDS file for the combined results.
@@ -142,8 +142,11 @@ job_cat <- function(input_dir,
   } else {
     message("Number of RDS files not specified.")
     msg <- paste0("There are ", length(rds_files), " RDS files that will be combined.")
-    ask_user_continue(msg)
-    delete_originals <- FALSE
+    if (!ask_user_continue(msg)) {
+      stop("Operation cancelled by user.")
+    } else {
+      delete_originals <- FALSE
+    }
   }
 
   # Initialize a list to store the loaded results and attributes

@@ -11,7 +11,7 @@ test_that("get_annoData works with actual paths in tempdir", {
   extdata_dir <- file.path(package_dir, "extdata")
   gene_set_dir <- file.path(extdata_dir, "geneSets")
 
-  
+
   if (dir.exists(gene_set_dir)) {
     unlink(gene_set_dir, recursive = TRUE)
   }

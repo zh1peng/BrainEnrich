@@ -1,6 +1,6 @@
 library(testthat)
 
-annoData <- get_annoData()  # Example of annotation type
+annoData <- get_annoData() # Example of annotation type
 # Example test for get_geneSetList()
 test_that("get_geneSetList retrieves gene sets correctly", {
   # Assume that get_annoData is working correctly, so we can retrieve annoData
@@ -12,5 +12,5 @@ test_that("get_geneSetList retrieves gene sets correctly", {
   expect_true(length(geneSetList) > 0)
   # Test that each element in the list has the expected structure (assuming they are vectors or data frames)
   expect_true(all(sapply(geneSetList, is.vector) | sapply(geneSetList, is.data.frame)))
-  expect_error(get_geneSetList(NULL), "not supported")  
+  expect_error(get_geneSetList(NULL), "not supported")
 })

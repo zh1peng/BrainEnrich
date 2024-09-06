@@ -150,7 +150,7 @@ brainscore <- function(brain_data,
     sampled_gs <- resample_geneSetList_matching_coexp(gene_data, selected.gs, tol = matchcoexp_tol, max_iter = matchcoexp_max_iter, n_perm = n_perm)
 
     if (is.null(sampled_gs)) stop("NULL sampled_gs returned.")
-    if (!identical(names(geneSetList), names(sampled_gs))) stop("geneSetList and sampled_geneSetList are not matched.")
+    if (!identical(names(selected.gs), names(sampled_gs))) stop("geneSetList and sampled_geneSetList are not matched.")
 
     if (verbose) {
       message("Aggregating gene set scores in coexp_matched mode...")
