@@ -30,15 +30,3 @@ test_that("ask_user_continue works with valid inputs", {
   local_mocked_bindings(ask_user_continue = mock_ask_user_continue)
   expect_true(ask_user_continue("Test message")) # Expect FALSE for "N"
 })
-
-
-test_that("ask_user_continue works with valid inputs", {
-  # Mock the readline function to return "Y"
-
-  pkgload::load_all()
-  mock_ask_user_continue <- function(msg) {
-    return(FALSE)
-  }
-  local_mocked_bindings(ask_user_continue = mock_ask_user_continue)
-  expect_false(ask_user_continue("Test message")) # Expect FALSE for "N"
-})

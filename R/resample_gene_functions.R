@@ -70,9 +70,11 @@ resample_gene <- function(geneList.true, n_perm = 5000) {
 #' Statistical testing in transcriptomic-neuroimaging studies: A how-to and evaluation of methods assessing spatial and gene specificity.
 #' Human Brain Mapping, 43(3), 885–901.
 resample_geneSetList_matching_coexp <- function(gene_data, geneSetList, tol = 0.01, max_iter = 1000000, n_perm = 5000, n_cores = 1) {
-  if (!ask_user_continue("Coexp matching will take a long time.")) {
-    stop("Operation aborted by the user.\n")
-  }
+  # if (!ask_user_continue("Coexp matching will take a long time.")) {
+  #   stop("Operation aborted by the user.\n")
+  # }
+  warning("Resampling gene sets based on co-expression patterns can be computationally intensive and may take a long time to complete.")
+
   # Calculate the co-expression matrix
   coexp_matrix <- cor(gene_data)
   total_gs <- length(geneSetList)

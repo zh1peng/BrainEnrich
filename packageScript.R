@@ -55,7 +55,7 @@ coverage <- covr::function_coverage(
   fun = job_cat,               # The function to test
   test_file("tests/testthat/test-job_cat.R")  # The specific test file(s)
 )
-
+test_file("tests/testthat/test-misc.R")
 
 
 

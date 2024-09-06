@@ -1,7 +1,3 @@
-library(testthat)
-
-
-# Prepare mock data for testing
 
 # Example brain data (small data frame with region names as rownames)
 data(brain_data)
@@ -110,17 +106,7 @@ test_that("brainenrich performs gene set analysis correctly with valid input (re
 
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (co-exp matched)", {
-  # Mock readline function to simulate user input
-  # mock_readline <- function(prompt) {
-  #       return("Y")  # Simulate user input as "Y"
-  #     }
-  pkgload::load_all()
-  mock_ask_user_continue <- function(msg) {
-    return(TRUE)
-  }
 
-  # Need to add readline <- NULL in package
-  local_mocked_bindings(ask_user_continue = mock_ask_user_continue)
   # Perform analysis with valid inputs
   res <- brainenrich(
     brain_data = brain_data,
@@ -143,43 +129,6 @@ test_that("brainenrich performs gene set analysis correctly with valid input (co
   # Test that the result is a gseaResult object
   expect_s4_class(res, "gseaResult")
 })
-
-
-
-
-# Test the brainenrich function
-test_that("brainenrich performs gene set analysis correctly with valid input (co-exp matched)", {
-  # Mock readline function to simulate user input
-  # mock_readline <- function(prompt) {
-  #       return("Y")  # Simulate user input as "Y"
-  #     }
-  pkgload::load_all()
-  mock_ask_user_continue <- function(msg) {
-    return(FALSE)
-  }
-
-  # Need to add readline <- NULL in package
-  local_mocked_bindings(ask_user_continue = mock_ask_user_continue)
-  # Perform analysis with valid inputs
-
-  expect_error(res <- brainenrich(
-    brain_data = brain_data,
-    gene_data = gene_data,
-    annoData = annoData,
-    cor_method = "pearson",
-    aggre_method = "mean",
-    null_model = "coexp_matched",
-    n_perm = 2,
-    n_cores = 2,
-    minGSSize = 20,
-    maxGSSize = 200,
-    pvalueCutoff = 1,
-    threshold_type = "none",
-    matchcoexp_tol = 0.8,
-    matchcoexp_max_iter = 1000,
-  ), "Operation aborted by the user")
-})
-
 
 
 
