@@ -50,6 +50,7 @@ covr::package_coverage()
 covr::codecov(token = "bf94b382-482f-4c28-9ced-e988216dde4a")
 
 
+
 # Report coverage for a specific function (e.g., `job_splitter`)
 coverage <- covr::function_coverage(
   fun = job_cat,               # The function to test
