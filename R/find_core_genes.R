@@ -111,8 +111,8 @@ identify_core_genes <- function(changes, threshold_type = c("sd", "percentile"),
   threshold_type <- match.arg(threshold_type)
   # Validate threshold_value based on method
   if (threshold_type == "percentile") {
-    if (threshold_value < 1 || threshold_value > 99 || threshold_value %% 10 != 0) {
-      stop("For 'percentile', threshold_value should be a multiple of 10 and between 1 and 99.")
+    if (threshold_value < 1 || threshold_value > 99) {
+      stop("For 'percentile', threshold_value should be  between 1 and 99.")
     }
     threshold <- quantile(changes, probs = threshold_value / 100)
   } else if (threshold_type == "sd") {
