@@ -3,6 +3,7 @@
 export(aggregate_geneSet)
 export(aggregate_geneSetList)
 export(aggregate_geneSetList_matching_coexp)
+export(ask_user_continue)
 export(brainenrich)
 export(brainscore)
 export(brainscore.lm_test)

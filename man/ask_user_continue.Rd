@@ -2,7 +2,7 @@
 % Please edit documentation in R/misc.R
 \name{ask_user_continue}
 \alias{ask_user_continue}
-\title{Ask User to Continue with Yes/No Input}
+\title{Prompt User to Continue with Yes/No Input}
 \usage{
 ask_user_continue(msg)
 }
@@ -10,10 +10,10 @@ ask_user_continue(msg)
 \item{msg}{A character string containing the message to display to the user before the prompt.}
 }
 \value{
-A logical value: \code{TRUE} if the user inputs 'Y' (Yes) and \code{FALSE} if the user inputs 'N' (No).
+A logical value: \code{TRUE} if the user inputs 'Y' (Yes), and \code{FALSE} if the user inputs 'N' (No).
 }
 \description{
-This function prompts the user with a message asking whether they want to continue,
-and accepts either 'Y' (for Yes) or 'N' (for No) as valid inputs.
-The function will repeatedly ask the user for input until they enter a valid response.
+This function continuously prompts the user with a message asking whether they want to continue.
+It accepts either 'Y' (for Yes) or 'N' (for No) as valid inputs. The function will keep prompting
+the user until they provide valid input.
 }

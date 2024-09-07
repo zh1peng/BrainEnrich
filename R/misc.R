@@ -1,4 +1,13 @@
 
+#' Prompt User to Continue with Yes/No Input
+#'
+#' This function continuously prompts the user with a message asking whether they want to continue. 
+#' It accepts either 'Y' (for Yes) or 'N' (for No) as valid inputs. The function will keep prompting 
+#' the user until they provide valid input.
+#'
+#' @param msg A character string containing the message to display to the user before the prompt.
+#' @return A logical value: `TRUE` if the user inputs 'Y' (Yes), and `FALSE` if the user inputs 'N' (No).
+#' @export
 ask_user_continue <- function(msg) {
   repeat {
     user_input <- readline(prompt = sprintf("%s. Do you want to continue? (Y/N): ", msg))
@@ -12,6 +21,7 @@ ask_user_continue <- function(msg) {
     }
   }
 }
+
 
 
 
