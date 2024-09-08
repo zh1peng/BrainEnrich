@@ -25,8 +25,9 @@ devtools::build()
 devtools::install()
 
 
-devtools::test()
-usethis::use_testthat()
+
+# do coverage test
+install.packages("covr")
 usethis::use_test("get_annoData")
 usethis::use_test("get_geneSetList")
 usethis::use_test("split_Anno")
@@ -34,7 +35,6 @@ usethis::use_test("filter_geneSetList")
 usethis::use_test("get_termDescription")
 usethis::use_test("get_geneExp")
 usethis::use_test("brainscore.simulate.R")
-
 usethis::use_test("brainenrich")
 usethis::use_test("rotate_parcellation")
 usethis::use_test("job_splitter")
@@ -45,8 +45,6 @@ usethis::use_test("brainscore.lm_test.R")
 usethis::use_test("plot_functions")
 usethis::use_test("corr_brain_gene")
 
-
-install.packages("covr")
 covr::package_coverage()
 covr::codecov(token = "bf94b382-482f-4c28-9ced-e988216dde4a")
 
@@ -74,18 +72,6 @@ devtools::build_vignettes()
 devtools::build_manual()
 
 
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-BiocManager::install(c("DOSE", "clusterProfiler", "org.Hs.eg.db"))
-
-
-# action on github uses pak to install the package
-# install.packages("pak")
-# pak::pkg_install("BrainEnrich")
-
-
-
 usethis::use_mit_license()
 usethis::use_citation()
 usethis::use_agpl3_license()
@@ -108,7 +94,6 @@ usethis::use_github_action('check-standard')
 
 
 install.packages("styler")
-
 styler::style_pkg()
 
 devtools::build_vignettes()
