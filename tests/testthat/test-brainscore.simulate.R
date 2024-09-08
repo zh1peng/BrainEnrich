@@ -122,3 +122,40 @@ test_that("brainscore.simulate works with pre-calculated null gsScore", {
   # Test that the result is a list
   expect_type(res, "list")
 })
+
+
+# Test with pre-calculated null gsScore
+test_that("brainscore.simulate works with pre-calculated null gsScore", {
+  # Pre-calculate the null gsScore
+  gsScore.null <- brainscore(
+    brain_data = brain_data,
+    gene_data = gene_data,
+    annoData = annoData,
+    null_model = "resample_gene",
+    n_perm = 10,
+    perm_id = perm_id_dk_lh_5000,
+    minGSSize = 20,
+    maxGSSize = 200
+  )
+
+  # Run the simulation using the pre-calculated gsScore
+  
+  expect_error(res <- brainscore.simulate(
+    pred_df = pred_df,
+    cov_df = cov_df,
+    brain_data = brain_data,
+    gene_data = gene_data,
+    annoData = annoData,
+    gsScoreList.null = gsScore.null,
+    sim_n = 5,
+    subsample_size = 100,
+    sim_type = "spin_brain",
+    cor_method = "pearson",
+    aggre_method = "mean",
+    n_perm = 10,
+    perm_id = perm_id_dk_lh_5000,
+    minGSSize = 20,
+    maxGSSize = 200
+  ), "Please review the mismatches above.")
+})
+

@@ -43,6 +43,7 @@ usethis::use_test("brainscore")
 usethis::use_test("misc")
 usethis::use_test("brainscore.lm_test.R")
 usethis::use_test("plot_functions")
+usethis::use_test("corr_brain_gene")
 
 
 install.packages("covr")

@@ -36,6 +36,17 @@ test_that("rotate_parcellation works as expected (coord.r)", {
   expect_equal(ncol(perm_id_dk_lh_10), 10)
 })
 
+test_that("rotate_parcellation works as expected (coord.r;method=vasa)", {
+  # Run the rotate_parcellation function with a specific seed and 10 rotations
+  perm_id_dk_lh_10 <- rotate_parcellation(coord.r = coord_dk_lh, nrot = 10, seed = 2024, method = "vasa")
+
+  # Test that the output is a matrix
+  expect_true(is.matrix(perm_id_dk_lh_10))
+
+  # Test that the number of rotations (columns) is correct
+  expect_equal(ncol(perm_id_dk_lh_10), 10)
+})
+
 
 test_that("rotate_parcellation works as expected (method=vasa)", {
   # Run the rotate_parcellation function with a specific seed and 10 rotations
