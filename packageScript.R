@@ -58,7 +58,6 @@ coverage <- covr::function_coverage(
 test_file("tests/testthat/test-misc.R")
 
 
-
 detach("package:BrainEnrich", unload = TRUE)
 library(BrainEnrich)
 
