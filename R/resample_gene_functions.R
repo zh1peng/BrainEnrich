@@ -73,8 +73,9 @@ resample_geneSetList_matching_coexp <- function(gene_data, geneSetList, tol = 0.
   # if (!ask_user_continue("Coexp matching will take a long time.")) {
   #   stop("Operation aborted by the user.\n")
   # }
-  warning("Resampling gene sets based on co-expression patterns can be computationally intensive and may take a long time to complete.")
-
+  message("=============================================================")
+  message("Resampling gene sets based on co-expression patterns can be computationally intensive and may take a long time to complete.")
+  message("=============================================================")
   # Calculate the co-expression matrix
   coexp_matrix <- cor(gene_data)
   total_gs <- length(geneSetList)
