@@ -106,7 +106,7 @@ brainscore.simulate <- function(pred_df,
               TRUE ~ 0
             )
           ) %>%
-          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig) %>%
+          dplyr::select(all_of(c("Dependent_vars", "nofdr_ifsig", "fdr_ifsig")))%>%
           dplyr::rename(
             !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
             !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig
@@ -268,7 +268,7 @@ brainscore.simulate <- function(pred_df,
               TRUE ~ 0
             )
           ) %>%
-          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
+          dplyr::select(all_of(c("Dependent_vars", "nofdr_ifsig", "fdr_ifsig", "np_nofdr_ifsig", "np_fdr_ifsig"))) %>%
           dplyr::rename(
             !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
             !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,
@@ -409,7 +409,7 @@ brainscore.simulate <- function(pred_df,
               TRUE ~ 0
             )
           ) %>%
-          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
+          dplyr::select(all_of(c("Dependent_vars", "nofdr_ifsig", "fdr_ifsig", "np_nofdr_ifsig", "np_fdr_ifsig"))) %>%
           dplyr::rename(
             !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
             !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,

@@ -212,8 +212,8 @@ brainscore.lm_test <- function(pred_df,
     if (nrow(res) != 0) {
       res <- res %>%
         dplyr::rename(ID = .data$Dependent_vars) %>%
-        dplyr::select(.data$ID, .data$Description, .data$setSize, everything()) %>%
-        dplyr::select(-.data$p.val, -.data$p.adj) %>%
+        dplyr::select(all_of(c("ID", "Description", "setSize")), everything()) %>%
+        dplyr::select(-all_of(c("p.val", "p.adj"))) %>%
         dplyr::rename(
           pvalue = .data$np.pval,
           p.adjust = .data$np.padj,
