@@ -26,6 +26,7 @@ devtools::install()
 
 
 
+
 # do coverage test
 install.packages("covr")
 usethis::use_test("get_annoData")
