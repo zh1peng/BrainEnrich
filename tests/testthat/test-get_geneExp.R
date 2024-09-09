@@ -1,5 +1,5 @@
 library(testthat)
-library(mockery)
+
 
 # Test the get_geneExp function
 test_that("get_geneExp works with valid and invalid inputs", {

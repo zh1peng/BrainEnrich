@@ -1,5 +1,5 @@
 library(testthat)
-library(mockery)
+
 
 # Test the get_annoData function using a real temporary directory
 test_that("get_annoData works with actual paths in tempdir", {

@@ -75,7 +75,7 @@ simple_lm <- function(dependent_df,
         #   TRUE ~ "n.s."
         # )
       ) %>%
-      dplyr::select(all_of(c("Dependent_vars", "term", "estimate", "std.error", "statistic", "Std_Coefficient", "CI_low", "CI_high", "p.value", "p.adj"))) %>%
+      dplyr::select(.data$Dependent_vars, .data$term, .data$estimate, .data$std.error, .data$statistic, .data$Std_Coefficient, .data$CI_low, .data$CI_high, .data$p.value, .data$p.adj) %>%
       dplyr::rename(
         Predictor = .data$term,
         Unstandardized_Coefficient = .data$estimate,
@@ -97,7 +97,7 @@ simple_lm <- function(dependent_df,
       ) %>%
       tidyr::unnest(.data$tidy_model) %>%
       dplyr::filter(.data$term == var2extract) %>%
-      dplyr::select(all_of(c("Dependent_vars", "term", "statistic"))) %>%
+      dplyr::select(.data$Dependent_vars, .data$term, .data$statistic) %>%
       dplyr::rename(Predictor = .data$term, tval = .data$statistic) %>%
       dplyr::ungroup()
   } else if (stat2return == "tval_list") {
@@ -111,7 +111,7 @@ simple_lm <- function(dependent_df,
       ) %>%
       tidyr::unnest(.data$tidy_model) %>%
       dplyr::filter(.data$term == var2extract) %>%
-      dplyr::select(all_of(c("Dependent_vars", "statistic"))) %>%
+      dplyr::select(.data$Dependent_vars, .data$statistic) %>%
       tibble::deframe() %>%
       as.list()
   } else if (stat2return == "pval") {
@@ -125,7 +125,7 @@ simple_lm <- function(dependent_df,
       ) %>%
       tidyr::unnest(.data$tidy_model) %>%
       dplyr::filter(.data$term == var2extract) %>%
-      dplyr::select(all_of(c("Dependent_vars", "term", "p.value"))) %>%
+      dplyr::select(.data$Dependent_vars, .data$term, .data$p.value) %>%
       dplyr::rename(Predictor = .data$term, pval = .data$p.value) %>%
       dplyr::ungroup()
   }

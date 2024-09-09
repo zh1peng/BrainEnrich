@@ -9,4 +9,12 @@
 library(testthat)
 library(BrainEnrich)
 
+# check if mockery is installed
+# if not, install it
+if (!requireNamespace("mockery", quietly = TRUE)) {
+  install.packages("mockery")
+}
+
+library(mockery)
+
 test_check("BrainEnrich")
