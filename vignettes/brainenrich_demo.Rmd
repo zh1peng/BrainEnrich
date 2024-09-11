@@ -54,7 +54,6 @@ Visualize the effect size map to understand the regional differences in cortical
 First, we define a plot function (this will not be included in the package).
 ```{r}
 library(ggseg)
-library(ggplot2)
 #' Plot Brain Data
 #'
 #' This function creates a brain plot using the ggplot2 and ggseg packages.
