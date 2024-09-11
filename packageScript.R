@@ -76,6 +76,7 @@ usethis::use_citation()
 #usethis::use_pkgdown_github_pages()
 usethis::use_pkgdown()
 pkgdown::build_site()
+pkgdown::build_articles()
 pkgdown::deploy_to_branch()
 
 

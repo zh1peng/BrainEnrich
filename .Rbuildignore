@@ -12,7 +12,6 @@
 .md$
 ^packageScript.R$
 .yml$
-.svnignore$
 ^vignettes$
 ^.*\.Rmd$
 ^.*\.Rnw$
