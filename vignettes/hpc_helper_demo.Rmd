@@ -14,7 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-# 1. Installation of the BrainEnrich package
+## Introduction
+In this vignette, we demonstrate how to precompute null gene set scores and run simulations on high-performance computing (HPC) systems using Slurm. 
+
+## 1. Installation of the BrainEnrich package
 ```{r setup, eval=FALSE}
 # Install remotes if you haven't already
 if (!requireNamespace("remotes", quietly = TRUE)) {
@@ -28,7 +31,7 @@ BiocManager::install("DOSE")
 remotes::install_github("zh1peng/BrainEnrich")
 ```
 
-# 2. Download gene_data and annoData to the package
+## 2. Download gene_data and annoData to the package
 We only need to do this once, and they will be available for all the nodes in the HPC.
 If you download them during the slurm job, it might cause the job to fail due to the sequential download of the data.
 The first node is trying to download the data, and the other nodes are trying to access the data that is not yet downloaded.
@@ -40,8 +43,8 @@ annoData <- get_annoData(type = "GO_MF")
 ```
 
 
-# 2. use job_splitter (a generic function to split jobs) to do brainscore
-## 2.1. Prepare the script for the job_splitter function
+## 3. use job_splitter (a generic function to split jobs) to do brainscore
+### 3.1. Prepare the script for the job_splitter function
 Here, we will prepare a script for distributed computing environments, allowing large-scale permutation tests to be split across multiple compute nodes. 
 ```{r,eval=FALSE}
 # brainscore_vacc.R
@@ -113,7 +116,7 @@ job_splitter(
   maxGSSize = maxGSSize
 )
 ```
-## 2.2. Prepare the slurm job file
+### 3.2. Prepare the slurm job file
 ```{bash,eval=FALSE}
 #!/bin/bash
 #SBATCH --job-name=gsScore              # Job name
@@ -183,13 +186,7 @@ cd /gpfs1/home/z/c/zcao4/BrainEnrich
 Rscript --vanilla run_brainscore_hpc.R $job_id $n_iter_per_job $iter_total $cor_method $aggre_method $null_model $gs_type $minGSSize $maxGSSize
 ```
 
-## 2.3. Submit the slurm job
-put the content of the slurm job file into a file named job_file.slurm and submit the job
-```{bash,eval=FALSE}
-sbatch job_file.slurm
-```
-
-## 2.4. Use job_cat to collect the brainscore results from jobs
+### 3.3. Use job_cat to collect the brainscore results from jobs
 ```{r,eval=FALSE}
 library(BrainEnrich)
 
@@ -238,7 +235,7 @@ for (null_model in null_models) {
   }
 }
 ```
-## 2.5. loop through other input arguments
+### 3.4. loop through other input arguments
 We can also loop through more arguments in the slurm job file:
 ```{bash,eval=FALSE}
 #!/bin/bash
@@ -283,8 +280,9 @@ Similar way to collect the results using job_cat
 ```
 
 
-# 3. use job_splitter (a generic function to split jobs) to do brainscore.simulate
-
+## 4. use job_splitter (a generic function to split jobs) to do brainscore.simulate
+### 4.1. Prepare the script for the job_splitter function
+Here, we will prepare a script for distributed computing environments, allowing large-scale permutation tests to be split across multiple compute nodes. 
 ```{r,eval=FALSE}
 # brainscore_simulate_vacc.R
 # Rscript brainscore_simulate_vacc.R <job_id> <n_iter_per_job> <iter_total> <cor_method> <aggre_method> <sim_type> <gs_type> <minGSSize> <maxGSSize> <gsScoreList.null.rds file>
@@ -368,7 +366,7 @@ job_splitter(
 )
 ```
 
-slurm job file
+### 4.2. Prepare the slurm job file
 ```{bash,eval=FALSE}
 #!/bin/bash
 #SBATCH --job-name=brainscore_sim    # Job name
@@ -412,7 +410,7 @@ for gs_type in "${gs_types[@]}"; do
 done
 ```
 
-collect the results
+### 4.3. Use job_cat to collect the brainscore results from jobs
 ```{r,eval=FALSE}
 library(BrainEnrich)
 input_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res/SynGO_spin_brain_pearson_mean_20_200_1000"

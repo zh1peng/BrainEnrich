@@ -21,17 +21,12 @@ This tutorial demonstrates how to perform an enrichment analysis of derived grou
 
 ## 0. Load the required libraries:
 
-```{r setup, eval=TRUE}
-# if (!requireNamespace("BrainEnrich", quietly=TRUE)){
-#   install.packages("BrainEnrich")
-# }
-# if (!requireNamespace("enrichplot", quietly=TRUE)){
-#   BiocManager::install("enrichplot")
-# }
+```{r setup, echo=TRUE, message=FALSE, warning=FALSE}
 library(BrainEnrich)
 library(dplyr)
 library(enrichplot)
 library(ggplot2)
+library(ggseg)
 ```
 
 ## 1. Prepare Data for the Analysis
@@ -51,9 +46,8 @@ str(brain_data)
 
 Visualize the effect size map to understand the regional differences in cortical thickness.
 
-First, we define a plot function (this will not be included in the package).
+First, we define a plot function (this is not included in the package as it is not a core function).
 ```{r}
-library(ggseg)
 #' Plot Brain Data
 #'
 #' This function creates a brain plot using the ggplot2 and ggseg packages.
@@ -163,6 +157,9 @@ plot_brain(df2plot,
 ```
 
 ### 1.2. Create perm_id for the Analysis
+perm_id is a list of permutations of brain regions with a spinning approach while trying to maintain the spatial structure of the brain.
+It is used to generate null distributions for the enrichment analysis.
+If you use this function to create perm_ids, consider citing the original source at https://github.com/frantisekvasa/rotate_parcellation and relevant papers.
 
 ```{r eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 # read the centroid coordinates of the brain regions
@@ -170,7 +167,7 @@ data(coord_dk_lh)
 perm_id_dk_lh_5000 <- rotate_parcellation(coord.l = coord_dk_lh, nrot = 5000, seed = 2024)
 ```
 
-#### Here, we can load the perm_id directly from the package.
+#### Here, we load the precomputed perm_id directly from the package.
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 data(perm_id_dk_lh_5000)
@@ -224,7 +221,7 @@ res <- brainenrich(
 
 ## 3. Visualize the Results
 
-The res is a gseaResult object that is commonly used in clusterProfiler and DOSE packages. This means that we can use some existing functions to visualize the results.
+The res is a gseaResult object that is commonly used in clusterProfiler and DOSE packages. This means that we can use some existing functions (e.g., those from enrichplot package) to visualize the results.
 
 ### 3.1. Upset Plot
 
@@ -268,8 +265,10 @@ heatplot(res, foldChange = geneList, label_format = 50, showCategory = 10) +
     space = "Lab", limits = c(-1, 1), name = "Association"
   )
 ```
+
 ### 3.5. Tree plot based on term similarity
-This requires GOSemSim and org.Hs.eg.db packages.
+
+Note: This requires GOSemSim and org.Hs.eg.db packages.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=10, fig.width=10}
 d <- GOSemSim::godata(annoDb = "org.Hs.eg.db", ont = "MF", keytype = "SYMBOL", computeIC = FALSE) # computeIC=FALSE when use Wang method
 res <- pairwise_termsim(res, method = "Wang", semData = d)
@@ -281,15 +280,4 @@ treeplot(res,
   color = "p.adjust",
   offset = rel(2)
 ) + theme(legend.position = c(0.95, 0.46))
-```
-
-
-```{r, echo=FALSE,eval=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-# Render me
-rmd_path <- "E:/xhmhc/BrainEnrich/vignettes"
-rmarkdown::render(
-  input = file.path(rmd_path, "brainenrich_demo.rmd"),
-  output_format = "html_document",
-  output_file = file.path(rmd_path, "brainenrich_demo.html")
-)
 ```

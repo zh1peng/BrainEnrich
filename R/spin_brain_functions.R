@@ -54,7 +54,7 @@ generate_null_brain_data <- function(brain_data, perm_id) {
 #' The function is based on a rotation of the FreeSurfer projection of coordinates
 #' of a set of regions of interest on the sphere.
 #' #' This function is modified from the original version available at:
-#' https://github.com/frantisekvasa/rotate_parcellation
+#' https://github.com/frantisekvasa/rotate_parcellation. Please cite relevant papers from this source if you used this function.
 #'
 #' Modifications include:
 #' - Added support for scenarios where only one hemisphere's coordinates are provided.
@@ -77,6 +77,7 @@ rotate_parcellation <- function(coord.l = NULL,
                                 coord.r = NULL, nrot = 5000,
                                 method = c("hungarian", "vasa"),
                                 seed = NULL) {
+  message("If you use this function to create perm_ids, consider citing the original source at https://github.com/frantisekvasa/rotate_parcellation and relevant papers.")
   method <- match.arg(method)
 
   # Set seed for reproducibility

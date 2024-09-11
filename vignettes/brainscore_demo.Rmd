@@ -14,17 +14,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup, eval=TRUE}
-# if (!requireNamespace("BrainEnrich", quietly=TRUE)){
-#   install.packages("BrainEnrich")
-# }
-# if (!requireNamespace("enrichplot", quietly=TRUE)){
-#   BiocManager::install("enrichplot")
-# }
+
+## Introduction
+
+This tutorial demonstrates how to perform enrichment analysis of individual-level imaging-derived phenotypes (IDPs) using the BrainEnrich package. 
+
+```{r setup, echo=TRUE, message=FALSE, warning=FALSE}
 library(BrainEnrich)
 library(dplyr)
 library(enrichplot)
 library(ggplot2)
+library(ggseg)
 ```
 
 ## 1. Prepare Data for the Analysis
@@ -34,7 +34,7 @@ In this section, we will prepare the data needed for enrichment analysis. The da
 The data is simulated from HCP data. Let's load and inspect it.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 data(sample_df)
-head(sample_df)
+str(sample_df)
 colnames(sample_df)
 ```
 ### 1.2. prepare brain_data for scoring
@@ -42,7 +42,7 @@ Next, we'll prepare the brain data by selecting the relevant columns and transfo
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 brain_data <- dplyr::select(sample_df, starts_with("L_")) %>% t()
 colnames(brain_data) <- paste0("sub-", 1:ncol(brain_data))
-head(brain_data)
+str(brain_data)
 ```
 
 ### 1.3. Load gene expression data for the Analysis
@@ -53,7 +53,7 @@ str(gene_data)
 ```
 
 ### 1.4. Load SynGO for the Analysis
-We will load GO MF terms that will be used in the enrichment analysis. This data represents gene sets associated with various molecular functions.
+We will load SynGO terms that will be used in the enrichment analysis. This data represents gene sets associated with various molecular functions.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 annoData <- get_annoData(type = "SynGO")
 geneSetList <- get_geneSetList(annoData)
@@ -61,17 +61,17 @@ length(geneSetList)
 print(sprintf("Number of SynGO terms: %d", length(geneSetList)))
 ```
 
-#### Filter the geneSetList (not required for the analysis)
+#### Filter the geneSetList (Optional)
 Filtering the gene sets by size is optional and is shown here for demonstration purposes. This step is embedded in the brainenrich/brainscore function.
 ```{r echo=TRUE, eval=FALSE}
 selected.gs <- filter_geneSetList(bg_genes = colnames(gene_data), geneSetList = geneSetList, minGSSize = 20, maxGSSize = 200)
 print(sprintf("%d MF terms have gene size ranging between 20 and 200", length(selected.gs)))
 ```
 
-## 2. Run the Analysis 
+## 2. Get gene set scores using `brainscore`
 In this section, we will run the individual enrichment analysis using the prepared data.
 
-### 2.1. get the row score of the brain_data (`set null_model='none'`)
+### 2.1. get the raw (empirical) score of the brain_data (`null_model='none'`)
 We calculate the gene set scores for the brain data without using any null model.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 gsScore.raw <- brainscore(
@@ -87,9 +87,9 @@ gsScore.raw <- brainscore(
 )
 str(head(gsScore.raw))
 ```
-The gsScore.raw is a list of molecular terms. For each molecular term, you can find individual gene set scores (gsScores) and use them for further analysis, such as linear regression or correlation analysis.
+The gsScore.raw is a list of molecular terms. For each molecular term, you can find individual gene set scores and use them for downstream analyses (e.g., correlation analysis, machine learning, clustering etc.).
 
-### 2.2. Get the null score of the brain_data (`set null_model='spin_brain'`)
+### 2.2. Get the null score of the brain_data (`null_model='spin_brain'`)
 Next, we will calculate the null scores using the 'spin_brain' null model.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 gsScore.spin <- brainscore(
@@ -107,9 +107,9 @@ gsScore.spin <- brainscore(
 )
 str(head(gsScore.spin, 5), 1)
 ```
-The result is a list of lists. Each sublist contains null scores for the molecular terms. This is useful for permutation tests, where you compare the observed correlation with your dependent variable between empirical gsScore and null model gsScore.
+The result is a list of lists. Each sublist contains null scores for the molecular terms (i.e. SynGO terms). This is useful for permutation tests, where you compare the observed results (e.g., correlation) with your dependent variable between empirical gsScore and null model gsScore.
 
-### 2.3. get the null score of the resample_gene (`set null_model='resample_gene'`)
+### 2.3. Get the null score of the resample_gene (`set null_model='resample_gene'`)
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 gsScore.resample <- brainscore(
   brain_data = brain_data,
@@ -125,11 +125,15 @@ gsScore.resample <- brainscore(
 )
 str(head(gsScore.resample, 5), 1)
 ```
-This result is also a list of lists containing null scores for molecular terms. These null scores can be used in permutation tests or other analyses.
+The result is also a list of lists. Each sublist contains null scores for the molecular terms (i.e. SynGO terms). This is useful for permutation tests, where you compare the observed results (e.g., correlation) with your dependent variable between empirical gsScore and null model gsScore.
 
 
-### 2.4. Perform linear regression between the gsScore and the brain data
-We will perform linear regression tests between the gsScore and the brain data and build a null model to determine the significance.
+## 3. Perform linear regression between the gsScore and predictors using `brainscore.lm_test`
+The function brainscore.lm_test is designed to perform linear regression tests between the gsScore and the brain data as follows:
+`gsScore ~ predictor + covariates`. 
+This would cover a large proportion of the scenarios where gsScores will be used. The predictor can be either a single numeric variable or a single two-level factor variable. The covariates can be a data frame with multiple numeric variables or factors. The function will first get the emprical statistics (i.e., t-value corresponding to the predictor) and then test that against the null model (e.g., spin_brain) to get the p-value.
+
+### Normal setup
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 cov_df <- sample_df %>% dplyr::select(Age, Sex)
 pred_df <- sample_df %>% dplyr::select(BMI)
@@ -153,10 +157,9 @@ res.df <- as.data.frame(res)
 ```
 For demonstration purposes, we only performed 10 permutations and set minGSSize to 50. In practice, you may need to perform more permutations (e.g., 5000) for a more reliable p-value.
 
-
-### 2.5. Perform linear regression between the gsScore and the brain data using precomputed null scores
+### Setup with precomputed null scores
 As an alternative to the previous step, you can use precomputed null scores to perform linear regression tests between the gsScore and the brain data.
-Generating null brain scores can be time consuming, especially when the number of permutations is high. Therefore, we recommend using precomputed null scores for the analysis.
+Generating null brain scores can be time consuming, especially when the number of permutations is high. Therefore, we recommend using precomputed null scores for the analysis. Here we used the null scores generated in Section 2.2.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 res1 <- brainscore.lm_test(
   pred_df = pred_df,
@@ -178,11 +181,11 @@ res1 <- brainscore.lm_test(
 The attribute of the gsScoreList.null should be the same as your input of the function for these variables:
 cor_method, aggre_method, minGSSize, maxGSSize, null_model, n_perm, if not, that means the gsScoreList.null is not usable for the currrent setup.
 
-## 3. Visualization
+## 4. Visualization
 This section covers the visualization of the results.
-Note: the upsetplot, heatplot that are available for brainenrich resutls are not applicable for these results.
+Note: the upsetplot, heatplot available for brainenrich resutls are not applicable for these results.
 
-### 3.2. Gene-Concept Network
+### 4.1. Gene-Concept Network
 We will visualize the gene-concept network.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
 geneList <- res@geneList
@@ -203,7 +206,7 @@ cnetplot(res,
 ) + scale_color_gradientn(colors = color_palette, limits = c(-3, 3), name = "t value")
 ```
 
-### 3.3. Dot Plot
+### 4.2. Dot Plot
 We will create a dot plot to visualize the results.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
 dotplot(res, x = "t_Value", label_format = 50, showCategory = 30) +
@@ -212,4 +215,3 @@ dotplot(res, x = "t_Value", label_format = 50, showCategory = 30) +
     space = "Lab", name = "p.adjusted"
   )
 ```
-This completes the visualization section of the tutorial, where we used various plots to illustrate the results of the brain enrichment analysis.
