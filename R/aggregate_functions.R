@@ -6,17 +6,16 @@
 #' @param geneList A matrix of genes by models, with each column representing a true or null model.
 #' @param geneSet A vector containing names of genes in the gene set of interest.
 #' @param method A character string specifying the method to use for aggregation.
-#'               Options include 'mean', 'median', 'meanabs', 'meansqr', 'maxmean', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_sum'. Default is 'mean'.
-#' @importFrom stats median p.adjust
+#'               Options include 'mean', 'median', 'meanabs', 'meansqr', 'maxmean', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum','custom'. Default is 'mean'. If a custom function that takes (genelist, geneSet) as input is provided, this function will use custom aggregation, and set method to 'custom'.
+#' @importFrom stats median
 #' @importFrom methods new
 #' @return Returns a numeric score based on the specified aggregation method.
 #' @export
 #'
-#'
 aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
                               geneSet, # one geneSet of interest
-                              method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom")) {
-  if (is.function(method)) { # if method is a custom function
+                              method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum")) {
+  if (is.function(method)) { # if method is a function
     aggre_func <- method
     method <- "custom"
   } else {
@@ -220,7 +219,7 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
 #' @param n_cores Number of cores to use for parallel processing. Default is 1.
 #' If set to 0, it uses all available cores minus one.
 #' @param method aggregation method used.
-#' @param n_cores Number of cores to use for parallel processing. Default is 1.
+#' @param n_cores Number of cores to use for parallel processing. Default is 1. If set to 0, it uses all available cores minus one.
 #' @return A list of aggregated gene set scores.
 #' @import pbapply
 #' @import parallel
@@ -261,10 +260,10 @@ aggregate_geneSetList <- function(geneList, geneSetList, method, n_cores = 1) {
 
 
 #' Aggregate Gene Set List with Matching Coexpression in Parallel
+#' 
+#' This function swaps gene sets in geneSetList with those from sampled_geneSetList (with coexpression matched, see resample_geneSetList_matching_coexp) and aggregates gene set scores in parallel.
 #'
-#' This function aggregates gene set scores in parallel using `pblapply` from the `pbapply` package.
-#'
-#' @param geneList.true A m x 1 matrix of true gene sets. Ensure to include `drop=FALSE` when subsetting.
+#' @param geneList.true A m x 1 matrix of true association values. Each row corresponds to a gene, and the column contains the association values between the gene and the brain.
 #' @param geneSetList A list of gene sets.
 #' @param sampled_geneSetList A list of sampled gene sets.
 #' @param method The method to be used for aggregation.
@@ -281,7 +280,7 @@ aggregate_geneSetList_matching_coexp <- function(geneList.true,
                                                  n_cores = 1) {
   # Ensure geneList.true is a matrix with one column
   if (!is.matrix(geneList.true) || ncol(geneList.true) != 1) {
-    stop("geneList.true should be a m x 1 matrix. Please include drop=FALSE when subsetting.")
+    stop("geneList.true should be a m x 1 matrix.")
   }
 
   # Ensure the order in geneSetList and sampled_geneSetList are the same

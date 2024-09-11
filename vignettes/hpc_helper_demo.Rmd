@@ -15,7 +15,11 @@ knitr::opts_chunk$set(
 ```
 
 ## Introduction
-In this vignette, we demonstrate how to precompute null gene set scores and run simulations on high-performance computing (HPC) systems using Slurm. 
+Here, we documented how to precompute null gene set scores and run simulations on high-performance computing (HPC) systems using Slurm. 
+By leveraging job splitting and parallel processing, we provide step-by-step instructions for running distributed permutation tests and simulations across multiple nodes on an HPC cluster. 
+
+Note:
+This is intended for users who have access to an HPC system and want to perform large-scale analyses efficiently.
 
 ## 1. Installation of the BrainEnrich package
 ```{r setup, eval=FALSE}

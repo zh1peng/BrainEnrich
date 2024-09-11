@@ -18,8 +18,7 @@ corr_brain_gene <- function(gene_data,
                               "pearson",
                               "spearman",
                               "pls1c",
-                              "pls1w",
-                              "custom"
+                              "pls1w"
                             ),
                             r2z = TRUE) {
   # Validate method

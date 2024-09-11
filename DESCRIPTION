@@ -7,7 +7,7 @@ Authors@R:
            comment = c(ORCID = "0000-0003-2624-2182"))
 Author: Zhipeng Cao [aut, cre] (0000-0003-2624-2182)
 Maintainer: Zhipeng Cao <zhipeng30@foxmail.com>
-Description: What the package does (one paragraph).
+Description: The BrainEnrich package addresses key challenges in imaging transcriptomics by providing a flexible, comprehensive toolkit for gene set enrichment analysis. It enhances the integration of transcriptomics and neuroimaging data by offering customizable test statistics and null models, helping to reduce false-positive biases that are common in rigid pipelines. BrainEnrich includes standardized predefined gene sets sourced from curated databases, ensuring consistency and reproducibility across studies. The package also facilitates the identification of core genes within gene sets, improving interpretation and visualization of results. Notably, BrainEnrich supports individual-level analysis, enabling a deeper examination of biological variability related to neurological and psychiatric disorders. By overcoming these methodological limitations, BrainEnrich advances the field of imaging transcriptomics, as demonstrated through real-world applications..
 License: AGPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -42,4 +42,4 @@ Suggests:
     enrichplot,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://github.com/zh1peng/BrainEnrich, https://zh1peng.github.io/BrainEnrich/
+URL: https://zh1peng.github.io/BrainEnrich/

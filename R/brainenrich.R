@@ -2,16 +2,16 @@
 #'
 #' This function performs a gene set analysis using brain data.
 #'
-#' @param brain_data A data frame of brain data. Region by 1 column.
-#' @param gene_data A data frame of gene expression data.
-#' @param annoData An environment containing annotation data.
+#' @param brain_data A data frame of brain data. Region by 1 column. Rownames (i.e., region names) must be consistent with gene_data.
+#' @param gene_data A data frame of gene expression data. Region by gene. Rownames (i.e., region names) must be consistent with brain_data.
+#' @param annoData An environment containing annotation data. see `get_annoData` for more details.
 #' @param cor_method A character string specifying the correlation method.
 #'                   Default is 'pearson'. Other options include 'spearman', 'pls1c',
-#'                   'pls1w', 'custom'.
+#'                   'pls1w', 'custom'. If a custom function that takes (ene_data, brain_data) as input is provided, this function will use custom correlation, and set method to 'custom'.
 #' @param aggre_method A character string specifying the aggregation method.
 #'                     Default is 'mean'. Other options include 'median', 'meanabs',
 #'                     'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum',
-#'                    'sign_test', 'rank_sum', 'custom'.
+#'                    'sign_test', 'rank_sum'. If a custom function that takes (genelist, geneSet) as input is provided, this function will use custom aggregation, and set method to 'custom'.
 #' @param null_model A character string specifying the null model.
 #'                   Default is 'spin_brain'. Other options include 'resample_gene',
 #'                   'coexp_matched'.
@@ -21,18 +21,18 @@
 #' @param coord.r A matrix of right hemisphere coordinates. Default is NULL.
 #' @param seed An integer specifying the seed for reproducibility of spinning brain. Default is NULL.
 #' @param n_cores An integer specifying the number of cores to use. Default is 0 (use all cores - 1).
-#' @param minGSSize An integer specifying the minimum gene set size. Default is 10.
-#' @param maxGSSize An integer specifying the maximum gene set size. Default is 200.
+#' @param minGSSize An integer specifying the minimum gene set size after intersection with gene data. Default is 10.
+#' @param maxGSSize An integer specifying the maximum gene set size after intersection with gene data. Default is 200.
 #' @param threshold_type A character string specifying the threshold type for core genes.
-#'                   Default is 'sd'. Other option is 'percentile'.
-#' @param threshold_value A numeric value specifying the threshold value for core genes. Default is 1.
+#'                   Default is 'sd'. Other option is 'percentile'. For 'sd', the threshold value is the number of standard deviations from the mean. see find_core_genes for more details.
+#' @param threshold_value A numeric value specifying the threshold value for core genes. Default is 1. see find_core_genes for more details.
 #' @param pvalueCutoff A numeric value specifying the p-value cutoff for output. Default is 0.05.
 #' @param pAdjustMethod A character string specifying the method ("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none") for p-value adjustment.
 #'                      Default is 'fdr'. see p.adjust for more details.
 #' @param matchcoexp_tol A numeric value specifying the tolerance for matched co-expression.
-#'                       Lower value means better matching but will take much more iterations. Default is 0.05.
+#'                       Lower value means better matching but will take much more iterations. Default is 0.05. see resample_geneSetList_matching_coexp for more details.
 #' @param matchcoexp_max_iter An integer specifying the maximum number of iterations
-#'                            for matched co-expression. Default is 1000000.
+#'                            for matched co-expression. Default is 1000000. see resample_geneSetList_matching_coexp for more details.
 #' @importClassesFrom DOSE gseaResult
 #' @import DOSE
 #' @importFrom utils getFromNamespace
