@@ -1,31 +1,31 @@
 #' Calculate Brain Scores for Gene Sets
 #'
-#' This function calculates scores for gene sets based on brain data. It includes options for different null models.
+#' This function calculates scores for gene sets based on brain data. It supports different null models.
+#' If a null model is specified, the function calculates null scores based on the chosen model.
+#' If the null model is 'none', the function calculates the raw (empirical) scores.
 #'
-#' @param brain_data A data frame of brain data. Region by Sub. Rownames (i.e., region names) must be consistent with gene_data.
-#' @param gene_data A data frame of gene expression data. Region by gene. Rownames (i.e., region names) must be consistent with brain_data.
-#' @param annoData An environment containing annotation data. see `get_annoData` for more details.
+#' @param brain_data A data frame of brain data with regions as rows and subjects as columns. The row names (i.e., region names) must match those in gene_data.
+#' @param gene_data A data frame of gene expression data with regions as rows and genes as columns. The row names (i.e., region names) must match those in brain_data.
+#' @param annoData An environment containing annotation data. See `get_annoData` for more details.
 #' @param cor_method A character string specifying the correlation method.
-#'                   Default is 'pearson'. Other options include 'spearman', 'pls1c',
-#'                   'pls1w'. If a custom function that takes (ene_data, brain_data) as input is provided, this function will use custom correlation, and set method to 'custom'.
+#'                   Default is 'pearson'. Other options include 'spearman', 'pls1c', and 'pls1w'. If a custom function that takes (gene_data, brain_data) as input is provided, the function uses the custom correlation method and sets `cor_method` to 'custom'.
 #' @param aggre_method A character string specifying the aggregation method.
 #'                     Default is 'mean'. Other options include 'median', 'meanabs',
 #'                     'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum',
-#'                    'sign_test', 'rank_sum'. If a custom function that takes (genelist, geneSet) as input is provided, this function will use custom aggregation, and set method to 'custom'.
-#' @param null_model A character string specifying the null model. Default is 'none', calculating the raw (emprical) scores. Other options include 'spin_brain', 'resample_gene', 'coexp_matched'.
-#' @param minGSSize An integer specifying the minimum gene set size after intersection with genes in gene_data. Default is 10.
-#' @param maxGSSize An integer specifying the maximum gene set size after intersection with genes in gene_data. Default is 200.
-#' @param n_cores An integer specifying the number of cores to use for parallel processing for the permutation. Default is 0 (use all cores - 1).
-#' @param n_perm An integer specifying the number of permutations for null models. Default is NULL (for "none" type).
-#' @param perm_id A matrix of permutation indices for 'spin_brain' null model. Default is NULL. Either perm_id or any of coord.l or coord.r must be provided if choosing spin_brain mode.
-#' @param coord.l A matrix of coordinates for the left hemisphere for 'spin_brain' null model. Default is NULL. It can be NULL if coord.r or perm_id is provided.
-#' @param coord.r A matrix of coordinates for the right hemisphere for 'spin_brain' null model. Default is NULL. It can be NULL if coord.l or perm_id is provided.
-#' @param seed An integer specifying the seed for reproducibility of spinning brain. Default is NULL.
-#' @param matchcoexp_tol A numeric value specifying the tolerance for matched co-expression.
-#'                       Lower value means better matching but will take much more iterations. Default is 0.05. see resample_geneSetList_matching_coexp for more details.
-#' @param matchcoexp_max_iter An integer specifying the maximum number of iterations
-#'                            for matched co-expression. Default is 1000000. see resample_geneSetList_matching_coexp for more details.
-#' @param verbose A logical specifying whether to print messages. Default is TRUE.
+#'                     'sign_test', and 'rank_sum'. If a custom function that takes (geneList, geneSet) as input is provided, the function uses the custom aggregation method and sets `aggre_method` to 'custom'.
+#' @param null_model A character string specifying the null model. Default is 'none', which calculates raw (empirical) scores. Other options include 'spin_brain', 'resample_gene', and 'coexp_matched'.
+#' @param minGSSize An integer specifying the minimum gene set size after intersecting with the genes in gene_data. Default is 10.
+#' @param maxGSSize An integer specifying the maximum gene set size after intersecting with the genes in gene_data. Default is 200.
+#' @param n_cores An integer specifying the number of cores to use for parallel processing during permutation. Default is 0 (uses all available cores minus one).
+#' @param n_perm An integer specifying the number of permutations for null models. Default is NULL (used when `null_model` is 'none').
+#' @param perm_id A matrix of permutation indices for the 'spin_brain' null model. Default is NULL. Either perm_id or `coord.l`/`coord.r` must be provided when using the 'spin_brain' model.
+#' @param coord.l A matrix of coordinates for the left hemisphere, used in the 'spin_brain' null model. Default is NULL. It can be NULL if `coord.r` or `perm_id` is provided.
+#' @param coord.r A matrix of coordinates for the right hemisphere, used in the 'spin_brain' null model. Default is NULL. It can be NULL if `coord.l` or `perm_id` is provided.
+#' @param seed An integer specifying the seed for reproducibility when using the 'spin_brain' model. Default is NULL.
+#' @param matchcoexp_tol A numeric value specifying the tolerance for matched co-expression. Lower values result in better matching but require more iterations. Default is 0.05. See `resample_geneSetList_matching_coexp` for more details.
+#' @param matchcoexp_max_iter An integer specifying the maximum number of iterations for matched co-expression. Default is 1,000,000. See `resample_geneSetList_matching_coexp` for more details.
+#' @param verbose A logical indicating whether to print messages during processing. Default is TRUE.
+
 #' @return A data frame containing the gene set scores with regions as rows and gene sets as columns.
 #' @import pbapply
 #' @import parallel
