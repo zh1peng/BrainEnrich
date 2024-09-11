@@ -15,14 +15,15 @@ if (!requireNamespace("testthat", quietly = TRUE)) {
   install.packages("testthat")
 }
 
+# check if devtools is ready
 devtools::has_devel()
 
+
+#
 devtools::document()
 #devtools::check()
 devtools::check(args="--no-tests --no-vignettes")
 devtools::check(args="--no-tests --no-vignettes --as-cran")
-
-
 styler::style_pkg()
 devtools::build()
 devtools::install()
@@ -32,6 +33,7 @@ devtools::install()
 
 # do coverage test
 install.packages("covr")
+# create test files for functions
 usethis::use_test("get_annoData")
 usethis::use_test("get_geneSetList")
 usethis::use_test("split_Anno")
@@ -49,49 +51,36 @@ usethis::use_test("brainscore.lm_test.R")
 usethis::use_test("plot_functions")
 usethis::use_test("corr_brain_gene")
 
-covr::package_coverage()
+# run coverage test and upload to codecov
 covr::codecov(token = "bf94b382-482f-4c28-9ced-e988216dde4a")
-
-
 
 # Report coverage for a specific function (e.g., `job_splitter`)
 coverage <- covr::function_coverage(
   fun = job_cat,               # The function to test
   test_file("tests/testthat/test-job_cat.R")  # The specific test file(s)
 )
+# test a specific function
 test_file("tests/testthat/test-misc.R")
 
-
-detach("package:BrainEnrich", unload = TRUE)
-library(BrainEnrich)
-
+# build vignettes
 devtools::build_vignettes()
-^vignettes$
-^.*\.Rmd$
-^.*\.Rnw$
-
-
 # install pdflatex for building manual
 devtools::build_manual()
 
 
-usethis::use_mit_license()
+
 usethis::use_citation()
-usethis::use_agpl3_license()
 
 
-usethis::use_pkgdown()
-usethis::edit_r_environ()
-usethis::browse_github_pat()
 
-usethis::use_pkgdown_github_pages()
-
+#usethis::use_pkgdown_github_pages()
 usethis::use_pkgdown()
 pkgdown::build_site()
 pkgdown::deploy_to_branch()
 
 
 usethis::use_github_action('check-standard')
+usethis::use_github_action('pr-commands')
 # prepare example data
 
 
