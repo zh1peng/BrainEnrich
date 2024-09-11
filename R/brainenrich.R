@@ -7,7 +7,7 @@
 #' @param annoData An environment containing annotation data. see `get_annoData` for more details.
 #' @param cor_method A character string specifying the correlation method.
 #'                   Default is 'pearson'. Other options include 'spearman', 'pls1c',
-#'                   'pls1w', 'custom'. If a custom function that takes (ene_data, brain_data) as input is provided, this function will use custom correlation, and set method to 'custom'.
+#'                   'pls1w'. If a custom function that takes (gene_data, brain_data) as input is provided, this function will use custom correlation, and set method to 'custom'.
 #' @param aggre_method A character string specifying the aggregation method.
 #'                     Default is 'mean'. Other options include 'median', 'meanabs',
 #'                     'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum',
@@ -16,13 +16,13 @@
 #'                   Default is 'spin_brain'. Other options include 'resample_gene',
 #'                   'coexp_matched'.
 #' @param n_perm An integer specifying the number of permutations. Default is 5000.
-#' @param perm_id A matrix of permutation IDs. Default is NULL.
-#' @param coord.l A matrix of left hemisphere coordinates. Default is NULL.
-#' @param coord.r A matrix of right hemisphere coordinates. Default is NULL.
+#' @param perm_id A matrix of permutation indices for 'spin_brain' null model. Default is NULL. Either perm_id or any of coord.l or coord.r must be provided if choosing spin_brain mode.
+#' @param coord.l A matrix of coordinates for the left hemisphere for 'spin_brain' null model. Default is NULL. It can be NULL if coord.r or perm_id is provided.
+#' @param coord.r A matrix of coordinates for the right hemisphere for 'spin_brain' null model. Default is NULL. It can be NULL if coord.l or perm_id is provided.
 #' @param seed An integer specifying the seed for reproducibility of spinning brain. Default is NULL.
 #' @param n_cores An integer specifying the number of cores to use. Default is 0 (use all cores - 1).
-#' @param minGSSize An integer specifying the minimum gene set size after intersection with gene data. Default is 10.
-#' @param maxGSSize An integer specifying the maximum gene set size after intersection with gene data. Default is 200.
+#' @param minGSSize An integer specifying the minimum gene set size after intersection with genes in gene_data. Default is 10.
+#' @param maxGSSize An integer specifying the maximum gene set size after intersection with genes in gene_data. Default is 200.
 #' @param threshold_type A character string specifying the threshold type for core genes.
 #'                   Default is 'sd'. Other option is 'percentile'. For 'sd', the threshold value is the number of standard deviations from the mean. see find_core_genes for more details.
 #' @param threshold_value A numeric value specifying the threshold value for core genes. Default is 1. see find_core_genes for more details.
@@ -41,8 +41,8 @@
 brainenrich <- function(brain_data,
                         gene_data,
                         annoData,
-                        cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
-                        aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
+                        cor_method = c("pearson", "spearman", "pls1c", "pls1w"),
+                        aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum"),
                         null_model = c("spin_brain", "resample_gene", "coexp_matched"),
                         minGSSize = 10,
                         maxGSSize = 200,
