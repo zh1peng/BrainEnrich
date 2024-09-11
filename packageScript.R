@@ -20,6 +20,9 @@ devtools::has_devel()
 devtools::document()
 #devtools::check()
 devtools::check(args="--no-tests --no-vignettes")
+devtools::check(args="--no-tests --no-vignettes --as-cran")
+
+
 styler::style_pkg()
 devtools::build()
 devtools::install()
@@ -115,3 +118,24 @@ git config --global http.proxy http://127.0.0.1:7890
 git push origin
 
 R CMD Rd2pdf .
+
+
+library(hexSticker)
+library(ggplot2)
+
+p <- ggplot(aes(x = mpg, y = wt), data = mtcars) + geom_point(fill="white", color="white") 
+p <- p + theme_void() + theme_transparent()
+sticker(p, package="BrainEnrich", p_size=20, p_y=0.52, p_color="#000000", 
+        s_x=1, s_y=.75, s_width=1.3, s_height=1,
+        h_fill="#025a63", h_color="#000000", 
+        url="https://zh1peng.github.io/BrainEnrich/",u_size=3, u_color="#000000",
+        filename="inst/figures/ggplot2.png")
+
+
+imgurl <- "C:/Users/Zhipeng/Desktop/tmp2add2021/test1.png"
+
+sticker(subplot=imgurl, asp=0.4,  package="BrainEnrich", p_size=20, p_y=0.52, p_color="#ffffff", 
+        s_x=1, s_y=1, s_width=1.6, s_height=1.2,
+        h_fill="#003c61", h_color="#000000", 
+        url="https://zh1peng.github.io/BrainEnrich/",u_size=3, u_color="#ffffff",
+        filename="inst/figures/url.png")

@@ -12,12 +12,9 @@ License: AGPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Suggests: 
-    knitr,
-    rmarkdown,
-    mockery,
-    testthat (>= 3.0.0)
-Config/testthat/edition: 3
+Depends: 
+    R (>= 4.0.0)
+biocViews:
 Imports:
     DOSE,
     clue,
@@ -29,15 +26,19 @@ Imports:
     tibble,
     tidyr,
     broom,
-    ggplot2,
-    ggseg,
     parameters,
     pls,
     methods,
     stats,
     data.table,
     utils
-Depends: 
-    R (>= 4.0.0)
 LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown,
+    mockery,
+    ggplot2,
+    ggseg,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
 URL: https://github.com/zh1peng/BrainEnrich, https://zh1peng.github.io/BrainEnrich/

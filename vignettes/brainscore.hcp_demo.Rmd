@@ -307,6 +307,44 @@ cd /gpfs1/home/z/c/zcao4/BrainEnrich
 Rscript --vanilla run_brainscore_hpc.R $job_id $n_iter_per_job $iter_total $cor_method $aggre_method $null_model $gs_type $minGSSize $maxGSSize
 ```
 
+we can also loop through the null_models and aggre_method
+```{bash}
+#!/bin/bash
+#SBATCH --job-name=gsScore       # Job name
+#SBATCH --output=gsScore.out     # Standard output log
+#SBATCH --error=gsScore.err      # Standard error log
+#SBATCH --time=10:00:00          # Time limit hrs:min:sec
+#SBATCH --nodes=1                # Number of nodes
+#SBATCH --ntasks=1               # Number of tasks
+#SBATCH --mem=16G                # Memory per node
+#SBATCH --array=1-1000           # Array range (adjust based on perm_total / n_perm_per_job)
+
+# Define variables for the script
+n_iter_per_job=5          # Number of permutations per job (adjust as needed)
+iter_total=5000           # Total number of permutations
+cor_method="pearson"      # Correlation method
+minGSSize=20              # Minimum gene set size
+maxGSSize=200             # Maximum gene set size
+
+# Define arrays of null models, gene set types, and aggregation methods
+null_models=("resample_gene" "spin_brain")
+gs_types=("SynGO" "GO_MF")
+aggre_methods=("mean" "median" "meanabs" "maxmean", "ks_weighted", "ks_pos_neg_sum")
+
+# Change directory to where your R script is located
+cd /gpfs1/home/z/c/zcao4/BrainEnrich
+
+# Loop over gene set types, null models, and aggregation methods
+for gs_type in "${gs_types[@]}"; do
+  for null_model in "${null_models[@]}"; do
+    for aggre_method in "${aggre_methods[@]}"; do
+      Rscript --vanilla brainscore_vacc.R $SLURM_ARRAY_TASK_ID $n_iter_per_job $iter_total $cor_method $aggre_method $null_model $gs_type $minGSSize $maxGSSize
+    done
+  done
+done
+```
+
+
 collect the results from jobs
 ```{r}
 library(BrainEnrich)

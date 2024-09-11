@@ -50,24 +50,14 @@ jobs:
             ${{ runner.os }}-r-${{ matrix.r-version }}-
             ${{ runner.os }}-r-
 
-      - name: Install dependencies
-        run: |
-          install.packages(c("remotes", "rcmdcheck", "BiocManager"))
-          remotes::install_deps(dependencies = TRUE)
-          BiocManager::install("DOSE")
-        shell: Rscript {0}
-
+      # - name: Install dependencies
+      #   run: |
+      #     install.packages(c("remotes", "rcmdcheck", "BiocManager"))
+      #     remotes::install_deps(dependencies = TRUE)
+      #     BiocManager::install("DOSE")
+      #   shell: Rscript {0}
       - name: Check
         run: |
-         if (!requireNamespace("ggseg", quietly = TRUE)) {
-           options(repos = c(
-                    ggseg = 'https://ggseg.r-universe.dev',
-                    CRAN = 'https://cloud.r-project.org'))
-
-                  # Install packages
-                  install.packages('ggseg')
-                }
-           
            rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error")
         shell: Rscript {0}
 
