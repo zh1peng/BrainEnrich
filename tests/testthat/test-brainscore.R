@@ -22,4 +22,3 @@ test_that("brainscore with coexp_matched", {
   expect_type(res, "list")
   expect_equal(length(res), 10)
 })
-

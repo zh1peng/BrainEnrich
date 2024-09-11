@@ -99,6 +99,7 @@ job_splitter <- function(job_id,
 #' @param delete_originals A logical indicating whether to delete the original RDS files after combining. Default is TRUE.
 #' @param preserve_attributes A logical indicating whether to preserve and update attributes specific to brainscore output. Default is FALSE.
 #' @param result_prefix A character string specifying the prefix for naming the combined results. Default is "null_".
+#' @param compress A character string specifying the compression method to use when saving the combined results. For an efficient download from the HPC, default is set as "xz".
 #' @return The combined results, either as a saved RDS file or returned directly if `save_combined` is FALSE.
 #' @export
 
@@ -109,7 +110,9 @@ job_cat <- function(input_dir,
                     file_pattern = "res_job_%d.rds",
                     delete_originals = TRUE,
                     preserve_attributes = FALSE,
-                    result_prefix = NULL) {
+                    result_prefix = NULL,
+                    compress = c("xz", "gzip", "bzip2")) {
+  compress <- match.arg(compress)
   # Set default save_name if not provided
   if (is.null(save_name)) {
     save_name <- basename(input_dir)
@@ -177,7 +180,7 @@ job_cat <- function(input_dir,
     output_dir <- input_dir
   }
   combined_file_path <- file.path(output_dir, save_name)
-  saveRDS(combined_results, combined_file_path)
+  saveRDS(combined_results, combined_file_path, compress = compress)
   message(sprintf("Combined results saved to %s.", combined_file_path))
 
   # Optionally delete the original files

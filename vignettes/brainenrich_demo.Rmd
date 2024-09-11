@@ -1,8 +1,8 @@
 ---
-title: "Enrichment analysis of group-level IDPs"
+title: "brainenrich (demo):Enrichment analysis of group-level IDPs"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Enrichment analysis of group-level IDPs}
+  %\VignetteIndexEntry{brainenrich (demo):Enrichment analysis of group-level IDPs}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -151,7 +151,6 @@ plot_brain <- function(df2plot,
 
   return(p)
 }
-
 ```
 
 ```{r fig.align='center', fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}

@@ -3,7 +3,7 @@ test_that("job_cat combines results from multiple RDS files", {
     return(TRUE)
   }
 
-  local_mocked_bindings(ask_user_continue = mock_ask_user_continue,.package = 'BrainEnrich')
+  local_mocked_bindings(ask_user_continue = mock_ask_user_continue, .package = "BrainEnrich")
 
   # Create mock data and save as multiple RDS files
   temp_input_dir <- tempdir()
@@ -35,12 +35,11 @@ test_that("job_cat combines results from multiple RDS files", {
 
 
 test_that("job_cat combines results from multiple RDS files", {
-
   mock_ask_user_continue <- function(msg) {
     return(FALSE)
   }
 
-  local_mocked_bindings(ask_user_continue = mock_ask_user_continue,.package = 'BrainEnrich')
+  local_mocked_bindings(ask_user_continue = mock_ask_user_continue, .package = "BrainEnrich")
 
   # Create mock data and save as multiple RDS files
   temp_input_dir <- tempdir()

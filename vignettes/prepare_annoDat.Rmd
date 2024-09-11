@@ -39,7 +39,7 @@ build_Anno <- getFromNamespace("build_Anno", "DOSE")
 ```
 
 As we may need to convert geneID to symbols, we first define helper functions for doing so
-```{r, include = FALSE}
+```{r, eval=FALSE}
 symbol_annoData <- function(annoData) {
   require(org.Hs.eg.db)
   tmp <- split_Anno(annoData)
@@ -105,7 +105,6 @@ annoData <- get_GO_data("org.Hs.eg.db", ont = "MF", keytype = "SYMBOL")
 # saveRDS(annoData, file = "extdata/geneSets/GO_MF.rds", compress = "xz")
 annoData <- get_GO_data("org.Hs.eg.db", ont = "CC", keytype = "SYMBOL")
 saveRDS(annoData, file = "inst/extdata/geneSets/GO_CC.rds", compress = "xz")
-
 
 # check version of org.Hs.eg.db
 packageVersion("clusterProfiler")

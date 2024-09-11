@@ -25,7 +25,7 @@ test_that("ask_user_continue works with valid inputs", {
   mock_ask_user_continue <- function(msg) {
     return(TRUE)
   }
-  local_mocked_bindings(ask_user_continue = mock_ask_user_continue, .package='BrainEnrich')
+  local_mocked_bindings(ask_user_continue = mock_ask_user_continue, .package = "BrainEnrich")
   expect_true(ask_user_continue("Test message")) # Expect FALSE for "N"
 })
 
@@ -34,7 +34,7 @@ test_that("ask_user_continue works with valid inputs", {
   mock_ask_user_continue <- function(msg) {
     return(FALSE)
   }
-  local_mocked_bindings(ask_user_continue = mock_ask_user_continue, .package='BrainEnrich')
+  local_mocked_bindings(ask_user_continue = mock_ask_user_continue, .package = "BrainEnrich")
   expect_false(ask_user_continue("Test message")) # Expect FALSE for "N"
 })
 
@@ -42,12 +42,12 @@ test_that("ask_user_continue returns FALSE for 'Y' input", {
   # Mock the readline function to simulate 'N' input
   local_mocked_bindings(
     readline = function(prompt) {
-      return("Y")  # Simulate user input "N"
-    },.package = 'BrainEnrich' # Mock readline in the base environment
+      return("Y") # Simulate user input "N"
+    }, .package = "BrainEnrich" # Mock readline in the base environment
   )
 
   # Test ask_user_continue
-  expect_true(ask_user_continue("Test message"))  # Expect FALSE for "N"
+  expect_true(ask_user_continue("Test message")) # Expect FALSE for "N"
 })
 
 
@@ -56,14 +56,10 @@ test_that("ask_user_continue returns FALSE for 'N' input", {
   # Mock the readline function to simulate 'N' input
   local_mocked_bindings(
     readline = function(prompt) {
-      return("N")  # Simulate user input "N"
-    },.package = 'BrainEnrich' # Mock readline in the base environment
+      return("N") # Simulate user input "N"
+    }, .package = "BrainEnrich" # Mock readline in the base environment
   )
 
   # Test ask_user_continue
-  expect_false(ask_user_continue("Test message"))  # Expect FALSE for "N"
+  expect_false(ask_user_continue("Test message")) # Expect FALSE for "N"
 })
-
-
-
-

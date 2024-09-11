@@ -1,4 +1,3 @@
-
 # Example brain data (small data frame with region names as rownames)
 data(brain_data)
 # Example gene data (matching rownames with brain_data)
@@ -106,7 +105,6 @@ test_that("brainenrich performs gene set analysis correctly with valid input (re
 
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (co-exp matched)", {
-
   # Perform analysis with valid inputs
   res <- brainenrich(
     brain_data = brain_data,

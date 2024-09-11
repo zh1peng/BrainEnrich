@@ -139,7 +139,7 @@ test_that("brainscore.simulate works with pre-calculated null gsScore", {
   )
 
   # Run the simulation using the pre-calculated gsScore
-  
+
   expect_error(res <- brainscore.simulate(
     pred_df = pred_df,
     cov_df = cov_df,
@@ -158,4 +158,3 @@ test_that("brainscore.simulate works with pre-calculated null gsScore", {
     maxGSSize = 200
   ), "Please review the mismatches above.")
 })
-

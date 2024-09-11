@@ -12,7 +12,8 @@ job_cat(
   file_pattern = "res_job_\%d.rds",
   delete_originals = TRUE,
   preserve_attributes = FALSE,
-  result_prefix = NULL
+  result_prefix = NULL,
+  compress = c("xz", "gzip", "bzip2")
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ Default is "res_job_\%d.rds".}
 \item{preserve_attributes}{A logical indicating whether to preserve and update attributes specific to brainscore output. Default is FALSE.}
 
 \item{result_prefix}{A character string specifying the prefix for naming the combined results. Default is "null_".}
+
+\item{compress}{A character string specifying the compression method to use when saving the combined results. For an efficient download from the HPC, default is set as "xz".}
 }
 \value{
 The combined results, either as a saved RDS file or returned directly if \code{save_combined} is FALSE.
