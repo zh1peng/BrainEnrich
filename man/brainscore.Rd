@@ -8,9 +8,9 @@ brainscore(
   brain_data,
   gene_data,
   annoData,
-  cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
+  cor_method = c("pearson", "spearman", "pls1c", "pls1w"),
   aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig",
-    "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
+    "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum"),
   null_model = c("none", "spin_brain", "resample_gene", "coexp_matched"),
   minGSSize = 10,
   maxGSSize = 200,
@@ -26,43 +26,49 @@ brainscore(
 )
 }
 \arguments{
-\item{brain_data}{A data frame of brain data. Region by 1 column.}
+\item{brain_data}{A data frame of brain data with regions as rows and subjects as columns. The row names (i.e., region names) must match those in gene_data.}
 
-\item{gene_data}{A data frame of gene expression data.}
+\item{gene_data}{A data frame of gene expression data with regions as rows and genes as columns. The row names (i.e., region names) must match those in brain_data.}
 
-\item{annoData}{An environment containing annotation data.}
+\item{annoData}{An environment containing annotation data. See \code{get_annoData} for more details.}
 
-\item{cor_method}{A character string specifying the correlation method. Default is 'pearson'. Other options include 'spearman', 'pls1c', 'pls1w', 'custom'.}
+\item{cor_method}{A character string specifying the correlation method.
+Default is 'pearson'. Other options include 'spearman', 'pls1c', and 'pls1w'. If a custom function that takes (gene_data, brain_data) as input is provided, the function uses the custom correlation method and sets \code{cor_method} to 'custom'.}
 
-\item{aggre_method}{A character string specifying the aggregation method. Default is 'mean'. Other options include 'median', 'meanabs', 'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.}
+\item{aggre_method}{A character string specifying the aggregation method.
+Default is 'mean'. Other options include 'median', 'meanabs',
+'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum',
+'sign_test', and 'rank_sum'. If a custom function that takes (geneList, geneSet) as input is provided, the function uses the custom aggregation method and sets \code{aggre_method} to 'custom'.}
 
-\item{null_model}{A character string specifying the null model. Default is 'none'. Other options include 'spin_brain', 'resample_gene', 'coexp_matched'.}
+\item{null_model}{A character string specifying the null model. Default is 'none', which calculates raw (empirical) scores. Other options include 'spin_brain', 'resample_gene', and 'coexp_matched'.}
 
-\item{minGSSize}{An integer specifying the minimum gene set size. Default is 10.}
+\item{minGSSize}{An integer specifying the minimum gene set size after intersecting with the genes in gene_data. Default is 10.}
 
-\item{maxGSSize}{An integer specifying the maximum gene set size. Default is 200.}
+\item{maxGSSize}{An integer specifying the maximum gene set size after intersecting with the genes in gene_data. Default is 200.}
 
-\item{n_cores}{An integer specifying the number of cores to use for parallel processing for the permutation. Default is 0 (use all cores - 1).}
+\item{n_cores}{An integer specifying the number of cores to use for parallel processing during permutation. Default is 0 (uses all available cores minus one).}
 
-\item{n_perm}{An integer specifying the number of permutations for null models. Default is NULL (for "none" type).}
+\item{n_perm}{An integer specifying the number of permutations for null models. Default is NULL (used when \code{null_model} is 'none').}
 
-\item{perm_id}{A matrix of permutation indices for 'spin_brain' null model. Default is NULL. Either perm_id or any of coord.l or coord.r must be provided if choosing spin_brain mode.}
+\item{perm_id}{A matrix of permutation indices for the 'spin_brain' null model. Default is NULL. Either perm_id or \code{coord.l}/\code{coord.r} must be provided when using the 'spin_brain' model.}
 
-\item{coord.l}{A matrix of coordinates for the left hemisphere for 'spin_brain' null model. Default is NULL.}
+\item{coord.l}{A matrix of coordinates for the left hemisphere, used in the 'spin_brain' null model. Default is NULL. It can be NULL if \code{coord.r} or \code{perm_id} is provided.}
 
-\item{coord.r}{A matrix of coordinates for the right hemisphere for 'spin_brain' null model. Default is NULL.}
+\item{coord.r}{A matrix of coordinates for the right hemisphere, used in the 'spin_brain' null model. Default is NULL. It can be NULL if \code{coord.l} or \code{perm_id} is provided.}
 
-\item{seed}{An integer specifying the seed for reproducibility of spinning brain. Default is NULL.}
+\item{seed}{An integer specifying the seed for reproducibility when using the 'spin_brain' model. Default is NULL.}
 
-\item{matchcoexp_tol}{A numeric value specifying the tolerance for matching co-expression in 'coexp_matched' null model. Default is 0.05.}
+\item{matchcoexp_tol}{A numeric value specifying the tolerance for matched co-expression. Lower values result in better matching but require more iterations. Default is 0.05. See \code{resample_geneSetList_matching_coexp} for more details.}
 
-\item{matchcoexp_max_iter}{An integer specifying the maximum iterations for matching co-expression in 'coexp_matched' null model. Default is 1000000.}
+\item{matchcoexp_max_iter}{An integer specifying the maximum number of iterations for matched co-expression. Default is 1,000,000. See \code{resample_geneSetList_matching_coexp} for more details.}
 
-\item{verbose}{A logical specifying whether to print messages. Default is TRUE.}
+\item{verbose}{A logical indicating whether to print messages during processing. Default is TRUE.}
 }
 \value{
 A data frame containing the gene set scores with regions as rows and gene sets as columns.
 }
 \description{
-This function calculates scores for gene sets based on brain data. It includes options for different null models.
+This function calculates scores for gene sets based on brain data. It supports different null models.
+If a null model is specified, the function calculates null scores based on the chosen model.
+If the null model is 'none', the function calculates the raw (empirical) scores.
 }

@@ -32,7 +32,7 @@ while (approximately) preserving contiguity and hemispheric symmetry.
 The function is based on a rotation of the FreeSurfer projection of coordinates
 of a set of regions of interest on the sphere.
 #' This function is modified from the original version available at:
-https://github.com/frantisekvasa/rotate_parcellation
+https://github.com/frantisekvasa/rotate_parcellation. Please cite relevant papers from this source if you used this function.
 }
 \details{
 Modifications include:

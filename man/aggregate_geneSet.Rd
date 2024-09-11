@@ -8,7 +8,7 @@ aggregate_geneSet(
   geneList,
   geneSet,
   method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted",
-    "ks_pos_neg_sum", "sign_test", "rank_sum", "custom")
+    "ks_pos_neg_sum", "sign_test", "rank_sum")
 )
 }
 \arguments{
@@ -17,7 +17,7 @@ aggregate_geneSet(
 \item{geneSet}{A vector containing names of genes in the gene set of interest.}
 
 \item{method}{A character string specifying the method to use for aggregation.
-Options include 'mean', 'median', 'meanabs', 'meansqr', 'maxmean', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_sum'. Default is 'mean'.}
+Options include 'mean', 'median', 'meanabs', 'meansqr', 'maxmean', 'sign_test', 'rank_sum', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum','custom'. Default is 'mean'. If a custom function that takes (genelist, geneSet) as input is provided, this function will use custom aggregation, and set method to 'custom'.}
 }
 \value{
 Returns a numeric score based on the specified aggregation method.

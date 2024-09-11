@@ -13,7 +13,7 @@ aggregate_geneSetList_matching_coexp(
 )
 }
 \arguments{
-\item{geneList.true}{A m x 1 matrix of true gene sets. Ensure to include \code{drop=FALSE} when subsetting.}
+\item{geneList.true}{A m x 1 matrix of true association values. Each row corresponds to a gene, and the column contains the association values between the gene and the brain.}
 
 \item{geneSetList}{A list of gene sets.}
 
@@ -28,5 +28,5 @@ If set to 0, it uses all available cores minus one.}
 A list of aggregated gene set scores.
 }
 \description{
-This function aggregates gene set scores in parallel using \code{pblapply} from the \code{pbapply} package.
+This function swaps gene sets in geneSetList with those from sampled_geneSetList (with coexpression matched, see resample_geneSetList_matching_coexp) and aggregates gene set scores in parallel.
 }

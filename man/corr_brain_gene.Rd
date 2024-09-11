@@ -7,7 +7,7 @@
 corr_brain_gene(
   gene_data,
   brain_data,
-  method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
+  method = c("pearson", "spearman", "pls1c", "pls1w"),
   r2z = TRUE
 )
 }

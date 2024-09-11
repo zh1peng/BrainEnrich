@@ -13,7 +13,7 @@ aggregate_geneSetList(geneList, geneSetList, method, n_cores = 1)
 
 \item{method}{aggregation method used.}
 
-\item{n_cores}{Number of cores to use for parallel processing. Default is 1.}
+\item{n_cores}{Number of cores to use for parallel processing. Default is 1. If set to 0, it uses all available cores minus one.}
 }
 \value{
 A list of aggregated gene set scores.
