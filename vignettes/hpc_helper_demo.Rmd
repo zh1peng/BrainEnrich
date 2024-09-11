@@ -100,7 +100,7 @@ job_splitter(
   prefix = "res_job_",
   output_dir = output_dir,
   FUN = brainscore,
-  subset_vars = subset_vars,
+  subset_vars = subset_vars, # perm_id will be subsetted when spliting the jobs for spin_brain mode
   subset_total_var = "n_perm",
   brain_data = brain_data,
   gene_data = gene_data,
@@ -183,49 +183,13 @@ cd /gpfs1/home/z/c/zcao4/BrainEnrich
 Rscript --vanilla run_brainscore_hpc.R $job_id $n_iter_per_job $iter_total $cor_method $aggre_method $null_model $gs_type $minGSSize $maxGSSize
 ```
 
-We can also loop through more arguments in the slurm job file:
-```{bash,eval=FALSE}
-#!/bin/bash
-#SBATCH --job-name=gsScore       # Job name
-#SBATCH --output=gsScore.out     # Standard output log
-#SBATCH --error=gsScore.err      # Standard error log
-#SBATCH --time=10:00:00          # Time limit hrs:min:sec
-#SBATCH --nodes=1                # Number of nodes
-#SBATCH --ntasks=1               # Number of tasks
-#SBATCH --mem=16G                # Memory per node
-#SBATCH --array=1-1000           # Array range (adjust based on perm_total / n_perm_per_job)
-
-# Define variables for the script
-n_iter_per_job=5          # Number of permutations per job (adjust as needed)
-iter_total=5000           # Total number of permutations
-cor_method="pearson"      # Correlation method
-minGSSize=20              # Minimum gene set size
-maxGSSize=200             # Maximum gene set size
-
-# Define arrays of null models, gene set types, and aggregation methods
-null_models=("resample_gene" "spin_brain")
-gs_types=("SynGO" "GO_MF")
-aggre_methods=("mean" "median" "meanabs" "maxmean", "ks_weighted", "ks_pos_neg_sum")
-
-# Change directory to where your R script is located
-cd /gpfs1/home/z/c/zcao4/BrainEnrich
-
-# Loop over gene set types, null models, and aggregation methods
-for gs_type in "${gs_types[@]}"; do
-  for null_model in "${null_models[@]}"; do
-    for aggre_method in "${aggre_methods[@]}"; do
-      Rscript --vanilla brainscore_vacc.R $SLURM_ARRAY_TASK_ID $n_iter_per_job $iter_total $cor_method $aggre_method $null_model $gs_type $minGSSize $maxGSSize
-    done
-  done
-done
-```
 ## 2.3. Submit the slurm job
 put the content of the slurm job file into a file named job_file.slurm and submit the job
 ```{bash,eval=FALSE}
 sbatch job_file.slurm
 ```
 
-# 3. use job_cat to collect the results from jobs
+## 2.4. Use job_cat to collect the brainscore results from jobs
 ```{r,eval=FALSE}
 library(BrainEnrich)
 
@@ -274,10 +238,52 @@ for (null_model in null_models) {
   }
 }
 ```
+## 2.5. loop through other input arguments
+We can also loop through more arguments in the slurm job file:
+```{bash,eval=FALSE}
+#!/bin/bash
+#SBATCH --job-name=gsScore       # Job name
+#SBATCH --output=gsScore.out     # Standard output log
+#SBATCH --error=gsScore.err      # Standard error log
+#SBATCH --time=10:00:00          # Time limit hrs:min:sec
+#SBATCH --nodes=1                # Number of nodes
+#SBATCH --ntasks=1               # Number of tasks
+#SBATCH --mem=16G                # Memory per node
+#SBATCH --array=1-1000           # Array range (adjust based on perm_total / n_perm_per_job)
+
+# Define variables for the script
+n_iter_per_job=5          # Number of permutations per job (adjust as needed)
+iter_total=5000           # Total number of permutations
+cor_method="pearson"      # Correlation method
+minGSSize=20              # Minimum gene set size
+maxGSSize=200             # Maximum gene set size
+
+# Define arrays of null models, gene set types, and aggregation methods
+null_models=("resample_gene" "spin_brain")
+gs_types=("SynGO" "GO_MF")
+aggre_methods=("mean" "median" "meanabs" "maxmean", "ks_weighted", "ks_pos_neg_sum")
+
+# Change directory to where your R script is located
+cd /gpfs1/home/z/c/zcao4/BrainEnrich
+
+# Loop over gene set types, null models, and aggregation methods
+for gs_type in "${gs_types[@]}"; do
+  for null_model in "${null_models[@]}"; do
+    for aggre_method in "${aggre_methods[@]}"; do
+      Rscript --vanilla brainscore_vacc.R $SLURM_ARRAY_TASK_ID $n_iter_per_job $iter_total $cor_method $aggre_method $null_model $gs_type $minGSSize $maxGSSize
+    done
+  done
+done
+```
+Similar way to collect the results using job_cat
+```{r,eval=FALSE}
 
 
 
-# 7. use job_splitter (a generic function to split jobs) to do brainscore.simulate
+```
+
+
+# 3. use job_splitter (a generic function to split jobs) to do brainscore.simulate
 
 ```{r}
 # job_splitter_brainscore_simulate.R
@@ -299,25 +305,25 @@ gsScoreList.null <- args[10]
 library(BrainEnrich)
 
 # Set other parameters
-output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/test_job_splitter_sim"
+output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res"
 data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
 
 # Load hcp brain_data
 brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
-cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS")) # Assuming covariates data is stored in cov_df.RDS
-pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS")) # Assuming predictor data is stored in pred_df.RDS
+cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS"))  # Assuming covariates data is stored in cov_df.RDS
+pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS"))  # Assuming predictor data is stored in pred_df.RDS
 
 # Load additional necessary data
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 annoData <- get_annoData(type = gs_type)
 
 if (sim_type == "spin_brain") {
-  subset_vars <- list(perm_id = perm_id_dk_lh_5000)
+  subset_vars<-list(perm_id = perm_id_dk_lh_5000)
 } else {
-  subset_vars <- list()
+  subset_vars<-list()
 }
 
-if (sim_type %in% c("resample_gene", "spin_brain")) {
+if (sim_type %in% c("resample_gene","spin_brain")){
   gsScoreList.null <- readRDS(gsScoreList.null)
 }
 
@@ -343,8 +349,8 @@ job_splitter(
   iter_total = iter_total,
   output_dir = output_dir,
   FUN = brainscore.simulate,
-  subset_vars = subset_vars, # No subset_vars required in this case
-  subset_total_var = "sim_n",
+  subset_vars = subset_vars,  # perm_id will be subsetted when spliting the jobs for spin_brain mode
+  subset_total_var = 'sim_n',
   brain_data = brain_data,
   gene_data = gene_data,
   annoData = annoData,
@@ -352,13 +358,13 @@ job_splitter(
   cov_df = cov_df,
   cor_method = cor_method,
   aggre_method = aggre_method,
-  subsample_size = c(50, 100, 150, 200, 250, 300),
+  subsample_size = c(100,200,300),
   sim_type = sim_type,
   n_cores = 1,
   minGSSize = minGSSize,
   maxGSSize = maxGSSize,
   n_perm = 5000, # should match gsScoreList
-  gsScoreList.null = gsScoreList.null # This argument is now correctly placed at the end
+  gsScoreList.null = gsScoreList.null  # This argument is now correctly placed at the end
 )
 ```
 
