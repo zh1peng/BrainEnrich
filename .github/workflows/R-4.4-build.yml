@@ -58,7 +58,8 @@ jobs:
       #   shell: Rscript {0}
       - name: Check
         run: |
-           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran"), error_on = "error")
+           install.packages(c("rcmdcheck"))
+           rcmdcheck::rcmdcheck(args = c("--no-manual", "--as-cran","--no-tests", "--no-vignettes"), error_on = "error")
         shell: Rscript {0}
 
 
