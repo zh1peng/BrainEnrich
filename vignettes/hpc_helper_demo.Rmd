@@ -240,6 +240,14 @@ for (null_model in null_models) {
 }
 ```
 ### 3.4. loop through other input arguments
+Note! 
+
+For the array in bash, do not include commas in the array. For example,
+
+`aggre_methods=("mean" "median" "meanabs" "maxmean", "ks_weighted", "ks_pos_neg_sum")`
+
+Here, `maxmean` will be treated as `maxmean,` and `ks_weighted` will be treated as `ks_weighted,` respectively.
+
 We can also loop through more arguments in the slurm job file:
 ```{bash,eval=FALSE}
 #!/bin/bash
@@ -262,7 +270,7 @@ maxGSSize=200             # Maximum gene set size
 # Define arrays of null models, gene set types, and aggregation methods
 null_models=("resample_gene" "spin_brain")
 gs_types=("SynGO" "GO_MF")
-aggre_methods=("mean" "median" "meanabs" "maxmean", "ks_weighted", "ks_pos_neg_sum")
+aggre_methods=("mean" "median" "meanabs" "maxmean" "ks_weighted" "ks_pos_neg_sum")
 
 # Change directory to where your R script is located
 cd /gpfs1/home/z/c/zcao4/BrainEnrich
@@ -289,9 +297,9 @@ minGSSize <- 20  # Minimum gene set size
 maxGSSize <- 200  # Maximum gene set size
 
 # Define an array of null models, gene set types, and aggregation methods to loop through
-null_models <- c("spin_brain")
+null_models <- c("resample_gene")
 gs_types <- c("SynGO", "GO_MF")
-aggre_methods <- c("median", "meanabs", "ks_pos_neg_sum")
+aggre_methods <- c("ks_pos_neg_sum")
 
 # Loop through each combination of null model, gene set type, and aggregation method
 for (null_model in null_models) {

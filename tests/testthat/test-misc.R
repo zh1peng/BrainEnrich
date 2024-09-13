@@ -38,7 +38,7 @@ test_that("ask_user_continue works with valid inputs", {
   expect_false(ask_user_continue("Test message")) # Expect FALSE for "N"
 })
 
-test_that("ask_user_continue returns FALSE for 'Y' input", {
+test_that("ask_user_continue returns TRUE for 'Y' input", {
   # Mock the readline function to simulate 'N' input
   local_mocked_bindings(
     readline = function(prompt) {
