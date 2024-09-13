@@ -278,9 +278,53 @@ done
 ```
 Similar way to collect the results using job_cat
 ```{r,eval=FALSE}
+# Set the base output directory
+input_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_brainscore"
 
+# Define the parameters of the analysis
+n_iter_per_job <- 5  # Number of iterations per job
+iter_total <- 5000   # Total number of iterations
+cor_method <- "pearson"  # Correlation method
+minGSSize <- 20  # Minimum gene set size
+maxGSSize <- 200  # Maximum gene set size
 
+# Define an array of null models, gene set types, and aggregation methods to loop through
+null_models <- c("resample_gene", "spin_brain")
+gs_types <- c("SynGO", "GO_MF")
+aggre_methods <- c("median", "meanabs", "maxmean", "ks_weighted", "ks_pos_neg_sum")
 
+# Loop through each combination of null model, gene set type, and aggregation method
+for (null_model in null_models) {
+  for (gs_type in gs_types) {
+    for (aggre_method in aggre_methods) {
+      
+      # Construct the folder name based on the parameters
+      folder_name <- sprintf(
+        "%s_%s_%s_%s_%d_%d_%d",
+        gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total
+      )
+
+      # Construct the full path to the folder
+      input_dir <- file.path(input_dir_base, folder_name)
+      output_dir <- input_dir_base
+
+      # Construct the save name based on the folder name
+      save_name <- folder_name
+
+      # Call the job_cat (or job_combiner) function to merge the RDS files in this folder
+      job_cat(
+        input_dir = input_dir,
+        output_dir = output_dir,
+        n_rds = iter_total / n_iter_per_job,
+        save_name = save_name,
+        file_pattern = "res_job_%d.rds",
+        delete_originals = TRUE,
+        preserve_attributes = TRUE,
+        result_prefix = "null_"
+      )
+    }
+  }
+}
 ```
 
 
