@@ -20,9 +20,13 @@ knitr::opts_chunk$set(
 This tutorial demonstrates how to perform do simulation to assess the false positive rate of analysis with brainscore. 
 The `brainscore` function calculates the gene set scores and correlates them with the predictor variable. 
 The simulation analysis is performed by 
-* (1) permuting the predictor variable (`sim_type ='randomize_pred'`);
-* (2) simulating the brain data by spinning it (`sim_type ='spin_brain'`);
-* (3) resampling the genes (`sim_type ='resampling_gene'`). 
+
+(1) permuting the predictor variable (`sim_type ='randomize_pred'`);
+
+(2) spinning the brain data (`sim_type ='spin_brain'`);
+
+(3) resampling the gene data (`sim_type ='resampling_gene'`). 
+
 The simulation analysis is performed to assess the false positive rate of the analysis, as when the above elements are permuted, we expect no the correlation between the gene set scores and the predictor variable.
 For demonstration purposes, we have used a small number of iterations (sim_n = 5) and one subsample size (subsample_size = 100). In practice, we recommend using a larger number of iterations (i.e. 1000), various subsample sizes (e.g., 50, 100, 150, 200) and larger size of null models for a more robust analysis.
 

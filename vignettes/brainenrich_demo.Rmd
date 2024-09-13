@@ -1,8 +1,8 @@
 ---
-title: "brainenrich (demo):Enrichment analysis of group-level IDPs"
+title: "Enrichment analysis of group-level IDPs (brainenrich)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{brainenrich (demo):Enrichment analysis of group-level IDPs}
+  %\VignetteIndexEntry{Enrichment analysis of group-level IDPs (brainenrich)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

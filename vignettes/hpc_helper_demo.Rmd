@@ -1,5 +1,5 @@
 ---
-title: "How to precompute null gene set scores and do simulation on HPC with slurm"
+title: "How to precompute null gene set scores and do simulation/analysis on HPC with slurm"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{How to precompute null gene set scores and do simulation on HPC with slurm}
@@ -289,9 +289,9 @@ minGSSize <- 20  # Minimum gene set size
 maxGSSize <- 200  # Maximum gene set size
 
 # Define an array of null models, gene set types, and aggregation methods to loop through
-null_models <- c("resample_gene", "spin_brain")
+null_models <- c("spin_brain")
 gs_types <- c("SynGO", "GO_MF")
-aggre_methods <- c("median", "meanabs", "maxmean", "ks_weighted", "ks_pos_neg_sum")
+aggre_methods <- c("median", "meanabs", "ks_pos_neg_sum")
 
 # Loop through each combination of null model, gene set type, and aggregation method
 for (null_model in null_models) {
@@ -328,8 +328,65 @@ for (null_model in null_models) {
 ```
 
 
-## 4. use job_splitter (a generic function to split jobs) to do brainscore.simulate
-### 4.1. Prepare the script for the job_splitter function
+## 4. setup brainscore.lm_test with precomputed null scores
+One advantage of precomputing null gene set scores is that you can reuse them for multiple analyses without recalculating them each time.
+```{r,eval=FALSE}
+
+data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
+null_score_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_brainscore"
+
+# Load hcp brain_data
+brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
+cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS"))  # Assuming covariates data is stored in cov_df.RDS
+pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS"))  # Assuming predictor data is stored in pred_df.RDS
+
+# Define the parameters of the analysis
+n_iter_per_job <- 5  # Number of iterations per job
+iter_total <- 5000   # Total number of iterations
+cor_method <- "pearson"  # Correlation method
+minGSSize <- 20  # Minimum gene set size
+maxGSSize <- 200  # Maximum gene set size
+
+# Define an array of null models, gene set types, and aggregation methods to loop through
+null_models <- c("resample_gene", "spin_brain")
+gs_types <- c("GO_MF")
+aggre_methods <- c("median", "meanabs", "ks_weighted", "ks_pos_neg_sum")
+
+# Loop through each combination of null model, gene set type, and aggregation method
+for (null_model in null_models) {
+  for (gs_type in gs_types) {
+    for (aggre_method in aggre_methods) {
+      
+      # Construct the folder name based on the parameters
+      nllScoreRds <- sprintf(
+        "%s/%s_%s_%s_%s_%d_%d_%d",
+        null_score_dir,gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total
+      )
+      nullscore<-readRDS(nllScoreRds)
+      annoData <- get_annoData(type = gs_type)
+
+res <- brainscore.lm_test(
+  pred_df = pred_df,
+  cov_df = cov_df,
+  brain_data = brain_data,
+  gene_data = gene_data,
+  annoData = annoData,
+  gsScoreList.null = nullscore,
+  cor_method = "pearson",
+  aggre_method = aggre_method,
+  n_cores = 0,
+  minGSSize = minGSSize,
+  maxGSSize = maxGSSize,
+  null_model = null_model,
+  n_perm = iter_total,
+  pvalueCutoff = 0.8
+)
+```
+
+
+
+## 5. use job_splitter (a generic function to split jobs) to do brainscore.simulate
+### 5.1. Prepare the script for the job_splitter function
 Here, we will prepare a script for distributed computing environments, allowing large-scale permutation tests to be split across multiple compute nodes. 
 ```{r,eval=FALSE}
 # brainscore_simulate_vacc.R
@@ -414,7 +471,7 @@ job_splitter(
 )
 ```
 
-### 4.2. Prepare the slurm job file
+### 5.2. Prepare the slurm job file
 ```{bash,eval=FALSE}
 #!/bin/bash
 #SBATCH --job-name=brainscore_sim    # Job name
@@ -458,7 +515,7 @@ for gs_type in "${gs_types[@]}"; do
 done
 ```
 
-### 4.3. Use job_cat to collect the brainscore results from jobs
+### 5.3. Use job_cat to collect the brainscore results from jobs
 ```{r,eval=FALSE}
 library(BrainEnrich)
 input_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res/SynGO_spin_brain_pearson_mean_20_200_1000"

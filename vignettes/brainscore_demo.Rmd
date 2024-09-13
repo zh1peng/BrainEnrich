@@ -1,8 +1,8 @@
 ---
-title: "Enrichment analysis of individual-level IDPs"
+title: "Enrichment analysis of individual-level IDPs (brainscore)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Enrichment analysis of individual-level IDPs}
+  %\VignetteIndexEntry{Enrichment analysis of individual-level IDPs (brainscore)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -24,7 +24,6 @@ library(BrainEnrich)
 library(dplyr)
 library(enrichplot)
 library(ggplot2)
-library(ggseg)
 ```
 
 ## 1. Prepare Data for the Analysis
@@ -35,7 +34,6 @@ The data is simulated from HCP data. Let's load and inspect it.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 data(sample_df)
 str(sample_df)
-colnames(sample_df)
 ```
 ### 1.2. prepare brain_data for scoring
 Next, we'll prepare the brain data by selecting the relevant columns and transforming the data for scoring.
