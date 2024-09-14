@@ -284,6 +284,7 @@ for gs_type in "${gs_types[@]}"; do
   done
 done
 ```
+
 Similar way to collect the results using job_cat
 ```{r,eval=FALSE}
 # Set the base output directory
@@ -297,9 +298,9 @@ minGSSize <- 20  # Minimum gene set size
 maxGSSize <- 200  # Maximum gene set size
 
 # Define an array of null models, gene set types, and aggregation methods to loop through
-null_models <- c("resample_gene")
+null_models <- c("resample_gene","spin_brain")
 gs_types <- c("SynGO", "GO_MF")
-aggre_methods <- c("ks_pos_neg_sum")
+aggre_methods <- c("ks_weighted","maxmean")
 
 # Loop through each combination of null model, gene set type, and aggregation method
 for (null_model in null_models) {
@@ -339,11 +340,17 @@ for (null_model in null_models) {
 ## 4. setup brainscore.lm_test with precomputed null scores
 One advantage of precomputing null gene set scores is that you can reuse them for multiple analyses without recalculating them each time.
 ```{r,eval=FALSE}
-
+library(BrainEnrich)
 data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
+res_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/res"
+if (!dir.exists(res_path)) {
+  dir.create(res_path)
+}
+
 null_score_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_brainscore"
 
 # Load hcp brain_data
+gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
 cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS"))  # Assuming covariates data is stored in cov_df.RDS
 pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS"))  # Assuming predictor data is stored in pred_df.RDS
@@ -357,21 +364,24 @@ maxGSSize <- 200  # Maximum gene set size
 
 # Define an array of null models, gene set types, and aggregation methods to loop through
 null_models <- c("resample_gene", "spin_brain")
-gs_types <- c("GO_MF")
-aggre_methods <- c("median", "meanabs", "ks_weighted", "ks_pos_neg_sum")
+gs_types <- c("GO_MF", "SynGO")
+aggre_methods <- c("mean", "median", "meanabs", "maxmean", "ks_weighted", "ks_pos_neg_sum")
 
+res_list <- list()
 # Loop through each combination of null model, gene set type, and aggregation method
 for (null_model in null_models) {
   for (gs_type in gs_types) {
+    annoData <- get_annoData(type = gs_type)
     for (aggre_method in aggre_methods) {
+      print(paste(gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total,sep="_"))
       
       # Construct the folder name based on the parameters
       nllScoreRds <- sprintf(
-        "%s/%s_%s_%s_%s_%d_%d_%d",
+        "%s/%s_%s_%s_%s_%d_%d_%d.rds",
         null_score_dir,gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total
       )
       nullscore<-readRDS(nllScoreRds)
-      annoData <- get_annoData(type = gs_type)
+      
 
 res <- brainscore.lm_test(
   pred_df = pred_df,
@@ -387,8 +397,17 @@ res <- brainscore.lm_test(
   maxGSSize = maxGSSize,
   null_model = null_model,
   n_perm = iter_total,
-  pvalueCutoff = 0.8
+  pvalueCutoff = 1,
+  gsea_obj = FALSE, # return a df instead of a gsea object
+  threshold_type = "none"
 )
+
+res_list[[paste(gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total,sep="_")]] <- res
+    }
+  }
+}
+
+saveRDS(res_list, file = file.path(res_path,"res_list.rds"))
 ```
 
 

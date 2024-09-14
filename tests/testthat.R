@@ -16,5 +16,6 @@ if (!requireNamespace("mockery", quietly = TRUE)) {
 }
 
 library(mockery)
+library(dplyr)
 
 test_check("BrainEnrich")

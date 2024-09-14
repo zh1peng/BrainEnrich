@@ -134,16 +134,28 @@ brainscore.lm_test <- function(pred_df,
     }
   }
 
-  stat.tmp <- list()
-  for (i in seq_along(gsScoreList.null)) {
-    dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
-    stat.tmp[[i]] <- simple_lm(
-      dependent_df = dependent_df.null,
-      pred_df = pred_df,
-      cov_df = cov_df,
-      stat2return = "tval_list"
-    )
-  }
+ message("Performing linear modeling using null gene set scores...")
+    if (n_cores == 0) {
+          n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
+        } else {
+          n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
+        }
+
+    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
+        if (!is.null(cl)) {
+          clusterExport(cl, c("pred_df","cov_df","simple_lm","gsScoreList.null"), envir = environment())
+        }
+
+    stat.tmp <- pblapply(seq_along(gsScoreList.null), function(i) {
+        dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
+        simple_lm(
+          dependent_df = dependent_df.null,
+          pred_df = pred_df,
+          cov_df = cov_df,
+          stat2return = "tval_list"
+        )
+      }, cl = cl)
+  if (!is.null(cl)) stopCluster(cl)
   stat.null <- list_transpose(stat.tmp)
 
   # Calculate p-values
