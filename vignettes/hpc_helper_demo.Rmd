@@ -392,7 +392,7 @@ res <- brainscore.lm_test(
   gsScoreList.null = nullscore,
   cor_method = "pearson",
   aggre_method = aggre_method,
-  n_cores = 0,
+  n_cores = 63,
   minGSSize = minGSSize,
   maxGSSize = maxGSSize,
   null_model = null_model,
@@ -409,6 +409,24 @@ res_list[[paste(gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSS
 
 saveRDS(res_list, file = file.path(res_path,"res_list.rds"))
 ```
+
+setup slurm job file to run the brainscore.lm_test
+Note that if setting `n_cores=0` to auto detect the number of cores, it will cause error.
+In the Rscript, we set `n_cores=63` to use 63 cores, which is the maximum number of cores on the node.
+```{bash,eval=FALSE}
+#!/bin/bash
+#SBATCH --job-name=lm              # Job name
+#SBATCH --error=lm.err   
+#SBATCH --out=lm.out   
+#SBATCH --time=24:00:00                 # Time limit hrs:min:sec
+#SBATCH --nodes=1                       # Number of nodes
+#SBATCH --ntasks=64                    # Number of tasks
+#SBATCH --mem=16G                       # Memory per node
+
+cd /gpfs1/home/z/c/zcao4/BrainEnrich
+Rscript --vanilla lm_tes_vacc.R
+```
+
 
 
 
