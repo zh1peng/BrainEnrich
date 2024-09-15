@@ -260,7 +260,7 @@ aggregate_geneSetList <- function(geneList, geneSetList, method, n_cores = 1) {
 
 
 #' Aggregate Gene Set List with Matching Coexpression in Parallel
-#' 
+#'
 #' This function swaps gene sets in geneSetList with those from sampled_geneSetList (with coexpression matched, see resample_geneSetList_matching_coexp) and aggregates gene set scores in parallel.
 #'
 #' @param geneList.true A m x 1 matrix of true association values. Each row corresponds to a gene, and the column contains the association values between the gene and the brain.

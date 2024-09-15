@@ -35,6 +35,7 @@
 #' @importFrom stats p.adjust
 #' @importFrom utils getFromNamespace
 #' @importFrom purrr list_transpose
+#' @import parallel
 #' @importFrom dplyr select rename %>% everything
 #' @importClassesFrom DOSE gseaResult
 #' @return A data frame containing the results of the linear model test, including p-values, adjusted p-values,
@@ -134,28 +135,50 @@ brainscore.lm_test <- function(pred_df,
     }
   }
 
- message("Performing linear modeling using null gene set scores...")
+  message("Performing linear modeling using null gene set scores...")
+  library(parallel)
+
+  # Detect operating system and set number of cores appropriately
+  if (.Platform$OS.type == "windows") {
+    # Windows does not support mclapply, so use 1 core or switch to makeCluster approach
+    n_cores <- 1
+  } else {
+    # For Unix-like systems (Linux/macOS), set number of cores for mclapply
     if (n_cores == 0) {
-          n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
-        } else {
-          n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
-        }
+      n_cores <- max(detectCores() - 1, 1)
+    } else {
+      n_cores <- min(n_cores, detectCores())
+    }
+  }
 
-    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
-        if (!is.null(cl)) {
-          clusterExport(cl, c("pred_df","cov_df","simple_lm","gsScoreList.null"), envir = environment())
-        }
+  # Check for Windows and apply mclapply if not on Windows
+  if (.Platform$OS.type != "windows") {
+    message("Unix-like system detected. Using mclapply for parallel processing.")
+    # Use mclapply for multi-core processing on Unix-like systems
+    stat.tmp <- mclapply(seq_along(gsScoreList.null), function(i) {
+      dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
+      simple_lm(
+        dependent_df = dependent_df.null,
+        pred_df = pred_df,
+        cov_df = cov_df,
+        stat2return = "tval_list"
+      )
+    }, mc.cores = n_cores)
+  } else {
+    message("Windows detected. Using lapply as a fallback. Consider using a Unix-like system for faster processing.")
+    # Use lapply as a fallback on Windows (single-core)
+    stat.tmp <- lapply(seq_along(gsScoreList.null), function(i) {
+      dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
+      simple_lm(
+        dependent_df = dependent_df.null,
+        pred_df = pred_df,
+        cov_df = cov_df,
+        stat2return = "tval_list"
+      )
+    })
+  }
 
-    stat.tmp <- pblapply(seq_along(gsScoreList.null), function(i) {
-        dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
-        simple_lm(
-          dependent_df = dependent_df.null,
-          pred_df = pred_df,
-          cov_df = cov_df,
-          stat2return = "tval_list"
-        )
-      }, cl = cl)
-  if (!is.null(cl)) stopCluster(cl)
+  # Combine results
   stat.null <- list_transpose(stat.tmp)
 
   # Calculate p-values

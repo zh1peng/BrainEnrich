@@ -291,22 +291,21 @@ Similar way to collect the results using job_cat
 input_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_brainscore"
 
 # Define the parameters of the analysis
-n_iter_per_job <- 5  # Number of iterations per job
-iter_total <- 5000   # Total number of iterations
-cor_method <- "pearson"  # Correlation method
-minGSSize <- 20  # Minimum gene set size
-maxGSSize <- 200  # Maximum gene set size
+n_iter_per_job <- 5 # Number of iterations per job
+iter_total <- 5000 # Total number of iterations
+cor_method <- "pearson" # Correlation method
+minGSSize <- 20 # Minimum gene set size
+maxGSSize <- 200 # Maximum gene set size
 
 # Define an array of null models, gene set types, and aggregation methods to loop through
-null_models <- c("resample_gene","spin_brain")
+null_models <- c("resample_gene", "spin_brain")
 gs_types <- c("SynGO", "GO_MF")
-aggre_methods <- c("ks_weighted","maxmean")
+aggre_methods <- c("ks_weighted", "maxmean")
 
 # Loop through each combination of null model, gene set type, and aggregation method
 for (null_model in null_models) {
   for (gs_type in gs_types) {
     for (aggre_method in aggre_methods) {
-      
       # Construct the folder name based on the parameters
       folder_name <- sprintf(
         "%s_%s_%s_%s_%d_%d_%d",
@@ -352,15 +351,15 @@ null_score_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_brainscore"
 # Load hcp brain_data
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
-cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS"))  # Assuming covariates data is stored in cov_df.RDS
-pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS"))  # Assuming predictor data is stored in pred_df.RDS
+cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS")) # Assuming covariates data is stored in cov_df.RDS
+pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS")) # Assuming predictor data is stored in pred_df.RDS
 
 # Define the parameters of the analysis
-n_iter_per_job <- 5  # Number of iterations per job
-iter_total <- 5000   # Total number of iterations
-cor_method <- "pearson"  # Correlation method
-minGSSize <- 20  # Minimum gene set size
-maxGSSize <- 200  # Maximum gene set size
+n_iter_per_job <- 5 # Number of iterations per job
+iter_total <- 5000 # Total number of iterations
+cor_method <- "pearson" # Correlation method
+minGSSize <- 20 # Minimum gene set size
+maxGSSize <- 200 # Maximum gene set size
 
 # Define an array of null models, gene set types, and aggregation methods to loop through
 null_models <- c("resample_gene", "spin_brain")
@@ -373,41 +372,41 @@ for (null_model in null_models) {
   for (gs_type in gs_types) {
     annoData <- get_annoData(type = gs_type)
     for (aggre_method in aggre_methods) {
-      print(paste(gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total,sep="_"))
-      
+      print(paste(gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total, sep = "_"))
+
       # Construct the folder name based on the parameters
       nllScoreRds <- sprintf(
         "%s/%s_%s_%s_%s_%d_%d_%d.rds",
-        null_score_dir,gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total
+        null_score_dir, gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total
       )
-      nullscore<-readRDS(nllScoreRds)
-      
+      nullscore <- readRDS(nllScoreRds)
 
-res <- brainscore.lm_test(
-  pred_df = pred_df,
-  cov_df = cov_df,
-  brain_data = brain_data,
-  gene_data = gene_data,
-  annoData = annoData,
-  gsScoreList.null = nullscore,
-  cor_method = "pearson",
-  aggre_method = aggre_method,
-  n_cores = 63,
-  minGSSize = minGSSize,
-  maxGSSize = maxGSSize,
-  null_model = null_model,
-  n_perm = iter_total,
-  pvalueCutoff = 1,
-  gsea_obj = FALSE, # return a df instead of a gsea object
-  threshold_type = "none"
-)
 
-res_list[[paste(gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total,sep="_")]] <- res
+      res <- brainscore.lm_test(
+        pred_df = pred_df,
+        cov_df = cov_df,
+        brain_data = brain_data,
+        gene_data = gene_data,
+        annoData = annoData,
+        gsScoreList.null = nullscore,
+        cor_method = "pearson",
+        aggre_method = aggre_method,
+        n_cores = 63,
+        minGSSize = minGSSize,
+        maxGSSize = maxGSSize,
+        null_model = null_model,
+        n_perm = iter_total,
+        pvalueCutoff = 1,
+        gsea_obj = FALSE, # return a df instead of a gsea object
+        threshold_type = "none"
+      )
+
+      res_list[[paste(gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total, sep = "_")]] <- res
     }
   }
 }
 
-saveRDS(res_list, file = file.path(res_path,"res_list.rds"))
+saveRDS(res_list, file = file.path(res_path, "res_list.rds"))
 ```
 
 setup slurm job file to run the brainscore.lm_test
@@ -458,20 +457,20 @@ data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
 
 # Load hcp brain_data
 brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
-cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS"))  # Assuming covariates data is stored in cov_df.RDS
-pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS"))  # Assuming predictor data is stored in pred_df.RDS
+cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS")) # Assuming covariates data is stored in cov_df.RDS
+pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS")) # Assuming predictor data is stored in pred_df.RDS
 
 # Load additional necessary data
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 annoData <- get_annoData(type = gs_type)
 
 if (sim_type == "spin_brain") {
-  subset_vars<-list(perm_id = perm_id_dk_lh_5000)
+  subset_vars <- list(perm_id = perm_id_dk_lh_5000)
 } else {
-  subset_vars<-list()
+  subset_vars <- list()
 }
 
-if (sim_type %in% c("resample_gene","spin_brain")){
+if (sim_type %in% c("resample_gene", "spin_brain")) {
   gsScoreList.null <- readRDS(gsScoreList.null)
 }
 
@@ -497,8 +496,8 @@ job_splitter(
   iter_total = iter_total,
   output_dir = output_dir,
   FUN = brainscore.simulate,
-  subset_vars = subset_vars,  # perm_id will be subsetted when spliting the jobs for spin_brain mode
-  subset_total_var = 'sim_n',
+  subset_vars = subset_vars, # perm_id will be subsetted when spliting the jobs for spin_brain mode
+  subset_total_var = "sim_n",
   brain_data = brain_data,
   gene_data = gene_data,
   annoData = annoData,
@@ -506,13 +505,13 @@ job_splitter(
   cov_df = cov_df,
   cor_method = cor_method,
   aggre_method = aggre_method,
-  subsample_size = c(100,200,300),
+  subsample_size = c(100, 200, 300),
   sim_type = sim_type,
   n_cores = 1,
   minGSSize = minGSSize,
   maxGSSize = maxGSSize,
   n_perm = 5000, # should match gsScoreList
-  gsScoreList.null = gsScoreList.null  # precomputed null gene set scores as specified by the user
+  gsScoreList.null = gsScoreList.null # precomputed null gene set scores as specified by the user
 )
 ```
 
