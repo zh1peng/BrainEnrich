@@ -30,8 +30,6 @@ devtools::install()
 
 
 
-
-
 # do coverage test
 install.packages("covr")
 # create test files for functions
