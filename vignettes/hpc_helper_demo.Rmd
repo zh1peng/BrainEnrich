@@ -363,10 +363,10 @@ maxGSSize <- 200 # Maximum gene set size
 
 # Define an array of null models, gene set types, and aggregation methods to loop through
 null_models <- c("resample_gene", "spin_brain")
-gs_types <- c("GO_MF", "SynGO")
+gs_types <- c("SynGO")
 aggre_methods <- c("mean", "median", "meanabs", "maxmean", "ks_weighted", "ks_pos_neg_sum")
 
-res_list <- list()
+
 # Loop through each combination of null model, gene set type, and aggregation method
 for (null_model in null_models) {
   for (gs_type in gs_types) {
@@ -401,12 +401,11 @@ for (null_model in null_models) {
         threshold_type = "none"
       )
 
-      res_list[[paste(gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total, sep = "_")]] <- res
+    saveRDS(res, file.path(res_path, sprintf("res_%s_%s_%s_%s_%d_%d_%d.rds", gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total)))
     }
   }
 }
 
-saveRDS(res_list, file = file.path(res_path, "res_list.rds"))
 ```
 
 setup slurm job file to run the brainscore.lm_test
@@ -420,7 +419,7 @@ In the Rscript, we set `n_cores=63` to use 63 cores, which is the maximum number
 #SBATCH --time=24:00:00                 # Time limit hrs:min:sec
 #SBATCH --nodes=1                       # Number of nodes
 #SBATCH --ntasks=64                    # Number of tasks
-#SBATCH --mem=16G                       # Memory per node
+#SBATCH --mem=64G                       # Memory per node (increase memory if it is unexpextedly slow)
 
 cd /gpfs1/home/z/c/zcao4/BrainEnrich
 Rscript --vanilla lm_tes_vacc.R
