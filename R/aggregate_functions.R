@@ -298,13 +298,14 @@ aggregate_geneSetList_matching_coexp <- function(geneList.true,
 
 
   # Initialize a cluster of workers
-  cl <- makeCluster(n_cores)
-
+  cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
   # Export necessary variables and functions to the cluster
+  if (!is.null(cl)) {
   clusterExport(cl,
     varlist = c("geneList.true", "swap_geneList", "aggregate_geneSet", "method", "geneSetList", "sampled_geneSetList"),
     envir = environment()
   )
+  }
 
   # Parallelize the processing using pblapply for progress bar
   allgs.scores <- pblapply(seq_along(geneSetList), function(i) {
@@ -324,7 +325,7 @@ aggregate_geneSetList_matching_coexp <- function(geneList.true,
   }, cl = cl)
 
   # Stop the cluster after processing
-  stopCluster(cl)
+  if (!is.null(cl)) stopCluster(cl)
   names(allgs.scores) <- names(geneSetList)
   return(allgs.scores)
 }

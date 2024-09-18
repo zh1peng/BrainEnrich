@@ -36,6 +36,7 @@
 #' @importFrom utils getFromNamespace
 #' @importFrom purrr list_transpose
 #' @import parallel
+#' @import pbapply
 #' @importFrom dplyr select rename %>% everything
 #' @importClassesFrom DOSE gseaResult
 #' @return A data frame containing the results of the linear model test, including p-values, adjusted p-values,
@@ -86,6 +87,7 @@ brainscore.lm_test <- function(pred_df,
     n_cores = n_cores
   )
   dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
+  message("Performing linear modeling using empirical gene set scores...")
   res <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
   stat.true <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "tval_list")
 
@@ -136,20 +138,14 @@ brainscore.lm_test <- function(pred_df,
   }
 
   message("Performing linear modeling using null gene set scores...")
-  library(parallel)
-
   # Detect operating system and set number of cores appropriately
-  if (.Platform$OS.type == "windows") {
-    # Windows does not support mclapply, so use 1 core or switch to makeCluster approach
-    n_cores <- 1
-  } else {
-    # For Unix-like systems (Linux/macOS), set number of cores for mclapply
+
     if (n_cores == 0) {
       n_cores <- max(detectCores() - 1, 1)
     } else {
       n_cores <- min(n_cores, detectCores())
     }
-  }
+
 
   # Check for Windows and apply mclapply if not on Windows
   if (.Platform$OS.type != "windows") {
@@ -165,9 +161,16 @@ brainscore.lm_test <- function(pred_df,
       )
     }, mc.cores = n_cores)
   } else {
-    message("Windows detected. Using lapply as a fallback. Consider using a Unix-like system for faster processing.")
-    # Use lapply as a fallback on Windows (single-core)
-    stat.tmp <- lapply(seq_along(gsScoreList.null), function(i) {
+    message("Windows detected. Using pblapply and makeCluster to do parallel processing. If large null GS score list is used, consider using a Unix-like system for more efficient processing.")
+  
+    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
+    
+    if (!is.null(cl)){
+      clusterExport(cl, list("gsScoreList.null", "pred_df", "cov_df", "simple_lm"),
+      envir = environment())
+    }
+    # Use parLapply for parallel processing
+    stat.tmp <- pbapply(seq_along(gsScoreList.null), function(i) {
       dependent_df.null <- data.frame(gsScoreList.null[[i]], check.names = FALSE)
       simple_lm(
         dependent_df = dependent_df.null,
@@ -175,7 +178,9 @@ brainscore.lm_test <- function(pred_df,
         cov_df = cov_df,
         stat2return = "tval_list"
       )
-    })
+    }, cl = cl)
+    # Stop the cluster after processing
+    if (!is.null(cl)) stopCluster(cl)
   }
 
   # Combine results
