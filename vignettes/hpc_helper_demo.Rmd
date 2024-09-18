@@ -561,7 +561,55 @@ done
 ### 5.3. Use job_cat to collect the brainscore results from jobs
 ```{r,eval=FALSE}
 library(BrainEnrich)
-input_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res/SynGO_spin_brain_pearson_mean_20_200_1000"
+input_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res/GO_MF_spin_brain_pearson_mean_20_200_1000"
 output_dir <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res"
-tmp <- job_cat(input_dir = input_dir, output_dir = output_dir, n_rds = 1000, delete_originals = TRUE)
+save_name <- "GO_MF_spin_brain_pearson_mean_20_200_1000"
+tmp <- job_cat(input_dir = input_dir, output_dir = output_dir, n_rds = 1000, delete_originals = TRUE, save_name = save_name)
+```
+
+### 5.4. loop through other input arguments
+```{bash,eval=FALSE}
+#!/bin/bash
+#SBATCH --job-name=brainscore_sim    # Job name
+#SBATCH --output=sim.out             # Standard output log
+#SBATCH --error=sim.err              # Standard error log
+#SBATCH --time=24:00:00              # Time limit hrs:min:sec
+#SBATCH --nodes=1                    # Number of nodes
+#SBATCH --ntasks=1                   # Number of tasks
+#SBATCH --mem=16G                    # Memory per node
+#SBATCH --array=1-1000               # Array range (adjust based on iter_total / n_iter_per_job)
+
+# Define the variables
+n_iter_per_job=1          # Number of iterations per job
+iter_total=1000           # Total number of iterations
+cor_method="pearson"      # Correlation method
+minGSSize=20              # Minimum gene set size
+maxGSSize=200             # Maximum gene set size
+sim_types=("randomize_pred" "spin_brain" "resample_gene")  # Simulation types
+gs_types=("SynGO")        # Gene set types
+aggre_methods=("median" "meanabs" "maxmean" "ks_weighted" "ks_pos_neg_sum") # Aggregation methods (excluding 'mean')
+
+# Change to the directory where the R script is located
+cd /gpfs1/home/z/c/zcao4/BrainEnrich
+
+# Loop through each combination of gene set type, simulation type, and aggregation method
+for gs_type in "${gs_types[@]}"; do
+  for sim_type in "${sim_types[@]}"; do
+    for aggre_method in "${aggre_methods[@]}"; do
+      
+      if [[ "$sim_type" == "randomize_pred" ]]; then
+        # Run the script without gsScoreList.null for randomize_pred
+        Rscript --vanilla brainscore_simulate_vacc.R $SLURM_ARRAY_TASK_ID $n_iter_per_job $iter_total $cor_method $aggre_method $sim_type $gs_type $minGSSize $maxGSSize ""
+      else
+        # Set the gsScoreList.null file path based on the current analysis parameters
+        gsScoreList_null="/gpfs1/home/z/c/zcao4/BrainEnrich/precomputed_brainscore/${gs_type}_${sim_type}_${cor_method}_${aggre_method}_${minGSSize}_${maxGSSize}_5000.rds"
+        
+        # Run the script with gsScoreList.null for other simulation types
+        Rscript --vanilla brainscore_simulate_vacc.R $SLURM_ARRAY_TASK_ID $n_iter_per_job $iter_total $cor_method $aggre_method $sim_type $gs_type $minGSSize $maxGSSize $gsScoreList_null
+      fi
+      
+    done
+  done
+done
+
 ```
