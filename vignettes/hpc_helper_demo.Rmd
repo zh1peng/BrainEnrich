@@ -576,7 +576,7 @@ tmp <- job_cat(input_dir = input_dir, output_dir = output_dir, n_rds = 1000, del
 #SBATCH --time=24:00:00              # Time limit hrs:min:sec
 #SBATCH --nodes=1                    # Number of nodes
 #SBATCH --ntasks=1                   # Number of tasks
-#SBATCH --mem=16G                    # Memory per node
+#SBATCH --mem=24G                    # Memory per node
 #SBATCH --array=1-1000               # Array range (adjust based on iter_total / n_iter_per_job)
 
 # Define the variables
@@ -585,9 +585,9 @@ iter_total=1000           # Total number of iterations
 cor_method="pearson"      # Correlation method
 minGSSize=20              # Minimum gene set size
 maxGSSize=200             # Maximum gene set size
-sim_types=("randomize_pred" "spin_brain" "resample_gene")  # Simulation types
+sim_types=("spin_brain" "resample_gene")  # Simulation types
 gs_types=("SynGO")        # Gene set types
-aggre_methods=("median" "meanabs" "maxmean" "ks_weighted" "ks_pos_neg_sum") # Aggregation methods (excluding 'mean')
+aggre_methods=("median" "meanabs" "maxmean" "ks_weighted" "ks_pos_neg_sum") # Aggregation methods
 
 # Change to the directory where the R script is located
 cd /gpfs1/home/z/c/zcao4/BrainEnrich
@@ -611,5 +611,4 @@ for gs_type in "${gs_types[@]}"; do
     done
   done
 done
-
 ```
