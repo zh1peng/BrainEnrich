@@ -52,6 +52,7 @@ brainscore.simulate <- function(pred_df,
   sim_type <- match.arg(sim_type)
   cor_method <- match.arg(cor_method)
   aggre_method <- match.arg(aggre_method)
+  sim_setting <- match.arg(sim_setting)
 
   if (sim_type == "randomize_pred") {
     message("Running randomize_pred simulation.")
