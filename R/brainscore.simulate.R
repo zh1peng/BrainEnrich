@@ -11,6 +11,7 @@
 #' @param gsScoreList.null Precomputed list of gene set scores for the null model by brainscore/brainscore.hpc function. Default is NULL.
 #' @param sim_n Integer specifying the number of simulations. Default is 1000.
 #' @param subsample_size Integer or vector specifying the subsample sizes. Default is 100.
+#' @param sim_setting Character string specifying the simulation setting. "type1": use shuffled data; "power": use original data. Default is 'type1'.
 #' @param sim_type Character string specifying the simulation type. Default is 'randomize_pred'.
 #'                 Other options include 'spin_brain', 'resample_gene', 'coexp_matched'.
 #' @param cor_method Character string specifying the correlation method. Default is 'pearson'.
@@ -35,6 +36,7 @@ brainscore.simulate <- function(pred_df,
                                 gsScoreList.null = NULL,
                                 sim_n = 1000,
                                 subsample_size = 100,
+                                sim_setting = c("type1","power"),
                                 sim_type = c("randomize_pred", "spin_brain", "resample_gene"),
                                 cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
                                 aggre_method = c(
@@ -51,13 +53,8 @@ brainscore.simulate <- function(pred_df,
   cor_method <- match.arg(cor_method)
   aggre_method <- match.arg(aggre_method)
 
-
-
-
-
   if (sim_type == "randomize_pred") {
     message("Running randomize_pred simulation.")
-    pred_df.sim <- pred_df
     gsScore <- brainscore(
       brain_data = brain_data,
       gene_data = gene_data,
@@ -80,11 +77,15 @@ brainscore.simulate <- function(pred_df,
 
     cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
     if (!is.null(cl)) {
-      clusterExport(cl, c("subsample_size", "pred_df", "dependent_df", "cov_df", "simple_lm", "sim_n"), envir = environment())
+      clusterExport(cl, c("subsample_size", "pred_df", "dependent_df", "cov_df", "simple_lm", "sim_n","sim_setting"), envir = environment())
     }
     message("Simulation with randomize_pred model...")
     results_list <- pblapply(1:sim_n, function(sim_i) {
-      pred_df.sim[[1]] <- sample(pred_df[[1]])
+      if (sim_setting == "power") {
+        pred_df.sim <- pred_df
+      } else if (sim_setting == "type1") {
+        pred_df.sim[[1]] <- sample(pred_df[[1]])
+      }
       sim_results <- list()
       for (size_i in seq_along(subsample_size)) {
         size2use <- subsample_size[size_i]
@@ -178,13 +179,16 @@ brainscore.simulate <- function(pred_df,
       clusterExport(cl, c(
         "sim_n", "subsample_size", "brain_data", "gene_data", "perm_id", "annoData",
         "cor_method", "aggre_method", "minGSSize", "maxGSSize", "gsScoreList.null",
-        "pred_df", "cov_df", "simple_lm", "brainscore"
+        "pred_df", "cov_df", "simple_lm", "brainscore", "sim_setting"
       ), envir = environment())
     }
     results_list <- pblapply(1:sim_n, function(sim_i) {
-      sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
-      rownames(sim.brain_data) <- rownames(brain_data)
-
+      if (sim_setting == "power") {
+        sim.brain_data <- brain_data
+      } else if (sim_setting == "type1") {  
+        sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
+        rownames(sim.brain_data) <- rownames(brain_data)
+      }
       gsScore.true <- brainscore(
         brain_data = sim.brain_data,
         gene_data = gene_data,
@@ -337,13 +341,17 @@ brainscore.simulate <- function(pred_df,
     if (!is.null(cl)) {
       clusterExport(cl, c(
         "sim_n", "subsample_size", "geneList", "selected.gs", "gsScoreList.null",
-        "aggre_method", "pred_df", "cov_df", "aggregate_geneSetList"
+        "aggre_method", "pred_df", "cov_df", "aggregate_geneSetList", "sim_setting"
       ), envir = environment())
     }
 
     results_list <- pblapply(1:sim_n, function(sim_i) {
+      if (sim_setting == "power") {
+        sim.geneList <- geneList
+      } else if (sim_setting == "type1") {
       sim.geneList <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
       rownames(sim.geneList) <- rownames(geneList)
+      }
       sim.gsScore <- aggregate_geneSetList(sim.geneList, selected.gs, method = aggre_method, n_cores = 1)
       dependent_df.true <- data.frame(sim.gsScore, check.names = FALSE)
 
