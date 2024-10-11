@@ -13,6 +13,7 @@ brainscore.simulate(
   gsScoreList.null = NULL,
   sim_n = 1000,
   subsample_size = 100,
+  sim_setting = c("type1", "power"),
   sim_type = c("randomize_pred", "spin_brain", "resample_gene"),
   cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
   aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig",
@@ -40,6 +41,8 @@ brainscore.simulate(
 \item{sim_n}{Integer specifying the number of simulations. Default is 1000.}
 
 \item{subsample_size}{Integer or vector specifying the subsample sizes. Default is 100.}
+
+\item{sim_setting}{Character string specifying the simulation setting. "type1": use shuffled data; "power": use original data. Default is 'type1'.}
 
 \item{sim_type}{Character string specifying the simulation type. Default is 'randomize_pred'.
 Other options include 'spin_brain', 'resample_gene', 'coexp_matched'.}
