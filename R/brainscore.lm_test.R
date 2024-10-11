@@ -140,11 +140,11 @@ brainscore.lm_test <- function(pred_df,
   message("Performing linear modeling using null gene set scores...")
   # Detect operating system and set number of cores appropriately
 
-    if (n_cores == 0) {
-      n_cores <- max(detectCores() - 1, 1)
-    } else {
-      n_cores <- min(n_cores, detectCores())
-    }
+  if (n_cores == 0) {
+    n_cores <- max(detectCores() - 1, 1)
+  } else {
+    n_cores <- min(n_cores, detectCores())
+  }
 
 
   # Check for Windows and apply mclapply if not on Windows
@@ -162,12 +162,13 @@ brainscore.lm_test <- function(pred_df,
     }, mc.cores = n_cores)
   } else {
     message("Windows detected. Using pblapply and makeCluster to do parallel processing. If large null GS score list is used, consider using a Unix-like system for more efficient processing.")
-  
+
     cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
-    
-    if (!is.null(cl)){
+
+    if (!is.null(cl)) {
       clusterExport(cl, list("gsScoreList.null", "pred_df", "cov_df", "simple_lm"),
-      envir = environment())
+        envir = environment()
+      )
     }
     # Use parLapply for parallel processing
     stat.tmp <- pbapply(seq_along(gsScoreList.null), function(i) {

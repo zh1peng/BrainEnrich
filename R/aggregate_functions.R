@@ -301,10 +301,10 @@ aggregate_geneSetList_matching_coexp <- function(geneList.true,
   cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
   # Export necessary variables and functions to the cluster
   if (!is.null(cl)) {
-  clusterExport(cl,
-    varlist = c("geneList.true", "swap_geneList", "aggregate_geneSet", "method", "geneSetList", "sampled_geneSetList"),
-    envir = environment()
-  )
+    clusterExport(cl,
+      varlist = c("geneList.true", "swap_geneList", "aggregate_geneSet", "method", "geneSetList", "sampled_geneSetList"),
+      envir = environment()
+    )
   }
 
   # Parallelize the processing using pblapply for progress bar

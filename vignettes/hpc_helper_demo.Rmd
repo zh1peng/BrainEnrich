@@ -401,11 +401,10 @@ for (null_model in null_models) {
         threshold_type = "none"
       )
 
-    saveRDS(res, file.path(res_path, sprintf("res_%s_%s_%s_%s_%d_%d_%d.rds", gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total)))
+      saveRDS(res, file.path(res_path, sprintf("res_%s_%s_%s_%s_%d_%d_%d.rds", gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total)))
     }
   }
 }
-
 ```
 
 setup slurm job file to run the brainscore.lm_test
