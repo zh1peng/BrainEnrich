@@ -130,7 +130,7 @@ brainscore.simulate <- function(pred_df,
     # To boost efficiency we can put this part outside the sim loop
 
     if (is.null(gsScoreList.null)) {
-      message("gsScoreList.null is NULL. Running brainscore to compute null model. This may take long time!")
+      message("gsScoreList.null is not provided. Running brainscore to compute null model. This may take long time!")
       gsScoreList.null <- brainscore(
         brain_data = brain_data,
         gene_data = gene_data,
@@ -295,7 +295,7 @@ brainscore.simulate <- function(pred_df,
     selected.gs <- filter_geneSetList(rownames(geneList), geneSetList, minGSSize = minGSSize, maxGSSize = maxGSSize)
 
     if (is.null(gsScoreList.null)) {
-      message("gsScoreList.null is NULL. Running brainscore to compute null model. This may take long time!")
+      message("gsScoreList.null is not provided. Running brainscore to compute null model. This may take long time!")
       gsScoreList.null <- brainscore(
         brain_data = brain_data,
         gene_data = gene_data,
@@ -331,7 +331,7 @@ brainscore.simulate <- function(pred_df,
         message("Using precomputed gsScoreList.null.")
       }
     }
-    message("Simulation with spin_brain model...")
+    message("Simulation with resample_gene model...")
     if (n_cores == 0) {
       n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
     } else {
