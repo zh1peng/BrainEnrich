@@ -611,3 +611,51 @@ for gs_type in "${gs_types[@]}"; do
   done
 done
 ```
+
+## 5.5. loop through other input arguments to collect the results
+```{r,eval=FALSE}
+library(BrainEnrich)
+
+# Set the base input and output directories
+input_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res"
+output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res"
+
+# Define the parameters of the analysis
+iter_total <- 1000 # Total number of iterations
+cor_method <- "pearson" # Correlation method
+aggre_methods <- c("ks_pos_neg_sum", "ks_weighted", "maxmean", "meanabs", "median") # Aggregation methods
+null_models <- c("randomize", "resample_gene", "spin_brain") # Null models
+gs_types <- c("SynGO") # Gene set types
+minGSSize <- 20 # Minimum gene set size
+maxGSSize <- 200 # Maximum gene set size
+
+# Loop through each combination of null model, aggregation method, and gene set type
+for (null_model in null_models) {
+  for (aggre_method in aggre_methods) {
+    for (gs_type in gs_types) {
+      # Construct the folder name based on the parameters
+      folder_name <- sprintf(
+        "%s_%s_%s_%s_%d_%d_%d",
+        gs_type, null_model, cor_method, aggre_method, minGSSize, maxGSSize, iter_total
+      )
+
+      # Construct the full path to the folder
+      input_dir <- file.path(input_dir_base, folder_name)
+      output_dir <- output_dir_base
+
+      # Construct the save name based on the folder name
+      save_name <- folder_name
+
+      # Call the job_cat function to merge the RDS files in this folder
+      job_cat(
+        input_dir = input_dir,
+        output_dir = output_dir,
+        n_rds = iter_total,
+        save_name = save_name,
+        file_pattern = "res_job_%d.rds",
+        delete_originals = TRUE,
+      )
+    }
+  }
+}
+```
