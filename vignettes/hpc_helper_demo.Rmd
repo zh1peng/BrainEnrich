@@ -624,7 +624,7 @@ output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res"
 iter_total <- 1000 # Total number of iterations
 cor_method <- "pearson" # Correlation method
 aggre_methods <- c("ks_pos_neg_sum", "ks_weighted", "maxmean", "meanabs", "median") # Aggregation methods
-null_models <- c("randomize", "resample_gene", "spin_brain") # Null models
+null_models <- c("randomize_pred", "resample_gene", "spin_brain") # Null models
 gs_types <- c("SynGO") # Gene set types
 minGSSize <- 20 # Minimum gene set size
 maxGSSize <- 200 # Maximum gene set size
