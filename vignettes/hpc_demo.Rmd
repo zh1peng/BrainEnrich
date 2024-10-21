@@ -1,8 +1,8 @@
 ---
-title: "How to precompute null gene set scores and do simulation/analysis on HPC with slurm"
+title: "HPC with slurm"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to precompute null gene set scores and do simulation on HPC with slurm}
+  %\VignetteIndexEntry{HPC with slurm}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
