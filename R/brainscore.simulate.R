@@ -11,7 +11,7 @@
 #' @param gsScoreList.null Precomputed list of gene set scores for the null model by brainscore/brainscore.hpc function. Default is NULL.
 #' @param sim_n Integer specifying the number of simulations. Default is 1000.
 #' @param subsample_size Integer or vector specifying the subsample sizes. Default is 100.
-#' @param sim_setting Character string specifying the simulation setting. "type1": use shuffled data; "power": use original data. Default is 'type1'.
+#' @param sim_setting Character string specifying the simulation setting. "type1": use shuffled data; "power": use original data. Default is 'power'.
 #' @param sim_type Character string specifying the simulation type. Default is 'randomize_pred'.
 #'                 Other options include 'spin_brain', 'resample_gene', 'coexp_matched'.
 #' @param cor_method Character string specifying the correlation method. Default is 'pearson'.
@@ -36,7 +36,7 @@ brainscore.simulate <- function(pred_df,
                                 gsScoreList.null = NULL,
                                 sim_n = 1000,
                                 subsample_size = 100,
-                                sim_setting = c("type1", "power"),
+                                sim_setting = c("power","type1"),
                                 sim_type = c("randomize_pred", "spin_brain", "resample_gene"),
                                 cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
                                 aggre_method = c(
@@ -82,9 +82,8 @@ brainscore.simulate <- function(pred_df,
     }
     message("Simulation with randomize_pred model...")
     results_list <- pblapply(1:sim_n, function(sim_i) {
-      if (sim_setting == "power") {
-        pred_df.sim <- pred_df
-      } else if (sim_setting == "type1") {
+      pred_df.sim <- pred_df # Explicitly define pred_df.sim for parallel processing
+       if (sim_setting == "type1") {
         pred_df.sim[[1]] <- sample(pred_df[[1]])
       }
       sim_results <- list()
@@ -98,9 +97,9 @@ brainscore.simulate <- function(pred_df,
           stat2return = "pval"
         )
         sampled_res <- sampled_res %>%
-          dplyr::select(.data$Dependent_vars, .data$p.val) %>%
+          dplyr::select(.data$Dependent_vars, .data$pval) %>%
           dplyr::rename(
-            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$p.val
+            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$pval
           )
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
@@ -173,9 +172,8 @@ brainscore.simulate <- function(pred_df,
       ), envir = environment())
     }
     results_list <- pblapply(1:sim_n, function(sim_i) {
-      if (sim_setting == "power") {
-        sim.brain_data <- brain_data
-      } else if (sim_setting == "type1") {
+        sim.brain_data <- brain_data # power setting
+       if (sim_setting == "type1") {
         sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
         rownames(sim.brain_data) <- rownames(brain_data)
       }
@@ -229,22 +227,20 @@ brainscore.simulate <- function(pred_df,
 
         check_names <- all(
           names(stat.true) == names(stat.null),
-          names(stat.null) == names(np_pval),
-          names(np_pval) == names(np_p.adj),
+          names(stat.null) == names(np_pval)
         )
 
         if (!check_names) {
           stop("The names of the results are not consistent.")
         } else {
-          res$p.adj <- p.adjust(res$pval, method = "fdr")
-          res$np_pval <- np_pval
+          res$np_pval <- unname(np_pval)
         }
 
         sampled_res <- res %>%
-          dplyr::select(.data$Dependent_vars, .data$p.val, .data$np_p.pval) %>%
+          dplyr::select(.data$Dependent_vars, .data$pval, .data$np_pval) %>%
           dplyr::rename(
-            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$p.val,
-            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_p.val
+            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$pval,
+            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_pval
           )
 
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
@@ -313,9 +309,9 @@ brainscore.simulate <- function(pred_df,
     }
 
     results_list <- pblapply(1:sim_n, function(sim_i) {
-      if (sim_setting == "power") {
-        sim.geneList <- geneList
-      } else if (sim_setting == "type1") {
+
+        sim.geneList <- geneList # power setting
+      if (sim_setting == "type1") {
         sim.geneList <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
         rownames(sim.geneList) <- rownames(geneList)
       }
@@ -353,20 +349,18 @@ brainscore.simulate <- function(pred_df,
 
         check_names <- all(
           names(stat.true) == names(stat.null),
-          names(stat.null) == names(np_pval),
-          names(np_pval) == names(np_p.adj)
+          names(stat.null) == names(np_pval)
         )
         if (!check_names) {
           stop("The names of the results are not consistent.")
         } else {
-          res$p.adj <- p.adjust(res$pval, method = "fdr")
-          res$np_pval <- np_pval
+          res$np_pval <- unname(np_pval)
         }
         sampled_res <- res %>%
-          dplyr::select(.data$Dependent_vars, .data$p.val, .data$np_p.pval) %>%
+          dplyr::select(.data$Dependent_vars, .data$pval, .data$np_pval) %>%
           dplyr::rename(
-            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$p.val,
-            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_p.val
+            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$pval,
+            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_pval
           )
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
