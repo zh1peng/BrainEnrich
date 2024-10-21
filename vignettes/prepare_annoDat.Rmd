@@ -488,14 +488,3 @@ for (cat_i in c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
   }
 }
 ```
-
-
-# render me
-```{r include=F, eval=FALSE}
-rmd_path <- "E:/xhmhc/BrainEnrich/vignettes"
-rmarkdown::render(
-  input = file.path(rmd_path, "prepare_annoDat.Rmd"),
-  output_format = "html_document",
-  output_file = file.path(rmd_path, "prepare_annoDat.html")
-)
-```
