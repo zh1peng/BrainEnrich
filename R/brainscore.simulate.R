@@ -95,23 +95,12 @@ brainscore.simulate <- function(pred_df,
           dependent_df = dependent_df[sampled_idx, , drop = FALSE],
           pred_df = pred_df.sim[sampled_idx, , drop = FALSE],
           cov_df = cov_df[sampled_idx, , drop = FALSE],
-          stat2return = "all"
+          stat2return = "pval"
         )
         sampled_res <- sampled_res %>%
-          dplyr::mutate(
-            nofdr_ifsig = case_when(
-              .data$p.val < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            fdr_ifsig = case_when(
-              .data$p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            )
-          ) %>%
-          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig) %>%
+          dplyr::select(.data$Dependent_vars, .data$p.val) %>%
           dplyr::rename(
-            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
-            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig
+            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$p.val
           )
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
@@ -237,13 +226,11 @@ brainscore.simulate <- function(pred_df,
 
         stat.null <- list_transpose(stat.tmp)
         np_pval <- calculate_pvals(stat.true, stat.null, method = "standard")
-        np_p.adj <- p.adjust(np_pval, method = "fdr")
 
         check_names <- all(
           names(stat.true) == names(stat.null),
           names(stat.null) == names(np_pval),
           names(np_pval) == names(np_p.adj),
-          names(np_p.adj) == res$Dependent_vars
         )
 
         if (!check_names) {
@@ -251,34 +238,13 @@ brainscore.simulate <- function(pred_df,
         } else {
           res$p.adj <- p.adjust(res$pval, method = "fdr")
           res$np_pval <- np_pval
-          res$np_p.adj <- np_p.adj
         }
 
         sampled_res <- res %>%
-          dplyr::mutate(
-            nofdr_ifsig = case_when(
-              .data$pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            fdr_ifsig = case_when(
-              .data$p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            np_nofdr_ifsig = case_when(
-              .data$np_pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            np_fdr_ifsig = case_when(
-              .data$np_p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            )
-          ) %>%
-          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
+          dplyr::select(.data$Dependent_vars, .data$p.val, .data$np_p.pval) %>%
           dplyr::rename(
-            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
-            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,
-            !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_nofdr_ifsig,
-            !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := .data$np_fdr_ifsig
+            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$p.val,
+            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_p.val
           )
 
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
@@ -384,50 +350,26 @@ brainscore.simulate <- function(pred_df,
         })
         stat.null <- list_transpose(stat.tmp)
         np_pval <- calculate_pvals(stat.true, stat.null, method = "standard")
-        np_p.adj <- p.adjust(np_pval, method = "fdr")
 
         check_names <- all(
           names(stat.true) == names(stat.null),
           names(stat.null) == names(np_pval),
-          names(np_pval) == names(np_p.adj),
-          names(np_p.adj) == res$Dependent_vars
+          names(np_pval) == names(np_p.adj)
         )
         if (!check_names) {
           stop("The names of the results are not consistent.")
         } else {
           res$p.adj <- p.adjust(res$pval, method = "fdr")
           res$np_pval <- np_pval
-          res$np_p.adj <- np_p.adj
         }
         sampled_res <- res %>%
-          dplyr::mutate(
-            nofdr_ifsig = case_when(
-              .data$pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            fdr_ifsig = case_when(
-              .data$p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            np_nofdr_ifsig = case_when(
-              .data$np_pval < 0.05 ~ 1,
-              TRUE ~ 0
-            ),
-            np_fdr_ifsig = case_when(
-              .data$np_p.adj < 0.05 ~ 1,
-              TRUE ~ 0
-            )
-          ) %>%
-          dplyr::select(.data$Dependent_vars, .data$nofdr_ifsig, .data$fdr_ifsig, .data$np_nofdr_ifsig, .data$np_fdr_ifsig) %>%
+          dplyr::select(.data$Dependent_vars, .data$p.val, .data$np_p.pval) %>%
           dplyr::rename(
-            !!paste0("nofdr_sim_", sim_i, "_subsample_", size2use) := .data$nofdr_ifsig,
-            !!paste0("fdr_sim_", sim_i, "_subsample_", size2use) := .data$fdr_ifsig,
-            !!paste0("np_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_nofdr_ifsig,
-            !!paste0("np_fdr_sim_", sim_i, "_subsample_", size2use) := .data$np_fdr_ifsig
+            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$p.val,
+            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_p.val
           )
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
-
       return(sim_results)
     }, cl = cl)
 
