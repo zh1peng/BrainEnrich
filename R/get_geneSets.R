@@ -212,3 +212,45 @@ split_Anno <- function(Anno_clusterProfiler_Env) {
   }
   return(list(path2gene = path2gene, path2name = path2name))
 }
+
+#' Convert Annotation Data to Pathway Table
+#'
+#' This function takes an annotation environment, typically from `clusterProfiler`,
+#' and converts it into a pathway table. Each pathway will have its associated genes
+#' concatenated into a single string, along with the pathway name and the size of the gene set.
+#'
+#' @param Anno_clusterProfiler_Env An environment or list containing annotation data.
+#' This environment is expected to contain pathway-to-gene (`path2gene`) and pathway-to-name
+#' (`path2name`) mappings.
+#'
+#' @return A data frame with four columns:
+#' \describe{
+#'   \item{pathID}{Pathway identifier}
+#'   \item{pathName}{Pathway name}
+#'   \item{geneSetSize}{Size of the gene set for each pathway}
+#'   \item{geneID}{Concatenated string of gene IDs for each pathway, separated by ";"}
+#' }
+
+#' @export
+Anno2Table <- function(Anno_clusterProfiler_Env) {
+  # Split annotation environment
+  tmp.list <- split_Anno(Anno_clusterProfiler_Env)
+  path2gene <- tmp.list$path2gene
+  path2name <- tmp.list$path2name
+
+  # Concatenate genes by pathID
+  gene_concat <- aggregate(geneID ~ pathID, path2gene, paste, collapse = ";")
+
+  # Count the number of genes per pathID
+  gene_count <- aggregate(geneID ~ pathID, path2gene, length)
+  names(gene_count)[2] <- "geneSetSize" # Rename the count column
+
+  # Merge gene concatenation and gene count with path names
+  df <- merge(gene_concat, gene_count, by = "pathID")
+  df <- merge(df, path2name, by = "pathID")
+
+  # Reorder columns if needed
+  df <- df[, c("pathID", "pathName", "geneSetSize", "geneID")]
+
+  return(df)
+}
