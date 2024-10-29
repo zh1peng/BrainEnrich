@@ -51,7 +51,7 @@ brainscore.lm_test <- function(pred_df,
                                gsScoreList.null = NULL,
                                cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
                                aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
-                               null_model = c("spin_brain", "resample_gene", "coexp_matched","none"),
+                               null_model = c("spin_brain", "resample_gene", "coexp_matched", "none"),
                                minGSSize = 10,
                                maxGSSize = 200,
                                n_cores = 0,
@@ -91,10 +91,10 @@ brainscore.lm_test <- function(pred_df,
   dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
   message("Performing linear modeling using empirical gene set scores...")
   res <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
-  if(null_model == "none"){
+  if (null_model == "none") {
     message("Setting null model to none will return the empirical model results only. This is not recommended and only for quick testing purposes.")
     return(res)
-  } 
+  }
   stat.true <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "tval_list")
 
   message("=========Null model======")

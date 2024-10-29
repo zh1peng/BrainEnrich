@@ -455,20 +455,20 @@ data_path <- "/gpfs1/home/z/c/zcao4/BrainEnrich/data"
 
 # Load hcp brain_data
 brain_data <- readRDS(file.path(data_path, "hcp_brain_data_dk_lh.RDS"))
-cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS"))  # Assuming covariates data is stored in cov_df.RDS
-pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS"))  # Assuming predictor data is stored in pred_df.RDS
+cov_df <- readRDS(file.path(data_path, "hcp_cov_df.RDS")) # Assuming covariates data is stored in cov_df.RDS
+pred_df <- readRDS(file.path(data_path, "hcp_pred_df.RDS")) # Assuming predictor data is stored in pred_df.RDS
 
 # Load additional necessary data
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 annoData <- get_annoData(type = gs_type)
 
 if (sim_type == "spin_brain") {
-  subset_vars<-list(perm_id = perm_id_dk_lh_5000)
+  subset_vars <- list(perm_id = perm_id_dk_lh_5000)
 } else {
-  subset_vars<-list()
+  subset_vars <- list()
 }
 
-if (sim_type %in% c("resample_gene","spin_brain")){
+if (sim_type %in% c("resample_gene", "spin_brain")) {
   gsScoreList.null <- readRDS(gsScoreList.null)
 }
 
@@ -494,8 +494,8 @@ job_splitter(
   iter_total = iter_total,
   output_dir = output_dir,
   FUN = brainscore.simulate,
-  subset_vars = subset_vars,  # No subset_vars required in this case
-  subset_total_var = 'sim_n',
+  subset_vars = subset_vars, # No subset_vars required in this case
+  subset_total_var = "sim_n",
   brain_data = brain_data,
   gene_data = gene_data,
   annoData = annoData,
@@ -503,14 +503,14 @@ job_splitter(
   cov_df = cov_df,
   cor_method = cor_method,
   aggre_method = aggre_method,
-  subsample_size = c(100,200,300),
+  subsample_size = c(100, 200, 300),
   sim_setting = "type1",
   sim_type = sim_type,
   n_cores = 1,
   minGSSize = minGSSize,
   maxGSSize = maxGSSize,
   n_perm = 5000, # should match gsScoreList
-  gsScoreList.null = gsScoreList.null  # This argument is now correctly placed at the end
+  gsScoreList.null = gsScoreList.null # This argument is now correctly placed at the end
 )
 ```
 
@@ -569,7 +569,7 @@ output_dir_base <- "/gpfs1/home/z/c/zcao4/BrainEnrich/sim_res"
 # Define the parameters of the analysis
 iter_total <- 1000 # Total number of iterations
 cor_method <- "pearson" # Correlation method
-aggre_methods <- c("ks_pos_neg_sum", "ks_weighted", "maxmean", "meanabs", "median","mean") # Aggregation methods
+aggre_methods <- c("ks_pos_neg_sum", "ks_weighted", "maxmean", "meanabs", "median", "mean") # Aggregation methods
 null_models <- c("randomize_pred", "resample_gene", "spin_brain") # Null models
 gs_types <- c("SynGO") # Gene set types
 minGSSize <- 20 # Minimum gene set size

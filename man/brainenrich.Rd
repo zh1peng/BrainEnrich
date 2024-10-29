@@ -25,6 +25,7 @@ brainenrich(
   pvalueCutoff = 0.05,
   pAdjustMethod = c("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",
     "none"),
+  padjCutoff = NULL,
   matchcoexp_tol = 0.05,
   matchcoexp_max_iter = 1e+06
 )
@@ -73,6 +74,8 @@ Default is 'sd'. Other options are 'percentile' and 'none'. For 'sd', the thresh
 
 \item{pAdjustMethod}{A character string specifying the method for p-value adjustment ("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none").
 Default is 'fdr'. See \code{p.adjust} for more details.}
+
+\item{padjCutoff}{A numeric value specifying the adjusted p-value cutoff for significance in the output. Default is NULL. If provided, the output will be filtered based on this cutoff.}
 
 \item{matchcoexp_tol}{A numeric value specifying the tolerance for co-expression matching in the 'coexp_matched' null model.
 Lower values result in better matching but increase the number of iterations required. Default is 0.05. See \code{resample_geneSetList_matching_coexp} for more details.}

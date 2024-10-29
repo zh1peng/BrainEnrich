@@ -36,7 +36,7 @@ brainscore.simulate <- function(pred_df,
                                 gsScoreList.null = NULL,
                                 sim_n = 1000,
                                 subsample_size = 100,
-                                sim_setting = c("power","type1"),
+                                sim_setting = c("power", "type1"),
                                 sim_type = c("randomize_pred", "spin_brain", "resample_gene"),
                                 cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
                                 aggre_method = c(
@@ -83,7 +83,7 @@ brainscore.simulate <- function(pred_df,
     message("Simulation with randomize_pred model...")
     results_list <- pblapply(1:sim_n, function(sim_i) {
       pred_df.sim <- pred_df # Explicitly define pred_df.sim for parallel processing
-       if (sim_setting == "type1") {
+      if (sim_setting == "type1") {
         pred_df.sim[[1]] <- sample(pred_df[[1]])
       }
       sim_results <- list()
@@ -172,8 +172,8 @@ brainscore.simulate <- function(pred_df,
       ), envir = environment())
     }
     results_list <- pblapply(1:sim_n, function(sim_i) {
-        sim.brain_data <- brain_data # power setting
-       if (sim_setting == "type1") {
+      sim.brain_data <- brain_data # power setting
+      if (sim_setting == "type1") {
         sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
         rownames(sim.brain_data) <- rownames(brain_data)
       }
@@ -309,8 +309,7 @@ brainscore.simulate <- function(pred_df,
     }
 
     results_list <- pblapply(1:sim_n, function(sim_i) {
-
-        sim.geneList <- geneList # power setting
+      sim.geneList <- geneList # power setting
       if (sim_setting == "type1") {
         sim.geneList <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
         rownames(sim.geneList) <- rownames(geneList)

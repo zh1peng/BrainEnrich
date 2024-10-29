@@ -93,7 +93,7 @@ res <- brainscore.simulate(
   annoData = annoData,
   sim_n = 5,
   subsample_size = 100,
-  sim_setting = 'type1',
+  sim_setting = "type1",
   sim_type = "randomize_pred",
   cor_method = "pearson",
   aggre_method = "mean",
@@ -118,7 +118,7 @@ res <- brainscore.simulate(
   annoData = annoData,
   sim_n = 5,
   subsample_size = 100,
-  sim_setting = 'type1',
+  sim_setting = "type1",
   sim_type = "spin_brain",
   cor_method = "pearson",
   aggre_method = "mean",
@@ -158,7 +158,7 @@ res <- brainscore.simulate(
   gsScoreList.null = gsScore.spin_brain,
   sim_n = 5,
   subsample_size = 100,
-  sim_setting = 'type1',
+  sim_setting = "type1",
   sim_type = "spin_brain",
   cor_method = "pearson",
   aggre_method = "mean",
@@ -187,7 +187,7 @@ res <- brainscore.simulate(
   annoData = annoData,
   sim_n = 5,
   subsample_size = 100,
-  sim_setting = 'type1',
+  sim_setting = "type1",
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",
@@ -226,7 +226,7 @@ res <- brainscore.simulate(
   gsScoreList.null = gsScore.resample_gene,
   sim_n = 5,
   subsample_size = 100,
-  sim_setting = 'type1',
+  sim_setting = "type1",
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",
@@ -245,7 +245,7 @@ Compared to the false positive rate, the power analysis is performed to assess t
 
 This analysis could be done by setting the `sim_setting` to 'power' in the `brainscore.simulate` function. The rest of the parameters are the same as in the type1 error simulation analysis.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-  res <- brainscore.simulate(
+res <- brainscore.simulate(
   pred_df = pred_df,
   cov_df = cov_df,
   brain_data = brain_data,
@@ -254,7 +254,7 @@ This analysis could be done by setting the `sim_setting` to 'power' in the `brai
   gsScoreList.null = gsScore.resample_gene,
   sim_n = 5,
   subsample_size = 100,
-  sim_setting = 'power',
+  sim_setting = "power",
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",

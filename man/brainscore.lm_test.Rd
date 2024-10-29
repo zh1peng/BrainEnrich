@@ -14,7 +14,7 @@ brainscore.lm_test(
   cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
   aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig",
     "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
-  null_model = c("spin_brain", "resample_gene", "coexp_matched"),
+  null_model = c("spin_brain", "resample_gene", "coexp_matched", "none"),
   minGSSize = 10,
   maxGSSize = 200,
   n_cores = 0,
@@ -28,6 +28,7 @@ brainscore.lm_test(
   pvalueCutoff = 0.05,
   pAdjustMethod = c("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",
     "none"),
+  padjCutoff = NULL,
   matchcoexp_tol = 0.05,
   matchcoexp_max_iter = 1e+06,
   gsea_obj = TRUE
@@ -54,7 +55,7 @@ Other options include 'median', 'meanabs', 'meansqr', 'maxmean', 'ks_orig', 'ks_
 'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.}
 
 \item{null_model}{Character string specifying the null model method. Default is 'spin_brain'.
-Other options include 'resample_gene', 'coexp_matched'.}
+Other options include 'resample_gene', 'coexp_matched', 'none'.}
 
 \item{minGSSize}{Integer specifying the minimum gene set size. Default is 10.}
 
@@ -80,6 +81,8 @@ Other options include 'percentile'.}
 \item{pvalueCutoff}{Numeric value specifying the p-value cutoff for significant results. Default is 0.05.}
 
 \item{pAdjustMethod}{Character string specifying the method ("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "none") for p-value adjustment. Default is 'fdr'. see p.adjust for more details.}
+
+\item{padjCutoff}{Numeric value specifying the adjusted p-value cutoff for significant results. Default is NULL.}
 
 \item{matchcoexp_tol}{Numeric value specifying the tolerance for matched coexpression. Default is 0.05.}
 
