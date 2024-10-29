@@ -15,7 +15,7 @@
 #'                     Other options include 'median', 'meanabs', 'meansqr', 'maxmean', 'ks_orig', 'ks_weighted',
 #'                     'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.
 #' @param null_model Character string specifying the null model method. Default is 'spin_brain'.
-#'                   Other options include 'resample_gene', 'coexp_matched'.
+#'                   Other options include 'resample_gene', 'coexp_matched', 'none'.
 #' @param minGSSize Integer specifying the minimum gene set size. Default is 10.
 #' @param maxGSSize Integer specifying the maximum gene set size. Default is 200.
 #' @param n_cores Integer specifying the number of cores to use for parallel processing. Default is 0.
@@ -29,6 +29,7 @@
 #' @param threshold_value Numeric value specifying the threshold level. Default is 1.
 #' @param pvalueCutoff Numeric value specifying the p-value cutoff for significant results. Default is 0.05.
 #' @param pAdjustMethod Character string specifying the method ("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "none") for p-value adjustment. Default is 'fdr'. see p.adjust for more details.
+#' @param padjCutoff Numeric value specifying the adjusted p-value cutoff for significant results. Default is NULL.
 #' @param matchcoexp_tol Numeric value specifying the tolerance for matched coexpression. Default is 0.05.
 #' @param matchcoexp_max_iter Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.
 #' @param gsea_obj Logical specifying whether to return a GSEA object otherwise only a table will be returned. Default is TRUE.
@@ -50,7 +51,7 @@ brainscore.lm_test <- function(pred_df,
                                gsScoreList.null = NULL,
                                cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
                                aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
-                               null_model = c("spin_brain", "resample_gene", "coexp_matched"),
+                               null_model = c("spin_brain", "resample_gene", "coexp_matched","none"),
                                minGSSize = 10,
                                maxGSSize = 200,
                                n_cores = 0,
@@ -63,6 +64,7 @@ brainscore.lm_test <- function(pred_df,
                                threshold_value = 1,
                                pvalueCutoff = 0.05,
                                pAdjustMethod = c("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none"),
+                               padjCutoff = NULL,
                                matchcoexp_tol = 0.05,
                                matchcoexp_max_iter = 1000000,
                                gsea_obj = TRUE) {
@@ -89,6 +91,10 @@ brainscore.lm_test <- function(pred_df,
   dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
   message("Performing linear modeling using empirical gene set scores...")
   res <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
+  if(null_model == "none"){
+    message("Setting null model to none will return the empirical model results only. This is not recommended and only for quick testing purposes.")
+    return(res)
+  } 
   stat.true <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "tval_list")
 
   message("=========Null model======")
@@ -218,7 +224,9 @@ brainscore.lm_test <- function(pred_df,
   message("Filtering significant results...")
   res <- res[!is.na(res$np.pval), ]
   res <- res[res$np.pval <= pvalueCutoff, ]
-  res <- res[res$np.padj <= pvalueCutoff, ]
+  if (!is.null(padjCutoff)) {
+    res <- res[res$np.padj <= padjCutoff, ]
+  }
   res <- res[order(res$np.pval), ]
 
   if (nrow(res) == 0) {

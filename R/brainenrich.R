@@ -31,6 +31,7 @@
 #' @param pvalueCutoff A numeric value specifying the p-value cutoff for significance in the output. Default is 0.05.
 #' @param pAdjustMethod A character string specifying the method for p-value adjustment ("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none").
 #'                      Default is 'fdr'. See `p.adjust` for more details.
+#' @param padjCutoff A numeric value specifying the adjusted p-value cutoff for significance in the output. Default is NULL. If provided, the output will be filtered based on this cutoff.
 #' @param matchcoexp_tol A numeric value specifying the tolerance for co-expression matching in the 'coexp_matched' null model.
 #'                       Lower values result in better matching but increase the number of iterations required. Default is 0.05. See `resample_geneSetList_matching_coexp` for more details.
 #' @param matchcoexp_max_iter An integer specifying the maximum number of iterations
@@ -58,6 +59,7 @@ brainenrich <- function(brain_data,
                         threshold_value = 1,
                         pvalueCutoff = 0.05,
                         pAdjustMethod = c("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none"),
+                        padjCutoff = NULL,
                         matchcoexp_tol = 0.05,
                         matchcoexp_max_iter = 1000000) {
   # Check inputs
@@ -161,7 +163,9 @@ brainenrich <- function(brain_data,
   message("Filtering significant results...")
   res <- res[!is.na(res$pvalue), ]
   res <- res[res$pvalue <= pvalueCutoff, ]
-  res <- res[res$p.adjust <= pvalueCutoff, ]
+  if (!is.null(padjCutoff)) {
+    res <- res[res$p.adjust <= padjCutoff, ]
+  }
   res <- res[order(res$pvalue), ]
 
   if (nrow(res) == 0) {
