@@ -26,6 +26,7 @@
 #' @param perm_id Optional permutation ID.
 #' @importFrom dplyr case_when select rename %>%
 #' @importFrom data.table :=
+#' @importFrom rlang .data 
 #' @return A list of data frames containing the results of the simulations.
 #' @export
 brainscore.simulate <- function(pred_df,

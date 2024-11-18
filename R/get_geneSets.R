@@ -222,7 +222,7 @@ split_Anno <- function(AnnoEnv) {
 #' @param AnnoEnv An environment or list containing annotation data.
 #' This environment is expected to contain pathway-to-gene (`path2gene`) and pathway-to-name
 #' (`path2name`) mappings.
-#'
+#' @importFrom stats aggregate
 #' @return A data frame with four columns:
 #' \describe{
 #'   \item{pathID}{Pathway identifier}
@@ -270,6 +270,7 @@ Anno2Table <- function(AnnoEnv) {
 #' @return An annotation environment containing the term-to-gene mapping and term descriptions.
 #' @importFrom dplyr select mutate distinct %>%
 #' @importFrom tidyr unnest
+#' @importFrom rlang .data 
 #' @export
 Table2Anno <- function(df, sep = ";") {
   # Check if required columns are present
@@ -280,14 +281,15 @@ Table2Anno <- function(df, sep = ";") {
 
   # Split geneID into individual genes using the specified separator
   TERM2GENE <- df %>%
-    dplyr::select(term = pathID, gene = geneID) %>%
-    dplyr::mutate(gene = strsplit(as.character(gene), sep)) %>%
-    tidyr::unnest(cols = gene)
+    dplyr::select(term = .data$pathID, gene = .data$geneID) %>%
+    dplyr::mutate(gene = strsplit(as.character(.data$gene), sep)) %>%
+    tidyr::unnest(cols = .data$gene)
 
   # Prepare TERM2NAME
   TERM2NAME <- df %>%
-    dplyr::select(term = pathID, description = pathName) %>%
+    dplyr::select(term = .data$pathID, description = .data$pathName) %>%
     dplyr::distinct()
+
   # Use build_Anno to reconstruct the annotation object
   build_Anno <- getFromNamespace("build_Anno", "DOSE")
   annoEnv <- build_Anno(TERM2GENE, TERM2NAME)

@@ -31,7 +31,8 @@ Imports:
     methods,
     stats,
     data.table,
-    utils
+    utils,
+    rlang
 LazyData: true
 Suggests: 
     knitr,
