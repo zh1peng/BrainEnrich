@@ -295,3 +295,66 @@ Table2Anno <- function(df, sep = ";") {
   annoEnv <- build_Anno(TERM2GENE, TERM2NAME)
   return(annoEnv)
 }
+
+#' Filter and Intersect Genes in Annotation Data
+#'
+#' This function filters the genes in the `geneID` column of an annotation dataframe
+#' based on a given list of background genes. Only genes present in the background list
+#' are retained in the resulting dataframe. It also calculates and includes the `geneSetSize` column,
+#' and filters gene sets based on specified size constraints.
+#'
+#' @param df A dataframe containing the annotation information with columns:
+#'   - `pathID`: The ID of the pathway/term.
+#'   - `pathName`: The descriptive name of the pathway/term.
+#'   - `geneID`: A string of gene identifiers associated with the pathway/term, separated by a delimiter.
+#' @param background A character vector of background gene names.
+#' @param sep A character string that defines the delimiter for splitting the `geneID` column. Defaults to `";"`.
+#' @param minGSSize An integer specifying the minimum gene set size to retain. Defaults to `0`.
+#' @param maxGSSize An integer specifying the maximum gene set size to retain. Defaults to `Inf`.
+#'
+#' @return A dataframe with columns:
+#'   - `pathID`: The ID of the pathway/term.
+#'   - `pathName`: The descriptive name of the pathway/term.
+#'   - `geneSetSize`: The size of the filtered gene set.
+#'   - `geneID`: The filtered and concatenated gene identifiers.
+#'
+#' @importFrom dplyr mutate filter group_by summarise
+#' @importFrom tidyr unnest
+#' @export
+FilterTable <- function(df, bg_genes, sep = ";", minGSSize = 0, maxGSSize = Inf) {
+  # Check if required columns are present
+  required_cols <- c("pathID", "pathName", "geneID")
+  if (!all(required_cols %in% names(df))) {
+    stop("The dataframe must contain the columns: pathID, pathName, and geneID.")
+  }
+  
+   # Check if bg_genes is a character vector
+  if (!is.character(bg_genes)) {
+    stop("bg_genes must be a character vector containing gene identifiers.")
+  }
+  
+  # Check if minGSSize and maxGSSize are numeric
+  if (!is.numeric(minGSSize) || !is.numeric(maxGSSize)) {
+    stop("minGSSize and maxGSSize must be numeric values.")
+  }
+
+  # Split geneID into individual genes, filter against background, and reconstruct geneID
+  filtered_df <- df %>%
+    dplyr::mutate(
+      gene = strsplit(as.character(.data$geneID), sep)  # Split geneID into lists
+    ) %>%
+    tidyr::unnest(cols = .data$gene) %>%  # Expand into long format
+    dplyr::filter(.data$gene %in% background) %>%  # Keep only genes in the background
+    dplyr::group_by(.data$pathID, .data$pathName) %>%
+    dplyr::summarise(
+      geneID = paste(unique(.data$gene), collapse = sep),  # Recombine filtered genes
+      geneSetSize = n_distinct(.data$gene),  # Count the number of unique genes
+      .groups = "drop"  # Ungroup after summarizing
+    ) %>%
+    dplyr::filter(
+      geneSetSize >= minGSSize & geneSetSize <= maxGSSize  # Filter by gene set size
+    ) %>%
+    dplyr::select(pathID, pathName, geneSetSize, geneID)  # Reorder columns
+  
+  return(filtered_df)
+}
