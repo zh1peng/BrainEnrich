@@ -4,10 +4,10 @@
 \alias{Anno2Table}
 \title{Convert Annotation Data to Pathway Table}
 \usage{
-Anno2Table(Anno_clusterProfiler_Env)
+Anno2Table(AnnoEnv)
 }
 \arguments{
-\item{Anno_clusterProfiler_Env}{An environment or list containing annotation data.
+\item{AnnoEnv}{An environment or list containing annotation data.
 This environment is expected to contain pathway-to-gene (\code{path2gene}) and pathway-to-name
 (\code{path2name}) mappings.}
 }

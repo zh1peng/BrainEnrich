@@ -177,7 +177,7 @@ filter_geneSetList <- function(bg_genes, geneSetList, minGSSize, maxGSSize) {
 #' and organizes pathway IDs and associated gene IDs, as well as pathway names, into
 #' two separate data frames.
 #'
-#' @param Anno_clusterProfiler_Env An environment containing annotation data, including
+#' @param AnnoEnv An environment containing annotation data, including
 #'        `PATHID2EXTID` and `PATHID2NAME`, created by the `build_Anno` function.
 #' @importFrom utils stack
 #' @return A list with two components:
@@ -189,13 +189,13 @@ filter_geneSetList <- function(bg_genes, geneSetList, minGSSize, maxGSSize) {
 #'   present in the environment, this component will be `NULL`.}
 #' }
 #' @export
-split_Anno <- function(Anno_clusterProfiler_Env) {
-  if (!exists("PATHID2EXTID", envir = Anno_clusterProfiler_Env) ||
-    !exists("EXTID2PATHID", envir = Anno_clusterProfiler_Env)) {
+split_Anno <- function(AnnoEnv) {
+  if (!exists("PATHID2EXTID", envir = AnnoEnv) ||
+    !exists("EXTID2PATHID", envir = AnnoEnv)) {
     stop("The environment does not contain the required objects.")
   }
-  PATHID2EXTID <- get("PATHID2EXTID", envir = Anno_clusterProfiler_Env)
-  PATHID2NAME <- get("PATHID2NAME", envir = Anno_clusterProfiler_Env, inherits = TRUE)
+  PATHID2EXTID <- get("PATHID2EXTID", envir = AnnoEnv)
+  PATHID2NAME <- get("PATHID2NAME", envir = AnnoEnv, inherits = TRUE)
 
   # Reconstruct path2gene from PATHID2EXTID
   path2gene <- stack(PATHID2EXTID)
@@ -219,7 +219,7 @@ split_Anno <- function(Anno_clusterProfiler_Env) {
 #' and converts it into a pathway table. Each pathway will have its associated genes
 #' concatenated into a single string, along with the pathway name and the size of the gene set.
 #'
-#' @param Anno_clusterProfiler_Env An environment or list containing annotation data.
+#' @param AnnoEnv An environment or list containing annotation data.
 #' This environment is expected to contain pathway-to-gene (`path2gene`) and pathway-to-name
 #' (`path2name`) mappings.
 #'
@@ -232,9 +232,9 @@ split_Anno <- function(Anno_clusterProfiler_Env) {
 #' }
 
 #' @export
-Anno2Table <- function(Anno_clusterProfiler_Env) {
+Anno2Table <- function(AnnoEnv) {
   # Split annotation environment
-  tmp.list <- split_Anno(Anno_clusterProfiler_Env)
+  tmp.list <- split_Anno(AnnoEnv)
   path2gene <- tmp.list$path2gene
   path2name <- tmp.list$path2name
 
@@ -253,4 +253,43 @@ Anno2Table <- function(Anno_clusterProfiler_Env) {
   df <- df[, c("pathID", "pathName", "geneSetSize", "geneID")]
 
   return(df)
+}
+
+
+
+
+#' Convert a Dataframe to Annotation Environment
+#' This function converts a dataframe containing annotation information back to an annotation environment
+#' using the `build_Anno` function from the `DOSE` package. The resulting environment can be used for
+#' enrichment analysis or other annotation-related tasks.
+#' @param df A dataframe containing the annotation information with columns:
+#'   - `pathID`: The ID of the pathway/term.
+#'   - `pathName`: The descriptive name of the pathway/term.
+#'   - `geneID`: A string of gene identifiers associated with the pathway/term, separated by a delimiter.
+#' @param sep A character string that defines the delimiter for splitting the `geneID` column. Defaults to `";"`.
+#' @return An annotation environment containing the term-to-gene mapping and term descriptions.
+#' @importFrom dplyr select mutate distinct %>%
+#' @importFrom tidyr unnest
+#' @export
+Table2Anno <- function(df, sep = ";") {
+  # Check if required columns are present
+  required_cols <- c("pathID", "pathName", "geneID")
+  if (!all(required_cols %in% names(df))) {
+    stop("The dataframe must contain the columns: pathID, pathName, and geneID.")
+  }
+
+  # Split geneID into individual genes using the specified separator
+  TERM2GENE <- df %>%
+    dplyr::select(term = pathID, gene = geneID) %>%
+    dplyr::mutate(gene = strsplit(as.character(gene), sep)) %>%
+    tidyr::unnest(cols = gene)
+
+  # Prepare TERM2NAME
+  TERM2NAME <- df %>%
+    dplyr::select(term = pathID, description = pathName) %>%
+    dplyr::distinct()
+  # Use build_Anno to reconstruct the annotation object
+  build_Anno <- getFromNamespace("build_Anno", "DOSE")
+  annoEnv <- build_Anno(TERM2GENE, TERM2NAME)
+  return(annoEnv)
 }

@@ -4,10 +4,10 @@
 \alias{split_Anno}
 \title{Split Annotation Data}
 \usage{
-split_Anno(Anno_clusterProfiler_Env)
+split_Anno(AnnoEnv)
 }
 \arguments{
-\item{Anno_clusterProfiler_Env}{An environment containing annotation data, including
+\item{AnnoEnv}{An environment containing annotation data, including
 \code{PATHID2EXTID} and \code{PATHID2NAME}, created by the \code{build_Anno} function.}
 }
 \value{
