@@ -191,7 +191,7 @@ showCategory <- 10
 showID <- res@result$ID[1:showCategory]
 show.geneList <- geneList[showID]
 color_palette <- colorRampPalette(c("#0197b2", "white", "orange"))(100)
-breaks <- seq(-3, 3, length.out = 101)
+breaks <- seq(-5, 5, length.out = 101)
 geneList_colors <- color_palette[cut(show.geneList, breaks = breaks, labels = FALSE)]
 named_colors <- setNames(geneList_colors, names(show.geneList))
 cnetplot(res,
@@ -201,15 +201,15 @@ cnetplot(res,
     category_node = 1, gene_node = 0.75,
     category_label = 1.2, gene_label = 0.6
   ),
-) + scale_color_gradientn(colors = color_palette, limits = c(-3, 3), name = "t value")
+) + scale_color_gradientn(colors = color_palette, limits = c(-5, 5), name = "t value")
 ```
 
 ### 4.2. Dot Plot
 We will create a dot plot to visualize the results.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
 dotplot(res, x = "t_Value", label_format = 50, showCategory = 30) +
-  xlab("GS score") + scale_fill_gradient(
+  xlab("Correlation") + scale_fill_gradient(
     high = "#0197b2", low = "orange",
-    space = "Lab", name = "p.adjusted"
+    space = "Lab", name = "pval"
   )
 ```
