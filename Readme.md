@@ -2,7 +2,6 @@
 [![Codecov test coverage](https://codecov.io/gh/zh1peng/BrainEnrich/graph/badge.svg)](https://app.codecov.io/gh/zh1peng/BrainEnrich)
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/zh1peng/BrainEnrich/total?logo=plume&label=Download&color=%23328da8)
 
-### BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment 🧠🧬
 
 <p align="left">
   <img src="images/sticker.png" alt="R Sticker" align="left" height="160" style="margin-right: 15px;">
