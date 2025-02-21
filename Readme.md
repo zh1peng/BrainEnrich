@@ -4,14 +4,14 @@
 
 
 <p align="left">
-  <img src="images/sticker.png" alt="R Sticker" align="left" height="160" style="margin-right: 15px;">
+  <img src="images/sticker.png" alt="R Sticker" align="right" height="160" style="margin-right: 15px;">
   <span style="vertical-align: top; font-size: 16px;text-align: justify;">
-    🎯<strong>BrainEnrich</strong> is an R package designed to facilitate the integration of brain imaging data with transcriptomic profiles. It enables researchers to explore the molecular underpinnings of brain phenotypes by performing enrichment analysis of predefined gene sets. Whether working at the group or individual level, the package offers a flexible and powerful tool for examining associations between brain imaging phenotypes (e.g., cortical thickness) and gene expression, using a variety of statistical models, null models, and aggregation methods.
+    <strong>BrainEnrich</strong> is an R package designed to facilitate the integration of brain imaging data with transcriptomic profiles. It enables researchers to explore the molecular underpinnings of brain phenotypes by performing enrichment analysis of predefined gene sets. Whether working at the group or individual level, the package offers a flexible and powerful tool for examining associations between brain imaging phenotypes (e.g., cortical thickness) and gene expression, using a variety of statistical models, null models, and aggregation methods.
   </span>
 </p>
 
 <p align="center">
-  <img src="images/workflow.png" alt="BrainEnrich">
+  <img src="images/workflow1.png" alt="BrainEnrich">
   <br>
   <em>Overview of the BrainEnrich package and its analysis workflow.</em>
 </p>
