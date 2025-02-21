@@ -17,5 +17,6 @@
 ^.*\.Rnw$
 .pdf$
 ^tests$
+^images/
 
 

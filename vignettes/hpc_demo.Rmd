@@ -319,7 +319,7 @@ for (null_model in null_models) {
       # Construct the save name based on the folder name
       save_name <- folder_name
 
-      # Call the job_cat (or job_combiner) function to merge the RDS files in this folder
+      # Call the job_cat function to merge the RDS files in this folder
       job_cat(
         input_dir = input_dir,
         output_dir = output_dir,

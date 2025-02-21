@@ -6,23 +6,26 @@
 # BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment 🧠🧬
 
 ## Aim of the Toolbox 🎯
+**BrainEnrich** is an R package designed to facilitate the integration of brain imaging data with transcriptomic profiles. It enables researchers to explore the molecular underpinnings of brain phenotypes by performing enrichment analysis of predefined gene sets. Whether working at the group or individual level, the package offers a flexible and powerful tool for examining associations between brain imaging phenotypes (e.g., cortical thickness) and gene expression, using a variety of statistical models, null models, and aggregation methods. 
 
-`BrainEnrich` is an R package designed to facilitate the correlation of imaging-derived phenotypes with transcriptional profiles. This toolbox aims to provide researchers and clinicians with robust statistical tools to uncover molecular architectures associated with cognitive functions, brain development, and disorders.
+![BrainEnrich](images/workflow.png)  
+_Overview of the BrainEnrich package and its analysis workflow._
 
-## Timeline of Development 🗓️
+## Features 🚀
 
-- **Q4 2023**: Initial conceptualization and development of core functions. 🛠️
-- **Q1 2024**: Implementation of competitive null models and self-contained null models. 🧪
-- **Q1 2024**: Testing with simulated datasets and refinement of statistical tests. 🔬
-- **Q2 2024**: Beta release for community feedback and additional testing. 🔄
-- **Q3 2024**: Incorporation of feedback and preparation for CRAN submission. ✍️
-- **Q4 2024**: Submission to CRAN and publication of accompanying paper. 📰
+- **Group-Level Enrichment Analysis**: Correlate group-level imaging phenotypes (e.g., cortical thickness effect maps) with transcriptional profiles from the Allen Human Brain Atlas (AHBA).
+- **Individual-Level Enrichment Analysis**: Apply enrichment analysis to individual imaging-derived phenotypes (IDPs) to explore personalized brain signatures.
+- **Transcriptional Profiles**: Preprocessed gene expression data from the AHBA, Desikan-Killiany, and Schaefer atlases.
+- **Predefined Gene Sets**: Includes Gene Ontology (GO), DisGeNet, KEGG, WikiPathways, Reactome, MeSH, SynGO, and Cell Type gene sets for flexible pathway analysis.
+- **Multiple Association Methods**: Pearson and Spearman correlations, Partial Least Squares (PLS) regression, and user-defined methods for exploring gene-imaging associations.
+- **Aggregation Methods**: Multiple options for aggregating gene set scores, including mean, median, and Kolmogorov-Smirnov (KS)-based statistics.
+- **Null Models**: Includes both self-contained and competitive null models to assess the significance of gene set associations.
+- **Core Genes Identification**: Identify core genes within gene sets using a leave-one-out procedure for more interpretable results.
+- **Simulation Studies**: Type I error and power simulations to assess the reliability of the analysis methods.
+
+
 
 ## Installation 💾
-
-*Please note that `brainEnrich` is currently in development and not yet available for installation.*
-
-Once available, it can be installed from GitHub via the `devtools` package:
 
 ```r
 # Install remotes if you haven't already
@@ -36,24 +39,30 @@ BiocManager::install("DOSE")
 remotes::install_github("zh1peng/BrainEnrich")
 ```
 
-## Usage 📖
 
-*Instructions on how to use the toolbox will be provided here, including example code.*
+## Usage 🔬
 
-## To-Do List 📋
-- [x] Initialize the project 2023/11/04
-- [x] Finalize manuscript revision. 🔧
-- [x] Development of core functions🔧
-- [x] Create detailed vignettes for each major function. 📚
-- [x] Optimize performance for large datasets. ⚡
-- [ ] Conduct extensive testing with real-world data. 🌏
-- [ ] Develop a comprehensive test suite. ✅
-- [x] Set up continuous integration for automated testing. 🔄
-- [ ] Prepare documentation for public release. 📄
+### Group-Level Enrichment Analysis
+The group-level analysis involves correlating brain imaging phenotypes (e.g., cortical thickness) with gene expression data. The results are summarized in **GS scores** representing the association between each predefined gene set and the imaging phenotype.
+
+### Individual-Level Enrichment Analysis
+For individual participants, **BrainEnrich** calculates **GS scores** for each participant, enabling the exploration of personalized molecular signatures and their relationships with phenotypic outcomes.
+
+### Association Methods
+You can use **Pearson's** or **Spearman's** correlation, or **Partial Least Squares (PLS) regression** to investigate gene-imaging associations. The package also supports user-defined methods for advanced analyses.
+
+### Predefined Gene Sets
+The package includes predefined gene sets from various sources like **Gene Ontology**, **DisGeNet**, **KEGG**, **WikiPathways**, **Reactome**, **MeSH**, **SynGO**, and **Cell Type** gene sets. These can be used for enrichment analysis with a variety of biological contexts.
+
+### Statistical Tests & Null Models
+The package provides both **self-contained** and **competitive null models** to assess statistical significance and control false positives. It also includes co-expression-matched null models for more advanced analysis.
+
+### Simulations
+**BrainEnrich** includes simulations to evaluate **Type I error rates** and **statistical power** for enrichment analyses, helping researchers ensure their results are reliable.
 
 
 ## Contributing 🤝
-
+We welcome contributions to **BrainEnrich**! Feel free to fork the repository, and create pull requests.
 
 ## Versioning 🏷️
 We use git for versioning. For the versions available, see the [tags on this repository](https://github.com/zh1peng/brainEnrich/tags).
@@ -69,3 +78,5 @@ We use git for versioning. For the versions available, see the [tags on this rep
 This project is licensed under the GNU Affero General Public (AGP) License - see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Acknowledgments 👏
+
+Thanks to my family for their support.

@@ -98,7 +98,7 @@ job_splitter <- function(job_id,
 #'                     Default is "res_job_%d.rds".
 #' @param delete_originals A logical indicating whether to delete the original RDS files after combining. Default is TRUE.
 #' @param preserve_attributes A logical indicating whether to preserve and update attributes specific to brainscore output. Default is FALSE.
-#' @param result_prefix A character string specifying the prefix for naming the combined results. Default is "null_".
+#' @param result_prefix A character string specifying the prefix for naming the combined results. Default is NULL.
 #' @param compress A character string specifying the compression method to use when saving the combined results. For an efficient download from the HPC, default is set as "xz".
 #' @return The combined results, either as a saved RDS file or returned directly if `save_combined` is FALSE.
 #' @export
