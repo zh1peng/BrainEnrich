@@ -3,7 +3,7 @@
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/zh1peng/BrainEnrich/total?logo=plume&label=Download&color=%23328da8)
 
 
-# BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment 🧠🧬
+🧠🧬**BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment** 
 
 Citation: To be added. 
 
@@ -24,7 +24,7 @@ _Overview of the BrainEnrich package and its analysis workflow._
 
 
 
-## Installation 💾
+💾Installation 
 
 ```r
 # Install remotes if you haven't already
@@ -38,22 +38,17 @@ BiocManager::install("DOSE")
 remotes::install_github("zh1peng/BrainEnrich")
 ```
 
-## Contributing 🤝
+🤝Contributing 
 We welcome contributions to **BrainEnrich**! Feel free to fork the repository, and create pull requests.
 
-## Versioning 🏷️
-We use git for versioning. For the versions available, see the [tags on this repository](https://github.com/zh1peng/brainEnrich/tags).
 
-
-
-## Authors 👩‍💻👨‍💻
+👨‍💻Author
 
 * **Zhipeng Cao @ Xuhui Mental Health Center, Shanghai** - *Initial work* - [zh1peng](https://github.com/zh1peng)
 
-## License 📜
+📜License 
 
 This project is licensed under the GNU Affero General Public (AGP) License - see the [LICENSE.md](LICENSE.md) file for details.
 
-## Acknowledgments 👏
-
+👏Acknowledgments 
 Thanks to my family for their support.
