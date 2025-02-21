@@ -5,11 +5,11 @@
 ### BrainEnrich: Revealing Biological Insights from Imaging-Derived Features through Transcriptomic Enrichment 🧠🧬
 
 <p align="left">
-  <img src="images/sticker.png" alt="R Sticker" align="left" height="200">
+  <img src="images/sticker.png" alt="R Sticker" align="left" height="200" style="margin-right: 15px;">
+  <span style="vertical-align: top; font-size: 16px;">
+    🎯<strong>BrainEnrich</strong> is an R package designed to facilitate the integration of brain imaging data with transcriptomic profiles. It enables researchers to explore the molecular underpinnings of brain phenotypes by performing enrichment analysis of predefined gene sets. Whether working at the group or individual level, the package offers a flexible and powerful tool for examining associations between brain imaging phenotypes (e.g., cortical thickness) and gene expression, using a variety of statistical models, null models, and aggregation methods.
+  </span>
 </p>
-
-
-🎯**BrainEnrich** is an R package designed to facilitate the integration of brain imaging data with transcriptomic profiles. It enables researchers to explore the molecular underpinnings of brain phenotypes by performing enrichment analysis of predefined gene sets. Whether working at the group or individual level, the package offers a flexible and powerful tool for examining associations between brain imaging phenotypes (e.g., cortical thickness) and gene expression, using a variety of statistical models, null models, and aggregation methods. 
 
 <p align="center">
   <img src="images/workflow.png" alt="BrainEnrich">
@@ -28,7 +28,6 @@
 - 🔧**Aggregation Methods**: Multiple options for aggregating gene set scores, including mean, median, and Kolmogorov-Smirnov (KS)-based statistics.
 
 
-
 💾**Installation** 
 
 ```r
@@ -43,10 +42,15 @@ BiocManager::install("DOSE")
 remotes::install_github("zh1peng/BrainEnrich")
 ```
 
+🔬**Usage**
+
+Tutorials are available at [github-pages](https://zh1peng.github.io/BrainEnrich/)
+
 👨‍💻**Author**
 
 * **Zhipeng Cao @ Xuhui Mental Health Center, Shanghai** - *Initial work* - [zh1peng](https://github.com/zh1peng)
 
-📜License 
+
+📜**License** 
 
 This project is licensed under the GNU Affero General Public (AGP) License - see the [LICENSE.md](LICENSE.md) file for details. We welcome contributions to **BrainEnrich**! Feel free to fork the repository, and create pull requests.
