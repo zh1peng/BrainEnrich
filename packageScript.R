@@ -77,6 +77,8 @@ usethis::use_pkgdown()
 pkgdown::build_site(lazy=TRUE)
 pkgdown::build_articles()
 pkgdown::deploy_to_branch()
+pkgdown::build_home()
+pkgdown::build_home_index()
 
 
 usethis::use_github_action('check-standard')
