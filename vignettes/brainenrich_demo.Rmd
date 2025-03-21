@@ -150,8 +150,8 @@ plot_brain <- function(df2plot,
 ```{r fig.align='center', fig.height=6, fig.width=6, echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 df2plot <- brain_data %>% tibble::rownames_to_column("label")
 plot_brain(df2plot,
-  ats = "dk", filterby = "none", limit2show = c(-0.5, 0.5),
-  what2plot = "BD", hem = "left", low = "#0197b2", mid = "white", high = "orange",
+  ats = "dk", filterby = "none", limit2show = c(-0.3, 0.3),
+  what2plot = "MDD", hem = "left", low = "#0197b2", mid = "white", high = "orange",
   legend2show = "Effect Size"
 )
 ```
@@ -233,35 +233,32 @@ upsetplot(res, top = 15)
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
 geneList <- res@geneList
-cnetplot(res,
-  layout = "kk", color_category = "#a6a6a6", foldChange = geneList,
-  # color.params = list(foldChange = geneList),
-  showCategory = 10, cex.params = list(
-    category_node = 1, gene_node = 0.75,
-    category_label = 1.2, gene_label = 0.6
-  ),
-) + scale_color_gradient2(
-  midpoint = 0, low = "#0197b2", mid = "white", high = "orange",
-  space = "Lab", limits = c(-1, 1), name = "Association"
-)
+cnetplot(res, layout='kk', color_category='#a6a6a6', foldChange=geneList,
+          # color.params = list(foldChange = geneList),
+          showtext=TRUE,
+          node_label = 'gene',
+          showCategory =10, cex.params = list(category_node=1, gene_node=0.8, gene_label=0.8),
+          shadowtext = 'category')+
+          scale_color_gradient2(midpoint=0,low='#0197b2',mid='white',high='orange',
+                         space ="Lab" ,limits = c(-1,1), name='Association')
 ```
 
 ### 3.3. Dot Plot
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
 dotplot(res, x = "gsScore", label_format = 50, showCategory = 30) +
-  xlab("GS score") + scale_fill_gradient(
-    high = "#0197b2", low = "orange",
-    space = "Lab", name = "p.adjusted"
-  )
+  xlab("GS score") +
+  scale_fill_gradient(high='#ffffff',low='orange',
+          space ="Lab" , name='p.adjusted',limits = c(0,0.05)) +
+          theme(legend.position = 'none')
 ```
 
 ### 3.4. Heatplot 
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=6, fig.width=12}
-heatplot(res, foldChange = geneList, label_format = 50, showCategory = 10) +
+heatplot(res, foldChange = geneList, label_format = 50, showCategory = 10, symbol="dot") +
   scale_fill_gradient2(
-    midpoint = 0, low = "#0197b2", mid = "white", high = "orange",
+    midpoint = 0, low = "#0197b2", mid = "grey", high = "orange",
     space = "Lab", limits = c(-1, 1), name = "Association"
   )
 ```
@@ -274,10 +271,21 @@ d <- GOSemSim::godata(annoDb = "org.Hs.eg.db", ont = "MF", keytype = "SYMBOL", c
 res <- pairwise_termsim(res, method = "Wang", semData = d)
 treeplot(res,
   showCategory = 30,
-  cex_category = 0.9,
-  nCluster = 5,
-  nWords = 2,
-  color = "p.adjust",
+  fontsize=4,
+  cex_category = 0.9, color = "p.adjust",
+  cluster.params = list( n = 5,label_words_n = 3,
+  color = c("#FFB14ECC",  "#89be95cc","#8dc4d2", "#99bed3cc", "#ef9d8bcc")),
   offset = rel(2)
-) + theme(legend.position = c(0.95, 0.46))
+) + scale_color_continuous(high = "white", low = "orange",
+    space = "Lab",  name = "gsScore"
+  )+
+theme(legend.position = 'right') 
 ```
+
+### 4. Put results in a Table
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+res.df=as.data.frame(res)
+# make scollable table
+kable(res.df, format = "html", escape = FALSE) %>%
+  kable_styling("striped", full_width = FALSE) %>%
+  scroll_box(width = "100%", height = "400px")

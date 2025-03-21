@@ -181,7 +181,7 @@ res1 <- brainscore.lm_test(
 The attribute of the gsScoreList.null should be the same as your input of the function for these variables:
 cor_method, aggre_method, minGSSize, maxGSSize, null_model, n_perm, if not, that means the gsScoreList.null is not usable for the currrent setup.
 
-Note that the output of the brainscore.lm_test function is clusterProfilerResult object. Some methods and functions are available for this object. For example, you can convert it to dataframe easily and visualize the results (see section below).
+Note that the output of the brainscore.lm_test function is gseaResult object. Some methods and functions are available for this object. For example, you can convert it to dataframe easily and visualize the results (see section below).
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 res.df <- as.data.frame(res)
 # make scollable table
