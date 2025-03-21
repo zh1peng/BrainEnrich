@@ -1,5 +1,5 @@
-data(sample_df)
-brain_data <- dplyr::select(sample_df, starts_with("L_")) %>% t()
+data(sim_hcp)
+brain_data <- dplyr::select(sim_hcp, starts_with("L_")) %>% t()
 colnames(brain_data) <- paste0("sub-", 1:ncol(brain_data))
 
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.6", hem = "L")

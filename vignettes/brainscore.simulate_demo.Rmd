@@ -43,13 +43,13 @@ First, we will prepare the data needed for enrichment analysis. The data is simu
 ### 1.1. Load sample data simulated from HCP data.
 The data is simulated from HCP data. Let's load and inspect it.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-data(sample_df)
-str(sample_df)
+data(sim_hcp)
+str(sim_hcp)
 ```
 ### 1.2. prepare brain_data for scoring
 Next, we'll prepare the brain data by selecting the relevant columns and transforming the data for scoring.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-brain_data <- dplyr::select(sample_df, starts_with("L_")) %>% t()
+brain_data <- dplyr::select(sim_hcp, starts_with("L_")) %>% t()
 colnames(brain_data) <- paste0("sub-", 1:ncol(brain_data))
 str(brain_data)
 ```
@@ -83,8 +83,8 @@ In this section, we will run the enrichment analysis using the prepared data. We
 ### 2.1. Simulation analysis with randomized pred variable i.e., BMI (`sim_type ='randomize_pred'`)
 Note: Since the gene set scores are already calculated, randomizing the predictor variable (BMI) offers limited information regarding the false positive rate of individual scoring. Basically, it is testing the false discovery rate of the correlation (i.e., lm model).
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-cov_df <- sample_df %>% dplyr::select(Age, Sex)
-pred_df <- sample_df %>% dplyr::select(BMI)
+cov_df <- sim_hcp %>% dplyr::select(Age, Sex)
+pred_df <- sim_hcp %>% dplyr::select(BMI)
 res <- brainscore.simulate(
   pred_df = pred_df,
   cov_df = cov_df,
@@ -108,8 +108,8 @@ Two types of statistical tests are performed: parametric (based on lm model itse
 ### 2.2. Simulation analysis with spin_brain (`sim_type ='spin_brain'`)
 We simulate the brain data by spinning it and then calculate the gene set scores before correlating them with the predictor variable. Both parametric and non-parametric tests (here, based on spin_brain) are used.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-cov_df <- sample_df %>% dplyr::select(Age, Sex)
-pred_df <- sample_df %>% dplyr::select(BMI)
+cov_df <- sim_hcp %>% dplyr::select(Age, Sex)
+pred_df <- sim_hcp %>% dplyr::select(BMI)
 res <- brainscore.simulate(
   pred_df = pred_df,
   cov_df = cov_df,
@@ -147,8 +147,8 @@ gsScore.spin_brain <- brainscore(
   maxGSSize = 200
 )
 
-cov_df <- sample_df %>% dplyr::select(Age, Sex)
-pred_df <- sample_df %>% dplyr::select(BMI)
+cov_df <- sim_hcp %>% dplyr::select(Age, Sex)
+pred_df <- sim_hcp %>% dplyr::select(BMI)
 res <- brainscore.simulate(
   pred_df = pred_df,
   cov_df = cov_df,
@@ -177,8 +177,8 @@ cor_method, aggre_method, n_perm, perm_id, minGSSize, maxGSSize.
 ### 2.4. Simulation analysis with resample_gene (`sim_type ='resample_gene'`)
 We simulate the gene sets by resampling genes and then calculate the gene set scores before correlating them with the predictor variable. Both parametric and non-parametric tests (here, based on resample_gene) are used.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-cov_df <- sample_df %>% dplyr::select(Age, Sex)
-pred_df <- sample_df %>% dplyr::select(BMI)
+cov_df <- sim_hcp %>% dplyr::select(Age, Sex)
+pred_df <- sim_hcp %>% dplyr::select(BMI)
 res <- brainscore.simulate(
   pred_df = pred_df,
   cov_df = cov_df,
@@ -215,8 +215,8 @@ gsScore.resample_gene <- brainscore(
   maxGSSize = 200
 )
 
-cov_df <- sample_df %>% dplyr::select(Age, Sex)
-pred_df <- sample_df %>% dplyr::select(BMI)
+cov_df <- sim_hcp %>% dplyr::select(Age, Sex)
+pred_df <- sim_hcp %>% dplyr::select(BMI)
 res <- brainscore.simulate(
   pred_df = pred_df,
   cov_df = cov_df,

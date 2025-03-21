@@ -3,17 +3,16 @@
 \docType{data}
 \name{brain_data}
 \alias{brain_data}
-\title{Brain Data PC1 for Left Hemisphere}
+\title{Effect sizes map for MDD (Left Hemisphere)}
 \format{
-A data frame with rows as regions and columns as effect sizes of case-control comparisons on regional cortical thickness between bipolar disorders and healthy controls.
+A data frame with rows as regions and columns as effect sizes of case-control comparisons on regional cortical thickness between major depressive disorders and healthy controls.
 }
 \source{
-read.csv('data-raw/desikan_PC1_data.csv')
 }
 \usage{
 brain_data
 }
 \description{
-This dataset contains PC1 data filtered for regions starting with 'L_' in the Desikan atlas.
+A data frame with rows as regions and columns as effect sizes of case-control comparisons on regional cortical thickness between major depressive disorders and healthy controls.
 }
 \keyword{datasets}

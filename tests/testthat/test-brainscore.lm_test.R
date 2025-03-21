@@ -1,10 +1,10 @@
-data(sample_df)
-brain_data <- dplyr::select(sample_df, starts_with("L_")) %>% t()
+data(sim_hcp)
+brain_data <- dplyr::select(sim_hcp, starts_with("L_")) %>% t()
 colnames(brain_data) <- paste0("sub-", 1:ncol(brain_data))
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.6", hem = "L")
 annoData <- get_annoData(type = "SynGO")
-cov_df <- sample_df %>% dplyr::select(Age, Sex)
-pred_df <- sample_df %>% dplyr::select(BMI)
+cov_df <- sim_hcp %>% dplyr::select(Age, Sex)
+pred_df <- sim_hcp %>% dplyr::select(BMI)
 
 # Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (spin_brain)", {
@@ -88,7 +88,7 @@ test_that("brainenrich performs gene set analysis correctly with valid input (re
 
 
 
-pred_df <- sample_df %>%
+pred_df <- sim_hcp %>%
   dplyr::mutate(group = case_when(BMI > 25 ~ "case", TRUE ~ "hc")) %>%
   dplyr::select(group)
 pred_df$group <- relevel(factor(pred_df$group), ref = "hc")
@@ -118,7 +118,7 @@ test_that("brainenrich performs gene set analysis correctly with valid input (re
 })
 
 
-pred_df <- sample_df %>%
+pred_df <- sim_hcp %>%
   dplyr::mutate(group = case_when(BMI > 25 ~ 1, TRUE ~ 0)) %>%
   dplyr::select(group)
 pred_df$group <- as.factor(pred_df$group)
