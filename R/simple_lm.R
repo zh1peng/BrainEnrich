@@ -21,7 +21,7 @@
 #' @importFrom parameters standardize_parameters
 #' @importFrom stats p.adjust relevel
 #' @importFrom tibble deframe
-#' @importFrom rlang .data 
+#' @importFrom rlang .data
 #' @export
 simple_lm <- function(dependent_df,
                       pred_df,

@@ -270,7 +270,7 @@ Anno2Table <- function(AnnoEnv) {
 #' @return An annotation environment containing the term-to-gene mapping and term descriptions.
 #' @importFrom dplyr select mutate distinct %>%
 #' @importFrom tidyr unnest
-#' @importFrom rlang .data 
+#' @importFrom rlang .data
 #' @export
 Table2Anno <- function(df, sep = ";") {
   # Check if required columns are present
@@ -327,12 +327,12 @@ FilterTable <- function(df, bg_genes, sep = ";", minGSSize = 0, maxGSSize = Inf)
   if (!all(required_cols %in% names(df))) {
     stop("The dataframe must contain the columns: pathID, pathName, and geneID.")
   }
-  
-   # Check if bg_genes is a character vector
+
+  # Check if bg_genes is a character vector
   if (!is.character(bg_genes)) {
     stop("bg_genes must be a character vector containing gene identifiers.")
   }
-  
+
   # Check if minGSSize and maxGSSize are numeric
   if (!is.numeric(minGSSize) || !is.numeric(maxGSSize)) {
     stop("minGSSize and maxGSSize must be numeric values.")
@@ -341,20 +341,20 @@ FilterTable <- function(df, bg_genes, sep = ";", minGSSize = 0, maxGSSize = Inf)
   # Split geneID into individual genes, filter against background, and reconstruct geneID
   filtered_df <- df %>%
     dplyr::mutate(
-      gene = strsplit(as.character(.data$geneID), sep)  # Split geneID into lists
+      gene = strsplit(as.character(.data$geneID), sep) # Split geneID into lists
     ) %>%
-    tidyr::unnest(cols = .data$gene) %>%  # Expand into long format
-    dplyr::filter(.data$gene %in% background) %>%  # Keep only genes in the background
+    tidyr::unnest(cols = .data$gene) %>% # Expand into long format
+    dplyr::filter(.data$gene %in% background) %>% # Keep only genes in the background
     dplyr::group_by(.data$pathID, .data$pathName) %>%
     dplyr::summarise(
-      geneID = paste(unique(.data$gene), collapse = sep),  # Recombine filtered genes
-      geneSetSize = n_distinct(.data$gene),  # Count the number of unique genes
-      .groups = "drop"  # Ungroup after summarizing
+      geneID = paste(unique(.data$gene), collapse = sep), # Recombine filtered genes
+      geneSetSize = n_distinct(.data$gene), # Count the number of unique genes
+      .groups = "drop" # Ungroup after summarizing
     ) %>%
     dplyr::filter(
-      geneSetSize >= minGSSize & geneSetSize <= maxGSSize  # Filter by gene set size
+      geneSetSize >= minGSSize & geneSetSize <= maxGSSize # Filter by gene set size
     ) %>%
-    dplyr::select(pathID, pathName, geneSetSize, geneID)  # Reorder columns
-  
+    dplyr::select(pathID, pathName, geneSetSize, geneID) # Reorder columns
+
   return(filtered_df)
 }

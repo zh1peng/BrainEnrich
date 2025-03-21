@@ -39,7 +39,7 @@
 #' @import parallel
 #' @import pbapply
 #' @importFrom dplyr select rename %>% everything
-#' @importFrom rlang .data 
+#' @importFrom rlang .data
 #' @importClassesFrom DOSE gseaResult
 #' @return A data frame containing the results of the linear model test, including p-values, adjusted p-values,
 #'         q-values, descriptions, and core genes.

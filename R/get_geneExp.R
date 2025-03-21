@@ -16,7 +16,7 @@
 #' @importFrom dplyr %>% filter everything across
 #' @importFrom tibble column_to_rownames
 #' @importFrom stats complete.cases
-#' @importFrom rlang .data 
+#' @importFrom rlang .data
 #' @return A matrix containing the gene expression data.
 #' @export
 #'
