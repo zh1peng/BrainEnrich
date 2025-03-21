@@ -1,8 +1,8 @@
 ---
-title: "How to prepare gene sets (annoDat) for the analysis"
+title: "Preparison of gene sets (annoData)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{How to prepare gene sets (annoDat) for the analysis}
+  %\VignetteIndexEntry{Preparison of gene sets (annoData)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -13,7 +13,10 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+# Introduction
+The `annoData` object, from DOSE parckage, is a list containing two data frames: TERM2GENE and TERM2NAME. The TERM2GENE data frame contains the mapping of gene IDs to terms, while the TERM2NAME data frame contains the mapping of terms to their descriptions. 
 
+The documentation details the preparation of gene sets (annoData) and guides users on generating gene sets from various sources (e.g., gmt, csv). Users can create their own to match their research interests. 
 ```{r include=T, eval=F}
 # Load required libraries
 library(readxl)
@@ -38,7 +41,7 @@ library(BrainEnrich)
 build_Anno <- getFromNamespace("build_Anno", "DOSE")
 ```
 
-As we may need to convert geneID to symbols, we first define helper functions for doing so
+Since we may need to convert geneID to symbols, we first define helper functions for it.
 ```{r, eval=FALSE}
 symbol_annoData <- function(annoData) {
   require(org.Hs.eg.db)
@@ -66,7 +69,7 @@ symbol_annoData <- function(annoData) {
   return(annoData)
 }
 
-
+# Alternative approach to convert gene IDs to symbols
 # #' Convert Entrez IDs to Gene Symbols
 # #'
 # #' This function converts a vector of Entrez IDs to gene symbols using the org.Hs.eg.db annotation package.
@@ -96,7 +99,7 @@ symbol_annoData <- function(annoData) {
 # }
 ```
 
-# Gene ontology (GO) gene sets
+# Gene ontology (GO) gene sets from org.Hs.eg.db
 ```{r include=T, eval=F}
 get_GO_data <- getFromNamespace("get_GO_data", "clusterProfiler")
 annoData <- get_GO_data("org.Hs.eg.db", ont = "BP", keytype = "SYMBOL")
@@ -107,11 +110,11 @@ annoData <- get_GO_data("org.Hs.eg.db", ont = "CC", keytype = "SYMBOL")
 saveRDS(annoData, file = "inst/extdata/geneSets/GO_CC.rds", compress = "xz")
 
 # check version of org.Hs.eg.db
-packageVersion("clusterProfiler")
-packageVersion("org.Hs.eg.db")
+packageVersion("clusterProfiler") # '4.12.0'
+packageVersion("org.Hs.eg.db") # '3.19.1'
 ```
 
-# DisGeNET gene sets
+# DisGeNET gene sets using get_DGN_data from DOSE package
 ```{r include=T, eval=F}
 get_DGN_data <- getFromNamespace("get_DGN_data", "DOSE")
 annoData <- get_DGN_data()
@@ -123,11 +126,11 @@ test2 <- get_geneSetList(annoData)
 str(head(test2))
 
 saveRDS(annoData, file = "inst/extdata/geneSets/DGN.rds", compress = "xz")
-packageVersion("DOSE")
-packageVersion("AnnotationDbi")
+packageVersion("DOSE") # '3.30.1'
+packageVersion("AnnotationDbi") # '1.66.0'
 ```
 
-# KEGG modules
+# KEGG modules using get_KEGG_data from clusterProfiler package
 ```{r include=T, eval=F}
 prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
 annoData <- prepare_KEGG("hsa", "MKEGG", "ncbi-geneid")
@@ -140,11 +143,11 @@ str(head(test2))
 get_termDescription("M00124", annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/MKEGG.rds", compress = "xz")
 
-packageVersion("clusterProfiler")
+packageVersion("clusterProfiler") # '4.12.0'
 ```
 
 
-# KEGG pathways
+# KEGG pathways using get_KEGG_data from clusterProfiler package
 ```{r include=T, eval=F}
 prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
 annoData <- prepare_KEGG("hsa", "KEGG", "ncbi-geneid")
@@ -156,11 +159,11 @@ test2 <- get_geneSetList(annoData)
 str(head(test2))
 get_termDescription("hsa03008", annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/KEGG.rds", compress = "xz")
-packageVersion("clusterProfiler")
+packageVersion("clusterProfiler") # '4.12.0'
 ```
 
 
-# WikiPathways
+# WikiPathways using get_WP_data from clusterProfiler package
 ```{r include=T, eval=F}
 prepare_WP_data <- getFromNamespace("prepare_WP_data", "clusterProfiler")
 wpdata <- prepare_WP_data("Homo sapiens")
@@ -177,10 +180,10 @@ test2 <- get_geneSetList(annoData)
 str(head(test2))
 get_termDescription("WP2338", annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/WikiPathways.rds", compress = "xz")
-packageVersion("clusterProfiler")
+packageVersion("clusterProfiler") # '4.12.0'
 ```
 
-# Reactome
+# Reactome using get_Reactome_DATA from ReactomePA package
 ```{r include=T, eval=F}
 get_Reactome_DATA <- getFromNamespace("get_Reactome_DATA", "ReactomePA")
 annoData <- get_Reactome_DATA("human")
@@ -192,10 +195,10 @@ test2 <- get_geneSetList(annoData)
 str(head(test2))
 get_termDescription("R-HSA-1059683", annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/Reactome.rds", compress = "xz")
-packageVersion("ReactomePA")
+packageVersion("ReactomePA") # '1.48.0'
 ```
 
-# SynGO (how to make annoDat from xlsx)
+# SynGO from xlsx file downloaded from SynGO website
 ```{r include=T, eval=F}
 # Define URL for downloading SynGO data
 url <- "https://www.syngoportal.org/data/SynGO_bulk_download_release_20231201.zip"
@@ -237,8 +240,8 @@ annoData <- build_Anno(TERM2GENE, TERM2NAME)
 ```
 
 
-# CellTypes Seidlitz2020 (how to prepare annoData with a csv file)
-### Seidlitz, J., Nadig, A., Liu, S., Bethlehem, R. A., Vértes, P. E., Morgan, S. E., ... & Raznahan, A. (2020). Transcriptomic and cellular decoding of regional brain vulnerability to neurogenetic disorders. Nature communications, 11(1), 3358.
+# CellTypes_Seidlitz2020 from csv file downloaded from github
+Ref: Seidlitz, J., Nadig, A., Liu, S., Bethlehem, R. A., Vértes, P. E., Morgan, S. E., ... & Raznahan, A. (2020). Transcriptomic and cellular decoding of regional brain vulnerability to neurogenetic disorders. Nature communications, 11(1), 3358.
 ```{r include=T, eval=F}
 library(dplyr)
 # Define URL for Seidlitz2020
@@ -284,8 +287,8 @@ saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Seidlitz2020.rds", com
 ```
 
 
-# CellTypes Lake2018 (how to prepare annoData from a gmt file)
-### Lake, B. B., Chen, S., Sos, B. C., Fan, J., Kaeser, G. E., Yung, Y. C., ... & Zhang, K. (2018). Integrative single-cell analysis of transcriptional and epigenetic states in the human adult brain. Nature biotechnology, 36(1), 70-80.
+# CellTypes_Lake2018 from a gmt file downloaded from github
+Ref: Lake, B. B., Chen, S., Sos, B. C., Fan, J., Kaeser, G. E., Yung, Y. C., ... & Zhang, K. (2018). Integrative single-cell analysis of transcriptional and epigenetic states in the human adult brain. Nature biotechnology, 36(1), 70-80.
 ```{r include=T, eval=F}
 # Define URL for Lake2018
 url <- "https://github.com/molecular-neuroimaging/Imaging_Transcriptomics/raw/main/imaging_transcriptomics/data/geneset_LAKE.gmt"
@@ -298,7 +301,6 @@ on.exit(
   },
   add = TRUE
 )
-
 
 download.file(url, temp_file, mode = "wb")
 # Read GMT file
@@ -356,8 +358,6 @@ key_dict <- c(
 )
 
 
-
-
 TERM2NAME <- TERM2GENE %>%
   dplyr::mutate(description = dplyr::recode(term, !!!key_dict)) %>%
   dplyr::select(term, description)
@@ -371,8 +371,8 @@ get_termDescription(term = "Ast", annoData)
 saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Lake2018.rds", compress = "xz")
 ```
 
-# CellTypes Martins2021 (how to prepare annoData with a gmt file)
-### Imaging transcriptomics: Convergent cellular, transcriptomic, and molecular neuroimaging signatures in the healthy adult human brain. Daniel Martins, Alessio Giacomel, Steven CR Williams, Federico Turkheimer, Ottavia Dipasquale, Mattia Veronese, PET templates working group. Cell Reports.
+# CellTypes_Martins2021 from a gmt file downloaded from github
+Ref: Imaging transcriptomics: Convergent cellular, transcriptomic, and molecular neuroimaging signatures in the healthy adult human brain. Daniel Martins, Alessio Giacomel, Steven CR Williams, Federico Turkheimer, Ottavia Dipasquale, Mattia Veronese, PET templates working group. Cell Reports.
 ```{r include=T, eval=F}
 # Define URL for Martins2021
 url <- "https://github.com/molecular-neuroimaging/Imaging_Transcriptomics/raw/main/imaging_transcriptomics/data/geneset_Pooled.gmt"

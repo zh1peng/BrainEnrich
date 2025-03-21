@@ -1,8 +1,8 @@
 ---
-title: "Simulation analysis of brainscore"
+title: "Simulation analysis (brainscore.simulate)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Simulation analysis of brainscore}
+  %\VignetteIndexEntry{Simulation analysis (brainscore.simulate)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

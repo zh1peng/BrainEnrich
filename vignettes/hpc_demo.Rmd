@@ -1,8 +1,8 @@
 ---
-title: "HPC with slurm"
+title: "Computation on HPC with slurm"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{HPC with slurm}
+  %\VignetteIndexEntry{Computation on HPC with slurm}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
