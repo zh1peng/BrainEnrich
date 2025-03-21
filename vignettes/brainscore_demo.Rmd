@@ -2,7 +2,7 @@
 title: "Individual-level enrichment analysis (brainscore/brainscore.lm_test)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Individual-level IDP enrichment analysis (brainscore/brainscore.lm_test)}
+  %\VignetteIndexEntry{Individual-level enrichment analysis (brainscore/brainscore.lm_test)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
