@@ -38,6 +38,8 @@ usethis::use_data(perm_id_dk_lh_5000, overwrite = TRUE, compress = "xz")
 
 
 # simulate data from hcp data
+code_path='E:/xhmhc/BrainEnrich_ms/code'
+source(file.path(code_path,'1_prepare_HCP_data.R'))
 brain_data <- df.hcp %>%
   tibble::column_to_rownames("SubjID") %>%
   dplyr::select(starts_with("L_") & ends_with("thickavg")) %>%
