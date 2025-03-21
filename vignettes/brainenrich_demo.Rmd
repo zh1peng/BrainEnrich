@@ -27,6 +27,7 @@ library(dplyr)
 library(enrichplot)
 library(ggplot2)
 library(ggseg)
+library(kableExtra)
 ```
 
 ## 1. Prepare Data for the Analysis
