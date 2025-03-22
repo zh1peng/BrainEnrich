@@ -44,6 +44,11 @@ if (!requireNamespace("kableExtra", quietly = TRUE)) {
   install.packages("kableExtra")
 }
 
+# ggupset for vignettes
+if (!requireNamespace("ggupset", quietly = TRUE)) {
+  install.packages("ggupset")
+}
+
 # check if devtools is ready
 devtools::has_devel()
 
