@@ -33,6 +33,7 @@ options(BioC_mirror = "https://mirrors.tuna.tsinghua.edu.cn/bioconductor")
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("enrichplot")
+BiocManager::install("org.Hs.eg.db")
 
 # ggseg for vignettes
 if (!requireNamespace("ggseg", quietly = TRUE)) {
