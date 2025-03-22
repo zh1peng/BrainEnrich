@@ -72,6 +72,9 @@ usethis::use_citation()
 
 # options(repos = c(CRAN = "https://mirrors.tuna.tsinghua.edu.cn/CRAN/"))
 # install.packages("pkgdown")
+# install.packages("yaml")
+# install.packages("htmltools")
+
 #usethis::use_pkgdown_github_pages()
 usethis::use_pkgdown()
 pkgdown::build_site(lazy=TRUE)
