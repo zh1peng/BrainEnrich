@@ -2,7 +2,7 @@
 title: "Group-level Enrichment Analysis (brainenrich)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Group-level IDP Enrichment Analysis (brainenrich)}
+  %\VignetteIndexEntry{Group-level Enrichment Analysis (brainenrich)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
