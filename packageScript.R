@@ -70,12 +70,13 @@ devtools::build_manual()
 
 usethis::use_citation()
 
-
-
+# options(repos = c(CRAN = "https://mirrors.tuna.tsinghua.edu.cn/CRAN/"))
+# install.packages("pkgdown")
 #usethis::use_pkgdown_github_pages()
 usethis::use_pkgdown()
 pkgdown::build_site(lazy=TRUE)
-pkgdown::build_articles(lazy=TRUE)
+pkgdown::clean_site()
+pkgdown::build_articles()
 pkgdown::deploy_to_branch()
 pkgdown::build_home()
 pkgdown::build_home_index()
