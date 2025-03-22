@@ -15,6 +15,30 @@ if (!requireNamespace("testthat", quietly = TRUE)) {
   install.packages("testthat")
 }
 
+
+if (!requireNamespace("covr", quietly = TRUE)) {
+  install.packages("covr")
+}
+
+if (!requireNamespace("pkgdown", quietly = TRUE)) {
+  install.packages("pkgdown")
+}
+
+if (!requireNamespace("styler", quietly = TRUE)) {
+  install.packages("styler")
+}
+
+# enrichplot for vignettes
+options(BioC_mirror = "https://mirrors.tuna.tsinghua.edu.cn/bioconductor")
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("enrichplot")
+
+# ggseg for vignettes
+if (!requireNamespace("ggseg", quietly = TRUE)) {
+  install.packages("ggseg")
+}
+
 # check if devtools is ready
 devtools::has_devel()
 
@@ -74,6 +98,7 @@ usethis::use_citation()
 # install.packages("pkgdown")
 # install.packages("yaml")
 # install.packages("htmltools")
+# install.packages("devtools")
 
 #usethis::use_pkgdown_github_pages()
 usethis::use_pkgdown()
@@ -108,29 +133,29 @@ devtools::install_github("zh1peng/BrainEnrich")
 
 
 # fix push issue
-git config --global --unset http.proxy
-git config --global http.proxy http://127.0.0.1:7890
-git push origin
+# git config --global --unset http.proxy
+# git config --global http.proxy http://127.0.0.1:7890
+# git push origin
 
 R CMD Rd2pdf .
 
 
-library(hexSticker)
-library(ggplot2)
+# library(hexSticker)
+# library(ggplot2)
 
-p <- ggplot(aes(x = mpg, y = wt), data = mtcars) + geom_point(fill="white", color="white") 
-p <- p + theme_void() + theme_transparent()
-sticker(p, package="BrainEnrich", p_size=20, p_y=0.52, p_color="#000000", 
-        s_x=1, s_y=.75, s_width=1.3, s_height=1,
-        h_fill="#025a63", h_color="#000000", 
-        url="https://zh1peng.github.io/BrainEnrich/",u_size=3, u_color="#000000",
-        filename="inst/figures/ggplot2.png")
+# p <- ggplot(aes(x = mpg, y = wt), data = mtcars) + geom_point(fill="white", color="white") 
+# p <- p + theme_void() + theme_transparent()
+# sticker(p, package="BrainEnrich", p_size=20, p_y=0.52, p_color="#000000", 
+#         s_x=1, s_y=.75, s_width=1.3, s_height=1,
+#         h_fill="#025a63", h_color="#000000", 
+#         url="https://zh1peng.github.io/BrainEnrich/",u_size=3, u_color="#000000",
+#         filename="inst/figures/ggplot2.png")
 
 
-imgurl <- "C:/Users/Zhipeng/Desktop/tmp2add2021/test1.png"
+# imgurl <- "C:/Users/Zhipeng/Desktop/tmp2add2021/test1.png"
 
-sticker(subplot=imgurl, asp=0.4,  package="BrainEnrich", p_size=20, p_y=0.52, p_color="#ffffff", 
-        s_x=1, s_y=1, s_width=1.6, s_height=1.2,
-        h_fill="#003c61", h_color="#000000", 
-        url="https://zh1peng.github.io/BrainEnrich/",u_size=3, u_color="#ffffff",
-        filename="inst/figures/url.png")
+# sticker(subplot=imgurl, asp=0.4,  package="BrainEnrich", p_size=20, p_y=0.52, p_color="#ffffff", 
+#         s_x=1, s_y=1, s_width=1.6, s_height=1.2,
+#         h_fill="#003c61", h_color="#000000", 
+#         url="https://zh1peng.github.io/BrainEnrich/",u_size=3, u_color="#ffffff",
+#         filename="inst/figures/url.png")
