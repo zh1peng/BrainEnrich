@@ -39,6 +39,11 @@ if (!requireNamespace("ggseg", quietly = TRUE)) {
   install.packages("ggseg")
 }
 
+# kableExtra for vignettes
+if (!requireNamespace("kableExtra", quietly = TRUE)) {
+  install.packages("kableExtra")
+}
+
 # check if devtools is ready
 devtools::has_devel()
 
