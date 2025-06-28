@@ -1,20 +1,34 @@
 #' Distribute and Process Iterations Across HPC Jobs
 #'
-#' This function distributes a set of iterations across multiple jobs in a high-performance computing (HPC) environment.
-#' It subsets the necessary variables, calls a specified function with the relevant subsets, and saves the results to a specified directory.
+#' This function distributes a set of iterations across multiple jobs in a
+#' high-performance computing (HPC) environment. It subsets the necessary
+#' variables, calls a specified function with the relevant subsets, and saves the
+#' results to a given directory.
 #'
-#' @param job_id An integer specifying the job ID in the HPC job array (e.g., 1, 2, 3, ...). Determines which subset of iterations this job will process.
-#' @param n_iter_per_job An integer specifying the number of iterations each job should process. Default is 1.
-#' @param iter_total An integer specifying the total number of iterations to be processed across all jobs.
-#' @param subset_vars A named list of variables (typically matrices) that need to be subset according to the job's assigned iterations.
+#' @param job_id An integer specifying the job ID in the HPC job array (e.g.,
+#'   1, 2, 3, ...). Determines which subset of iterations this job will process.
+#' @param n_iter_per_job An integer specifying the number of iterations each job
+#'   should process. Default is 1.
+#' @param iter_total An integer specifying the total number of iterations to be
+#'   processed across all jobs.
+#' @param subset_vars A named list of variables (typically matrices) that need to
+#'   be subset according to the job's assigned iterations.
 #'        The names should correspond to the argument names in `FUN`.
-#' @param subset_total_var A character string specifying the name of the argument in `FUN` that corresponds to the total number of iterations.
-#'        If provided, the total number of iterations for the current job will be assigned to this argument.
-#' @param output_dir A character string specifying the directory where the results should be saved. If the directory does not exist, it will be created.
-#' @param prefix A character string specifying the base name for the saved RDS files. Default is "res_job_".
-#' @param FUN A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in `...`.
+#' @param subset_total_var A character string specifying the name of the argument
+#'   in `FUN` that corresponds to the total number of iterations.
+#'   If provided, the total number of iterations for the current job will be
+#'   assigned to this argument.
+#' @param output_dir A character string specifying the directory where the
+#'   results should be saved. If the directory does not exist, it will be
+#'   created.
+#' @param prefix A character string specifying the base name for the saved RDS
+#'   files. Default is "res_job_".
+#' @param FUN A function that will be called to process the data for the
+#'   specified iterations. The function should accept the arguments specified in
+#'   `...`.
 #' @param ... Additional arguments passed to `FUN`.
-#' @return This function does not return a value but saves the results of `FUN` to an RDS file in the specified `output_dir`.
+#' @return This function does not return a value but saves the results of `FUN`
+#'   to an RDS file in the specified `output_dir`.
 #' @examples
 #' \dontrun{
 #' # Call job_splitter, which will subset 'perm_id' and pass it to 'FUN'
@@ -87,20 +101,32 @@ job_splitter <- function(job_id,
 
 #' Combine Results from Saved RDS Files
 #'
-#' This function combines results from multiple saved RDS files into a single data frame or list,
-#' saves the combined results as an RDS file (optional), and checks for missing files.
-#' @param input_dir A character string specifying the directory containing the RDS files to be combined.
-#' @param output_dir A character string specifying the directory where the RDS files are stored.
-#' @param n_rds An integer specifying the expected number of RDS files. If provided, the function will check if any files are missing.
-#' @param save_name A character string specifying the name of the output RDS file for the combined results.
-#'                  If not provided, it will default to the name of the output_dir. Must end with .rds.
-#' @param file_pattern A character string specifying the pattern of the RDS files to be combined.
-#'                     Default is "res_job_%d.rds".
-#' @param delete_originals A logical indicating whether to delete the original RDS files after combining. Default is TRUE.
-#' @param preserve_attributes A logical indicating whether to preserve and update attributes specific to brainscore output. Default is FALSE.
-#' @param result_prefix A character string specifying the prefix for naming the combined results. Default is NULL.
-#' @param compress A character string specifying the compression method to use when saving the combined results. For an efficient download from the HPC, default is set as "xz".
-#' @return The combined results, either as a saved RDS file or returned directly if `save_combined` is FALSE.
+#' This function combines results from multiple saved RDS files into a single
+#' data frame or list, saves the combined results as an RDS file (optional), and
+#' checks for missing files.
+#' @param input_dir A character string specifying the directory containing the
+#'   RDS files to be combined.
+#' @param output_dir A character string specifying the directory where the RDS
+#'   files are stored.
+#' @param n_rds An integer specifying the expected number of RDS files. If
+#'   provided, the function will check if any files are missing.
+#' @param save_name A character string specifying the name of the output RDS file
+#'   for the combined results.
+#'   If not provided, it defaults to the name of `output_dir`. Must end with .rds.
+#' @param file_pattern A character string specifying the pattern of the RDS files
+#'   to be combined.
+#'   Default is "res_job_%d.rds".
+#' @param delete_originals A logical indicating whether to delete the original
+#'   RDS files after combining. Default is TRUE.
+#' @param preserve_attributes A logical indicating whether to preserve and update
+#'   attributes specific to brainscore output. Default is FALSE.
+#' @param result_prefix A character string specifying the prefix for naming the
+#'   combined results. Default is NULL.
+#' @param compress A character string specifying the compression method to use
+#'   when saving the combined results. For an efficient download from the HPC,
+#'   default is set to "xz".
+#' @return The combined results, either as a saved RDS file or returned directly
+#'   if `save_combined` is FALSE.
 #' @export
 
 job_cat <- function(input_dir,

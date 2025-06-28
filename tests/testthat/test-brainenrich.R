@@ -30,7 +30,6 @@ test_that("brainenrich performs gene set analysis correctly with valid input (sp
 })
 
 
-# Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (spin brain + coord.l)", {
   data(coord_dk_lh)
   # Perform analysis with valid inputs
@@ -56,7 +55,6 @@ test_that("brainenrich performs gene set analysis correctly with valid input (sp
   expect_s4_class(res, "gseaResult")
 })
 
-# Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (resample gene)", {
   # Perform analysis with valid inputs
   res <- brainenrich(
@@ -80,7 +78,6 @@ test_that("brainenrich performs gene set analysis correctly with valid input (re
 
 
 
-# Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (resample gene)", {
   # Perform analysis with valid inputs
   res <- brainenrich(
@@ -103,7 +100,6 @@ test_that("brainenrich performs gene set analysis correctly with valid input (re
 
 
 
-# Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (co-exp matched)", {
   # Perform analysis with valid inputs
   res <- brainenrich(
