@@ -6,7 +6,6 @@ annoData <- get_annoData(type = "SynGO")
 cov_df <- sim_hcp %>% dplyr::select(Age, Sex)
 pred_df <- sim_hcp %>% dplyr::select(BMI)
 
-# Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (spin_brain)", {
   data(perm_id_dk_lh_5000)
   # Perform analysis with valid inputs
@@ -33,7 +32,6 @@ test_that("brainenrich performs gene set analysis correctly with valid input (sp
 
 
 
-# Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (spin_brain)", {
   # Perform analysis with valid inputs
   data(coord_dk_lh)
@@ -62,7 +60,6 @@ test_that("brainenrich performs gene set analysis correctly with valid input (sp
 
 
 
-# Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (resample_gene)", {
   # Perform analysis with valid inputs
   res <- brainscore.lm_test(
@@ -92,7 +89,6 @@ pred_df <- sim_hcp %>%
   dplyr::mutate(group = case_when(BMI > 25 ~ "case", TRUE ~ "hc")) %>%
   dplyr::select(group)
 pred_df$group <- relevel(factor(pred_df$group), ref = "hc")
-# Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (resample_gene)", {
   # Perform analysis with valid inputs
   res <- brainscore.lm_test(
@@ -122,7 +118,6 @@ pred_df <- sim_hcp %>%
   dplyr::mutate(group = case_when(BMI > 25 ~ 1, TRUE ~ 0)) %>%
   dplyr::select(group)
 pred_df$group <- as.factor(pred_df$group)
-# Test the brainenrich function
 test_that("brainenrich performs gene set analysis correctly with valid input (resample_gene)", {
   # Perform analysis with valid inputs
   res <- brainscore.lm_test(
