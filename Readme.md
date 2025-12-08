@@ -81,3 +81,26 @@ install.packages(
   type  = "source",
   lib   = lib45
 )
+
+
+If you see errors like:
+
+- `Error: object 'consecutive_id' is not exported by 'namespace:dplyr'`
+- or failures compiling `gdtools` / `ggiraph` when installing `enrichplot`,
+
+you probably need **Ubuntu system libraries** and a **newer dplyr (and friends)**.
+
+In a terminal:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y \
+  libcairo2-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev pkg-config
+```
+
+If you see errors like:
+`Error: object ‘consecutive_id’ is not exported by 'namespace:dplyr'`
+
+ggiraph 0.9.2 expects a newer dplyr (which exports consecutive_id), but you have an older dplyr on your search path.
+
+Fix = update the tidyverse core in your user lib (4.5), then reinstall ggiraph → ggtree → enrichplot.
