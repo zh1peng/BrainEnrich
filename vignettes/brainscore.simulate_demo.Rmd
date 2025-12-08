@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-This tutorial demonstrates how to perform do simulation to assess the false positive rate of analysis with brainscore. 
+This tutorial demonstrates how to perform simulations to assess the false positive rate of analysis with brainscore.
 The `brainscore` function calculates the gene set scores and correlates them with the predictor variable. 
 The simulation analysis is performed by 
 
@@ -55,7 +55,7 @@ str(brain_data)
 ```
 
 ### 1.3. Load gene expression data for the Analysis
-We will now load gene expression data for the analysis. This data is based on a specific brain atlas (Desikan) and includes gene expression levels (correlation across donnors > 0.4) for the left hemisphere.
+We will now load gene expression data for the analysis. This data is based on a specific brain atlas (Desikan) and includes gene expression levels (correlation across donors > 0.4) for the left hemisphere.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.4", hem = "L")
 str(gene_data)

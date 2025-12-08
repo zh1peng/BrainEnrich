@@ -25,7 +25,7 @@
 - **F. Core Genes Identification**: A leave-one-out (LOO) procedure identifies genes that substantially influence GS scores (in group-level analysis) or the resultant test statistic (in individual-level analysis), highlighting the primary contributors to enriched terms. 
 - 🔧**Multiple Association Methods**: Pearson and Spearman correlations, Partial Least Squares (PLS) regression, and user-defined methods for exploring gene-imaging associations.[Tutorial:Customize Association Methods (in prep)]
 - 🔧**Aggregation Methods**: Multiple options for aggregating gene set scores, including mean, median, and Kolmogorov-Smirnov (KS)-based statistics.[Tutorial:Customize Aggregation Methods (in prep)]
-- �︎ **HCP (Slurm)**: Provides a detailed tutorial on running brainscore and simulation studies on high-performance computing systems using Slurm, enabling efficient large-scale analyses.[Tutorial:Computation on HPC with slurm](https://zh1peng.github.io/BrainEnrich/articles/hpc_demo.html)
+- **HCP (Slurm)**: Provides a detailed tutorial on running brainscore and simulation studies on high-performance computing systems using Slurm, enabling efficient large-scale analyses. [Tutorial: Computation on HPC with slurm](https://zh1peng.github.io/BrainEnrich/articles/hpc_demo.html)
 
 
 💾**Installation** 
@@ -41,7 +41,7 @@ BiocManager::install("DOSE")
 # Install brainEnrich from GitHub
 remotes::install_github("zh1peng/BrainEnrich")
 ```
-Note that the pacakge will be available on CRAN soon.
+Note that the package will be available on CRAN soon.
 
 If you have trouble installing DOSE/fgsea, you can try the following command:
 ```r
