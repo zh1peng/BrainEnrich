@@ -43,6 +43,16 @@ remotes::install_github("zh1peng/BrainEnrich")
 ```
 Note that the pacakge will be available on CRAN soon.
 
+If you have trouble installing DOSE/fgsea, you can try the following command:
+```r
+install.packages(
+  "fastmatch",
+  repos = "https://mirrors.tuna.tsinghua.edu.cn/CRAN/", # chinese mirror
+  type  = "source",
+  lib   = lib45
+)
+```
+
 🔬**Usage**
 
 Tutorials are available at [github-pages](https://zh1peng.github.io/BrainEnrich/)
@@ -55,3 +65,19 @@ Tutorials are available at [github-pages](https://zh1peng.github.io/BrainEnrich/
 📜**License** 
 
 This project is licensed under the GNU Affero General Public (AGP) License - see the [LICENSE.md](LICENSE.md) file for details. We welcome contributions to **BrainEnrich**! Feel free to fork the repository, and create pull requests.
+
+
+
+### Troubleshooting: DOSE / fgsea installation
+
+If you encounter errors when installing **DOSE** or **fgsea** (e.g., messages about `fastmatch.so` or `undefined symbol: match5`), the cause is often an old or incompatible system-wide installation of **fastmatch**.
+
+In that case, install a fresh copy of `fastmatch` into your user library (e.g., `lib45`) with:
+
+```r
+install.packages(
+  "fastmatch",
+  repos = "https://mirrors.tuna.tsinghua.edu.cn/CRAN/",  # Chinese CRAN mirror
+  type  = "source",
+  lib   = lib45
+)
