@@ -79,7 +79,7 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
     },
     ks_orig = {
       function(genelist, geneSet) {
-        # code obtained from DOSE: https://rdrr.io/bioc/DOSE/src/R/gsea.R
+        # Adapted from the original GSEA running-score implementation.
         genelist <- sort(genelist, decreasing = TRUE)
         geneSet <- intersect(geneSet, names(genelist))
         N <- length(genelist)
@@ -104,7 +104,7 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
     },
     ks_weighted = {
       function(genelist, geneSet) {
-        # code obtained from DOSE: https://rdrr.io/bioc/DOSE/src/R/gsea.R
+        # Adapted from the original GSEA running-score implementation.
         genelist <- sort(genelist, decreasing = TRUE)
         geneSet <- intersect(geneSet, names(genelist))
         N <- length(genelist)
@@ -225,33 +225,57 @@ aggregate_geneSet <- function(geneList, # named correlation/coefficient matrix
 #' @import parallel
 #' @export
 aggregate_geneSetList <- function(geneList, geneSetList, method, n_cores = 1) {
-  # Determine the number of cores to use
-  if (n_cores == 0) {
-    n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
-  } else {
-    n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
-  }
+  n_cores <- be_resolve_n_cores(n_cores)
 
-  # Initialize a cluster of workers
-  if (n_cores == 1) {
-    cl <- NULL
+  fast_methods <- c("mean", "median", "meanabs", "meansqr", "maxmean")
+  use_fast <- !is.function(method) &&
+    method %in% fast_methods &&
+    !is.null(rownames(geneList))
+
+  if (use_fast) {
+    idx_list <- lapply(geneSetList, function(gs) {
+      idx <- match(gs, rownames(geneList), nomatch = 0L)
+      idx[idx > 0L]
+    })
+    fast_aggre <- switch(method,
+      mean = function(x) colMeans(x),
+      median = function(x) apply(x, 2, stats::median),
+      meanabs = function(x) colMeans(abs(x)),
+      meansqr = function(x) colMeans(x^2),
+      maxmean = function(x) {
+        apply(x, 2, function(v) {
+          pos.mean <- mean(v[v > 0])
+          neg.mean <- mean(v[v < 0])
+          if (is.na(pos.mean)) pos.mean <- 0
+          if (is.na(neg.mean)) neg.mean <- 0
+          ifelse(pos.mean > abs(neg.mean), pos.mean, neg.mean)
+        })
+      }
+    )
+    allgs.scores <- be_parallel_lapply(seq_along(idx_list), function(i) {
+      idx <- idx_list[[i]]
+      if (length(idx) == 0) {
+        rep(NA_real_, ncol(geneList))
+      } else {
+        fast_aggre(geneList[idx, , drop = FALSE])
+      }
+    },
+    n_cores = n_cores,
+    export = c("idx_list", "geneList", "fast_aggre"),
+    envir = environment()
+    )
   } else {
-    cl <- makeCluster(n_cores)
-    # Export necessary variables to the cluster
-    clusterExport(cl, c("geneList", "aggregate_geneSet", "geneSetList", "method"),
-      envir = environment()
+    # Generic path supports custom or non-vectorized methods.
+    allgs.scores <- be_parallel_lapply(seq_along(geneSetList), function(i) {
+      gs <- geneSetList[[i]]
+      aggregate_geneSet(geneList = geneList, geneSet = gs, method = method)
+    },
+    n_cores = n_cores,
+    export = c("geneList", "aggregate_geneSet", "geneSetList", "method"),
+    envir = environment()
     )
   }
-  # Parallelize the processing using pblapply for progress bar
-  allgs.scores <- pblapply(seq_along(geneSetList), function(i) {
-    gs <- geneSetList[[i]]
-    aggregate_geneSet(geneList = geneList, geneSet = gs, method = method)
-  }, cl = cl)
 
-  # Stop the cluster after processing
-  if (!is.null(cl)) {
-    stopCluster(cl)
-  }
   names(allgs.scores) <- names(geneSetList)
   return(allgs.scores)
 }
@@ -289,26 +313,10 @@ aggregate_geneSetList_matching_coexp <- function(geneList.true,
   }
 
 
-  # Determine the number of cores to use
-  if (n_cores == 0) {
-    n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
-  } else {
-    n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
-  }
-
-
-  # Initialize a cluster of workers
-  cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
-  # Export necessary variables and functions to the cluster
-  if (!is.null(cl)) {
-    clusterExport(cl,
-      varlist = c("geneList.true", "swap_geneList", "aggregate_geneSet", "method", "geneSetList", "sampled_geneSetList"),
-      envir = environment()
-    )
-  }
+  n_cores <- be_resolve_n_cores(n_cores)
 
   # Parallelize the processing using pblapply for progress bar
-  allgs.scores <- pblapply(seq_along(geneSetList), function(i) {
+  allgs.scores <- be_parallel_lapply(seq_along(geneSetList), function(i) {
     gs <- geneSetList[[i]]
     sampled_gs <- sampled_geneSetList[[i]]
     geneList.null <- swap_geneList(
@@ -322,10 +330,12 @@ aggregate_geneSetList_matching_coexp <- function(geneList.true,
       method = method
     )
     return(gs.score)
-  }, cl = cl)
+  },
+  n_cores = n_cores,
+  export = c("geneList.true", "swap_geneList", "aggregate_geneSet", "method", "geneSetList", "sampled_geneSetList"),
+  envir = environment()
+  )
 
-  # Stop the cluster after processing
-  if (!is.null(cl)) stopCluster(cl)
   names(allgs.scores) <- names(geneSetList)
   return(allgs.scores)
 }

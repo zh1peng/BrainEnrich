@@ -2,22 +2,22 @@
 % Please edit documentation in R/get_geneSets.R
 \name{filter_geneSetList}
 \alias{filter_geneSetList}
-\title{Filter Gene Set List}
+\title{Filter gene set list}
 \usage{
 filter_geneSetList(bg_genes, geneSetList, minGSSize, maxGSSize)
 }
 \arguments{
-\item{bg_genes}{A vector of background gene symbols to be used for filtering.}
+\item{bg_genes}{Character vector of background genes.}
 
-\item{geneSetList}{A list of gene sets to be filtered.}
+\item{geneSetList}{Named list of gene sets.}
 
-\item{minGSSize}{Minimum gene set size for filtering.}
+\item{minGSSize}{Minimum size threshold.}
 
-\item{maxGSSize}{Maximum gene set size for filtering.}
+\item{maxGSSize}{Maximum size threshold.}
 }
 \value{
-A filtered list of gene sets that meet the size constraints and background genes criteria.
+Filtered named list of gene sets.
 }
 \description{
-This function filters a list of gene sets based on the background genes and specified size constraints.
+This function filters a list of gene sets based on background genes and size.
 }

@@ -24,7 +24,7 @@
 #   if (!requireNamespace("BiocManager", quietly = TRUE)) {
 #     install.packages("BiocManager")
 #   }
-#   bioc_packages <- c("DOSE")
+#   bioc_packages <- character()
 #   for (pkg in bioc_packages) {
 #     if (!requireNamespace(pkg, quietly = TRUE)) {
 #       BiocManager::install(pkg)

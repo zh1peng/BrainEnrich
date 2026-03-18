@@ -22,8 +22,6 @@ ask_user_continue <- function(msg) {
 }
 
 
-readline <- NULL
-
 # # Function to compress a CSV file using bzip2
 #' @importFrom utils write.csv
 compress_csv_bzip2 <- function(input_csv) {

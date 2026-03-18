@@ -28,11 +28,11 @@ if (!requireNamespace("styler", quietly = TRUE)) {
   install.packages("styler")
 }
 
-# enrichplot for vignettes
+# optional Bioconductor packages for data preparation vignettes
 options(BioC_mirror = "https://mirrors.tuna.tsinghua.edu.cn/bioconductor")
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("enrichplot")
+if (!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 BiocManager::install("org.Hs.eg.db")
 
 # ggseg for vignettes
@@ -140,6 +140,7 @@ usethis::use_github_action()
 usethis::use_github_action('test-coverage')
 usethis::use_pkgdown_github_pages()
 
+devtools::install_github("zh1peng/BrainEnrichData")
 devtools::install_github("zh1peng/BrainEnrich")
 
 

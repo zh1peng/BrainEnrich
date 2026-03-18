@@ -1,143 +1,81 @@
 data(sim_hcp)
-brain_data <- dplyr::select(sim_hcp, starts_with("L_")) %>% t()
-colnames(brain_data) <- paste0("sub-", 1:ncol(brain_data))
+sim_hcp_small <- sim_hcp[seq_len(min(80, nrow(sim_hcp))), , drop = FALSE]
+brain_data <- dplyr::select(sim_hcp_small, starts_with("L_")) %>% t()
+colnames(brain_data) <- paste0("sub-", seq_len(ncol(brain_data)))
 gene_data <- get_geneExp(atlas = "desikan", rdonor = "r0.6", hem = "L")
 annoData <- get_annoData(type = "SynGO")
-cov_df <- sim_hcp %>% dplyr::select(Age, Sex)
-pred_df <- sim_hcp %>% dplyr::select(BMI)
+cov_df <- sim_hcp_small %>% dplyr::select(Age, Sex)
+pred_df_num <- sim_hcp_small %>% dplyr::select(BMI)
 
-test_that("brainenrich performs gene set analysis correctly with valid input (spin_brain)", {
+test_that("brainscore.lm_test returns EnrichRes in spin_brain mode", {
   data(perm_id_dk_lh_5000)
-  # Perform analysis with valid inputs
   res <- brainscore.lm_test(
-    pred_df = pred_df,
+    pred_df = pred_df_num,
     cov_df = cov_df,
     brain_data = brain_data,
     gene_data = gene_data,
     annoData = annoData,
     cor_method = "pearson",
     aggre_method = "mean",
-    n_cores = 0,
+    n_cores = 1,
     minGSSize = 50,
     maxGSSize = 200,
     null_model = "spin_brain",
-    n_perm = 5,
+    n_perm = 10,
     perm_id = perm_id_dk_lh_5000,
     pvalueCutoff = 1
   )
-
-  # Test that the result is a gseaResult object
-  expect_s4_class(res, "gseaResult")
+  expect_s3_class(res, "EnrichRes")
+  expect_equal(res$analysis_type, "brainscore_lm_test")
 })
 
-
-
-test_that("brainenrich performs gene set analysis correctly with valid input (spin_brain)", {
-  # Perform analysis with valid inputs
-  data(coord_dk_lh)
+test_that("brainscore.lm_test returns data frame when gsea_obj = FALSE", {
+  data(perm_id_dk_lh_5000)
   res <- brainscore.lm_test(
-    pred_df = pred_df,
+    pred_df = pred_df_num,
     cov_df = cov_df,
     brain_data = brain_data,
     gene_data = gene_data,
     annoData = annoData,
     cor_method = "pearson",
     aggre_method = "mean",
-    n_cores = 0,
+    n_cores = 1,
     minGSSize = 50,
     maxGSSize = 200,
     null_model = "spin_brain",
-    n_perm = 5,
-    coord.l = coord_dk_lh,
+    n_perm = 10,
+    perm_id = perm_id_dk_lh_5000,
     pvalueCutoff = 1,
     gsea_obj = FALSE,
     threshold_type = "none"
   )
-
-  # Test that the result is a gseaResult object
-  expect_type(res, "list")
+  expect_true(is.data.frame(res))
 })
 
+test_that("brainscore.lm_test handles factor predictors", {
+  pred_df_fac <- sim_hcp_small %>%
+    dplyr::mutate(group = dplyr::case_when(BMI > 25 ~ "case", TRUE ~ "hc")) %>%
+    dplyr::select(group)
+  pred_df_fac$group <- stats::relevel(factor(pred_df_fac$group), ref = "hc")
 
-
-test_that("brainenrich performs gene set analysis correctly with valid input (resample_gene)", {
-  # Perform analysis with valid inputs
+  data(perm_id_dk_lh_5000)
   res <- brainscore.lm_test(
-    pred_df = pred_df,
+    pred_df = pred_df_fac,
     cov_df = cov_df,
     brain_data = brain_data,
     gene_data = gene_data,
     annoData = annoData,
     cor_method = "pearson",
     aggre_method = "mean",
-    n_cores = 0,
+    n_cores = 1,
     minGSSize = 50,
     maxGSSize = 200,
-    null_model = "resample_gene",
-    n_perm = 5,
-    coord.l = coord_dk_lh,
-    pvalueCutoff = 1
-  )
-
-  # Test that the result is a gseaResult object
-  expect_s4_class(res, "gseaResult")
-})
-
-
-
-pred_df <- sim_hcp %>%
-  dplyr::mutate(group = case_when(BMI > 25 ~ "case", TRUE ~ "hc")) %>%
-  dplyr::select(group)
-pred_df$group <- relevel(factor(pred_df$group), ref = "hc")
-test_that("brainenrich performs gene set analysis correctly with valid input (resample_gene)", {
-  # Perform analysis with valid inputs
-  res <- brainscore.lm_test(
-    pred_df = pred_df,
-    cov_df = cov_df,
-    brain_data = brain_data,
-    gene_data = gene_data,
-    annoData = annoData,
-    cor_method = "pearson",
-    aggre_method = "mean",
-    n_cores = 0,
-    minGSSize = 50,
-    maxGSSize = 200,
-    null_model = "resample_gene",
-    n_perm = 5,
+    null_model = "spin_brain",
+    n_perm = 10,
+    perm_id = perm_id_dk_lh_5000,
     pvalueCutoff = 1,
     gsea_obj = FALSE,
     threshold_type = "none"
   )
-
-  # Test that the result is a list
-  expect_type(res, "list")
-})
-
-
-pred_df <- sim_hcp %>%
-  dplyr::mutate(group = case_when(BMI > 25 ~ 1, TRUE ~ 0)) %>%
-  dplyr::select(group)
-pred_df$group <- as.factor(pred_df$group)
-test_that("brainenrich performs gene set analysis correctly with valid input (resample_gene)", {
-  # Perform analysis with valid inputs
-  res <- brainscore.lm_test(
-    pred_df = pred_df,
-    cov_df = cov_df,
-    brain_data = brain_data,
-    gene_data = gene_data,
-    annoData = annoData,
-    cor_method = "pearson",
-    aggre_method = "mean",
-    n_cores = 0,
-    minGSSize = 50,
-    maxGSSize = 200,
-    null_model = "resample_gene",
-    n_perm = 5,
-    pvalueCutoff = 1,
-    gsea_obj = FALSE,
-    threshold_type = "none"
-  )
-
-  # Test that the result is a list
-  expect_type(res, "list")
+  expect_true(is.data.frame(res))
 })

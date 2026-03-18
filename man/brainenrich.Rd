@@ -2,7 +2,7 @@
 % Please edit documentation in R/brainenrich.R
 \name{brainenrich}
 \alias{brainenrich}
-\title{Perform Brain Gene Set Analysis}
+\title{Perform brain gene set analysis}
 \usage{
 brainenrich(
   brain_data,
@@ -31,64 +31,53 @@ brainenrich(
 )
 }
 \arguments{
-\item{brain_data}{A data frame of brain data with regions as rows. The row names (i.e., region names) must be consistent with those in gene_data.}
+\item{brain_data}{A data frame/matrix of brain measurements with regions as rows.}
 
-\item{gene_data}{A data frame of gene expression data with regions as rows and genes as columns. The row names (i.e., region names) must be consistent with those in brain_data.}
+\item{gene_data}{A data frame/matrix of gene expression with regions as rows and genes as columns.}
 
-\item{annoData}{An environment containing annotation data. See \code{get_annoData} for more details.}
+\item{annoData}{An annotation object of class \code{EnrichAnno}.}
 
-\item{cor_method}{A character string specifying the correlation method.
-Default is 'pearson'. Other options include 'spearman', 'pls1c',
-and 'pls1w'. If a custom function that takes (gene_data, brain_data) as input is provided, the function will use the custom correlation method, and \code{cor_method} will be set to 'custom'.}
+\item{cor_method}{Correlation/association method name or a custom function.}
 
-\item{aggre_method}{A character string specifying the aggregation method.
-Default is 'mean'. Other options include 'median', 'meanabs',
-'meansqr', 'maxmean', 'ks_orig', 'ks_weighted', 'ks_pos_neg_sum',
-'sign_test', and 'rank_sum'. If a custom function that takes (geneList, geneSet) as input is provided, the function will use the custom aggregation method, and \code{aggre_method} will be set to 'custom'.}
+\item{aggre_method}{Aggregation method name or a custom function.}
 
-\item{null_model}{A character string specifying the null model to use.
-Default is 'spin_brain'. Other options include 'resample_gene' and 'coexp_matched'.}
+\item{null_model}{Null model type.}
 
-\item{minGSSize}{An integer specifying the minimum gene set size after intersecting with the genes in gene_data. Default is 10.}
+\item{minGSSize}{Minimum gene set size.}
 
-\item{maxGSSize}{An integer specifying the maximum gene set size after intersecting with the genes in gene_data. Default is 200.}
+\item{maxGSSize}{Maximum gene set size.}
 
-\item{n_cores}{An integer specifying the number of cores to use. Default is 0 (use all available cores minus one).}
+\item{n_cores}{Number of cores.}
 
-\item{n_perm}{An integer specifying the number of permutations. Default is 5000.}
+\item{n_perm}{Number of permutations.}
 
-\item{perm_id}{A matrix of permutation indices for the 'spin_brain' null model. Default is NULL. Either perm_id or coord.l/coord.r must be provided if choosing the 'spin_brain' mode.}
+\item{perm_id}{Optional permutation index matrix for \code{spin_brain}.}
 
-\item{coord.l}{A matrix of coordinates for the left hemisphere used in the 'spin_brain' null model. Default is NULL. Can be NULL if coord.r or perm_id is provided.}
+\item{coord.l}{Optional left hemisphere coordinates.}
 
-\item{coord.r}{A matrix of coordinates for the right hemisphere used in the 'spin_brain' null model. Default is NULL. Can be NULL if coord.l or perm_id is provided.}
+\item{coord.r}{Optional right hemisphere coordinates.}
 
-\item{seed}{An integer specifying the seed for reproducibility when using the 'spin_brain' model. Default is NULL.}
+\item{seed}{Optional seed.}
 
-\item{threshold_type}{A character string specifying the threshold type for identifying core genes.
-Default is 'sd'. Other options are 'percentile' and 'none'. For 'sd', the threshold value represents the number of standard deviations from the mean. For 'percentile', the threshold value represents the percentile of the distribution. For 'none', no identification of core genes is performed.}
+\item{threshold_type}{Core-gene threshold type.}
 
-\item{threshold_value}{A numeric value specifying the threshold for core gene identification. Default is 1. See \code{find_core_genes} for more details.}
+\item{threshold_value}{Core-gene threshold value.}
 
-\item{pvalueCutoff}{A numeric value specifying the p-value cutoff for significance in the output. Default is 0.05.}
+\item{pvalueCutoff}{P-value cutoff for reporting.}
 
-\item{pAdjustMethod}{A character string specifying the method for p-value adjustment ("fdr", "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "none").
-Default is 'fdr'. See \code{p.adjust} for more details.}
+\item{pAdjustMethod}{P-value adjust method.}
 
-\item{padjCutoff}{A numeric value specifying the adjusted p-value cutoff for significance in the output. Default is NULL. If provided, the output will be filtered based on this cutoff.}
+\item{padjCutoff}{Optional adjusted p-value cutoff.}
 
-\item{matchcoexp_tol}{A numeric value specifying the tolerance for co-expression matching in the 'coexp_matched' null model.
-Lower values result in better matching but increase the number of iterations required. Default is 0.05. See \code{resample_geneSetList_matching_coexp} for more details.}
+\item{matchcoexp_tol}{Co-expression matching tolerance.}
 
-\item{matchcoexp_max_iter}{An integer specifying the maximum number of iterations
-for co-expression matching in the 'coexp_matched' null model. Default is 1,000,000. See \code{resample_geneSetList_matching_coexp} for more details.}
+\item{matchcoexp_max_iter}{Co-expression matching max iterations.}
 }
 \value{
-A gseaResult object containing the enrichment results.
+An object of class \code{EnrichRes} with \code{analysis_type = "brainenrich"}.
 }
 \description{
-This function performs gene set analysis using group-level brain data.
-It aggregates the associations between gene expression data and brain data within gene sets from annotation data.
-The empirical aggregation score is compared to a null distribution generated by the selected null model.
-This function supports user-defined correlation and aggregation methods by allowing the use of custom functions.
+This function performs group-level gene set analysis by aggregating
+gene-brain association values within predefined gene sets and comparing
+empirical scores against null-model scores.
 }

@@ -193,7 +193,7 @@ job_cat <- function(input_dir,
   }
 
   # Update the names of the combined results with the user-defined prefix
-  if (!is.null(result_prefix) && length(combined_results) > 0 && is.list(combined_results) %% is.character(result_prefix)) {
+  if (!is.null(result_prefix) && length(combined_results) > 0 && is.list(combined_results) && is.character(result_prefix)) {
     names(combined_results) <- paste0(result_prefix, 1:length(combined_results))
   }
   # Save the combined results as an RDS file

@@ -62,9 +62,9 @@ simple_lm <- function(dependent_df,
         tidy_model = purrr::map(.data$lm_model, broom::tidy),
         std_coefs = purrr::map(.data$lm_model, ~ parameters::standardize_parameters(.x, method = "refit"))
       ) %>%
-      tidyr::unnest(.data$tidy_model) %>%
+      tidyr::unnest(cols = c("tidy_model")) %>%
       dplyr::filter(.data$term == var2extract) %>%
-      tidyr::unnest(.data$std_coefs) %>%
+      tidyr::unnest(cols = c("std_coefs")) %>%
       dplyr::filter(.data$Parameter == var2extract) %>%
       dplyr::ungroup() %>%
       dplyr::mutate(
@@ -96,7 +96,7 @@ simple_lm <- function(dependent_df,
         lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
         tidy_model = purrr::map(.data$lm_model, broom::tidy)
       ) %>%
-      tidyr::unnest(.data$tidy_model) %>%
+      tidyr::unnest(cols = c("tidy_model")) %>%
       dplyr::filter(.data$term == var2extract) %>%
       dplyr::select(.data$Dependent_vars, .data$term, .data$statistic) %>%
       dplyr::rename(Predictor = .data$term, tval = .data$statistic) %>%
@@ -110,7 +110,7 @@ simple_lm <- function(dependent_df,
         lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
         tidy_model = purrr::map(.data$lm_model, broom::tidy)
       ) %>%
-      tidyr::unnest(.data$tidy_model) %>%
+      tidyr::unnest(cols = c("tidy_model")) %>%
       dplyr::filter(.data$term == var2extract) %>%
       dplyr::select(.data$Dependent_vars, .data$statistic) %>%
       tibble::deframe() %>%
@@ -124,7 +124,7 @@ simple_lm <- function(dependent_df,
         lm_model = purrr::map(.data$data, ~ eval(bquote(lm(.(as.formula(paste("Dependent_value ~", paste(c(pred_var, cov_vars), collapse = "+")))), data = .x)))),
         tidy_model = purrr::map(.data$lm_model, broom::tidy)
       ) %>%
-      tidyr::unnest(.data$tidy_model) %>%
+      tidyr::unnest(cols = c("tidy_model")) %>%
       dplyr::filter(.data$term == var2extract) %>%
       dplyr::select(.data$Dependent_vars, .data$term, .data$p.value) %>%
       dplyr::rename(Predictor = .data$term, pval = .data$p.value) %>%

@@ -60,6 +60,7 @@ resample_gene <- function(geneList.true, n_perm = 5000) {
 #' @param max_iter An integer indicating the maximum number of iterations for the sampling process (default = 1000000).
 #' @param n_perm An integer indicating the number of permutations to generate (default = 5000).
 #' @param n_cores An integer indicating the number of cores to use for parallel processing (default = 1).
+#' @param seed Optional integer seed used for reproducible parallel sampling.
 #' @return A list of resampled gene sets based on the specified constraints.
 #' @import pbapply
 #' @import parallel
@@ -69,7 +70,7 @@ resample_gene <- function(geneList.true, n_perm = 5000) {
 #' Wei, Y., de Lange, S. C., Pijnenburg, R., Scholtens, L. H., Ardesch, D. J., Watanabe, K., Posthuma, D., & van den Heuvel, M. P. (2022).
 #' Statistical testing in transcriptomic-neuroimaging studies: A how-to and evaluation of methods assessing spatial and gene specificity.
 #' Human Brain Mapping, 43(3), 885–901.
-resample_geneSetList_matching_coexp <- function(gene_data, geneSetList, tol = 0.01, max_iter = 1000000, n_perm = 5000, n_cores = 1) {
+resample_geneSetList_matching_coexp <- function(gene_data, geneSetList, tol = 0.01, max_iter = 1000000, n_perm = 5000, n_cores = 1, seed = NULL) {
   # if (!ask_user_continue("Coexp matching will take a long time.")) {
   #   stop("Operation aborted by the user.\n")
   # }
@@ -80,33 +81,22 @@ resample_geneSetList_matching_coexp <- function(gene_data, geneSetList, tol = 0.
   coexp_matrix <- cor(gene_data)
   total_gs <- length(geneSetList)
 
-  # Determine the number of cores to use
-  if (n_cores == 0) {
-    n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
-  } else {
-    n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
-  }
+  n_cores <- be_resolve_n_cores(n_cores)
 
-  # Initialize a cluster of workers
-  cl <- makeCluster(n_cores)
-
-  # Export necessary variables and functions to the cluster
-  clusterExport(cl, c(
+  # Parallelize the processing using pblapply for progress bar
+  sampled_geneSetList <- be_parallel_lapply(seq_along(geneSetList), function(i) {
+    gs <- geneSetList[[i]]
+    cat(sprintf("Sampling gene set %d/%d: %s (gs size: %d) \n", i, total_gs, names(geneSetList)[i], length(gs)))
+    sample_gs_matching_coexp(gs = gs, coexp_matrix = coexp_matrix, tol = tol, max_iter = max_iter, n_target = n_perm)
+  },
+  n_cores = n_cores,
+  seed = seed,
+  export = c(
     "geneSetList", "coexp_matrix", "tol", "max_iter",
     "n_perm", "sample_gs_matching_coexp", "total_gs"
   ),
   envir = environment()
   )
-
-  # Parallelize the processing using pblapply for progress bar
-  sampled_geneSetList <- pblapply(seq_along(geneSetList), function(i) {
-    gs <- geneSetList[[i]]
-    cat(sprintf("Sampling gene set %d/%d: %s (gs size: %d) \n", i, total_gs, names(geneSetList)[i], length(gs)))
-    sample_gs_matching_coexp(gs = gs, coexp_matrix = coexp_matrix, tol = tol, max_iter = max_iter, n_target = n_perm)
-  }, cl = cl)
-
-  # Stop the cluster after processing
-  stopCluster(cl)
 
   names(sampled_geneSetList) <- names(geneSetList)
 
@@ -143,7 +133,9 @@ sample_gs_matching_coexp <- function(gs, coexp_matrix, tol = 0.01, max_iter = 10
   target_coexp <- mean(gs_coexp_lower)
 
   # Initialize a list to hold sampled gene sets that meet the criteria
-  sampled_gs <- list()
+  sampled_gs <- vector("list", 0)
+  sampled_n <- 0L
+  seen <- new.env(parent = emptyenv(), hash = TRUE)
   cat(sprintf("Target coexp: %f \n", target_coexp))
   for (i in 1:max_iter) {
     if (i %% 10000 == 0) {
@@ -155,17 +147,20 @@ sample_gs_matching_coexp <- function(gs, coexp_matrix, tol = 0.01, max_iter = 10
     sampled_coexp_avg <- mean(sampled_coexp_lower)
 
     if (abs(sampled_coexp_avg - target_coexp) < tol) {
-      sampled_gs[[length(sampled_gs) + 1]] <- sampled_genes
+      key <- paste(sampled_genes, collapse = "|")
+      if (!exists(key, envir = seen, inherits = FALSE)) {
+        assign(key, TRUE, envir = seen)
+        sampled_n <- sampled_n + 1L
+        sampled_gs[[sampled_n]] <- sampled_genes
+      }
     }
 
-    # Remove duplicates and check if the target number of sets has been reached
-    sampled_gs <- unique(sampled_gs)
-    if (length(sampled_gs) == n_target) {
+    if (sampled_n == n_target) {
       break
     }
   }
 
-  if (length(sampled_gs) < n_target) {
+  if (sampled_n < n_target) {
     stop("n_target not reached, consider increasing max_iter or decreasing tol")
   }
 

@@ -17,32 +17,46 @@ job_splitter(
 )
 }
 \arguments{
-\item{job_id}{An integer specifying the job ID in the HPC job array (e.g., 1, 2, 3, ...). Determines which subset of iterations this job will process.}
+\item{job_id}{An integer specifying the job ID in the HPC job array (e.g.,
+1, 2, 3, ...). Determines which subset of iterations this job will process.}
 
-\item{n_iter_per_job}{An integer specifying the number of iterations each job should process. Default is 1.}
+\item{n_iter_per_job}{An integer specifying the number of iterations each job
+should process. Default is 1.}
 
-\item{iter_total}{An integer specifying the total number of iterations to be processed across all jobs.}
+\item{iter_total}{An integer specifying the total number of iterations to be
+processed across all jobs.}
 
-\item{prefix}{A character string specifying the base name for the saved RDS files. Default is "res_job_".}
+\item{prefix}{A character string specifying the base name for the saved RDS
+files. Default is "res_job_".}
 
-\item{output_dir}{A character string specifying the directory where the results should be saved. If the directory does not exist, it will be created.}
+\item{output_dir}{A character string specifying the directory where the
+results should be saved. If the directory does not exist, it will be
+created.}
 
-\item{FUN}{A function that will be called to process the data for the specified iterations. The function should accept the arguments specified in \code{...}.}
+\item{FUN}{A function that will be called to process the data for the
+specified iterations. The function should accept the arguments specified in
+\code{...}.}
 
-\item{subset_vars}{A named list of variables (typically matrices) that need to be subset according to the job's assigned iterations.
+\item{subset_vars}{A named list of variables (typically matrices) that need to
+be subset according to the job's assigned iterations.
 The names should correspond to the argument names in \code{FUN}.}
 
-\item{subset_total_var}{A character string specifying the name of the argument in \code{FUN} that corresponds to the total number of iterations.
-If provided, the total number of iterations for the current job will be assigned to this argument.}
+\item{subset_total_var}{A character string specifying the name of the argument
+in \code{FUN} that corresponds to the total number of iterations.
+If provided, the total number of iterations for the current job will be
+assigned to this argument.}
 
 \item{...}{Additional arguments passed to \code{FUN}.}
 }
 \value{
-This function does not return a value but saves the results of \code{FUN} to an RDS file in the specified \code{output_dir}.
+This function does not return a value but saves the results of \code{FUN}
+to an RDS file in the specified \code{output_dir}.
 }
 \description{
-This function distributes a set of iterations across multiple jobs in a high-performance computing (HPC) environment.
-It subsets the necessary variables, calls a specified function with the relevant subsets, and saves the results to a specified directory.
+This function distributes a set of iterations across multiple jobs in a
+high-performance computing (HPC) environment. It subsets the necessary
+variables, calls a specified function with the relevant subsets, and saves the
+results to a given directory.
 }
 \examples{
 \dontrun{

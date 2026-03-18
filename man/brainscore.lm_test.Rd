@@ -2,7 +2,7 @@
 % Please edit documentation in R/brainscore.lm_test.R
 \name{brainscore.lm_test}
 \alias{brainscore.lm_test}
-\title{Perform Brain Score Linear Model Test}
+\title{Perform linear model testing on brain scores}
 \usage{
 brainscore.lm_test(
   pred_df,
@@ -39,62 +39,57 @@ brainscore.lm_test(
 
 \item{cov_df}{Data frame of covariate variables.}
 
-\item{brain_data}{Data frame of brain imaging data.}
+\item{brain_data}{Data frame/matrix of brain imaging data.}
 
-\item{gene_data}{Data frame of gene expression data.}
+\item{gene_data}{Data frame/matrix of gene expression data.}
 
-\item{annoData}{Environment containing annotation data.}
+\item{annoData}{Annotation object of class \code{EnrichAnno}.}
 
-\item{gsScoreList.null}{Precomputed list of gene set scores for the null model by brainscore/brainscore.hpc function. Default is NULL.}
+\item{gsScoreList.null}{Optional precomputed null gene-set score list.}
 
-\item{cor_method}{Character string specifying the correlation method. Default is 'pearson'.
-Other options include 'spearman', 'pls1c', 'pls1w', 'custom'.}
+\item{cor_method}{Correlation method name or custom function.}
 
-\item{aggre_method}{Character string specifying the aggregation method. Default is 'mean'.
-Other options include 'median', 'meanabs', 'meansqr', 'maxmean', 'ks_orig', 'ks_weighted',
-'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.}
+\item{aggre_method}{Aggregation method name or custom function.}
 
-\item{null_model}{Character string specifying the null model method. Default is 'spin_brain'.
-Other options include 'resample_gene', 'coexp_matched', 'none'.}
+\item{null_model}{Null model method.}
 
-\item{minGSSize}{Integer specifying the minimum gene set size. Default is 10.}
+\item{minGSSize}{Minimum retained gene set size.}
 
-\item{maxGSSize}{Integer specifying the maximum gene set size. Default is 200.}
+\item{maxGSSize}{Maximum retained gene set size.}
 
-\item{n_cores}{Integer specifying the number of cores to use for parallel processing. Default is 0.}
+\item{n_cores}{Number of cores.}
 
-\item{n_perm}{Integer specifying the number of permutations. Default is 5000.}
+\item{n_perm}{Number of permutations.}
 
-\item{perm_id}{Optional permutation ID.}
+\item{perm_id}{Optional permutation ID matrix.}
 
 \item{coord.l}{Optional left hemisphere coordinates.}
 
 \item{coord.r}{Optional right hemisphere coordinates.}
 
-\item{seed}{Optional random seed for generating perm_id.}
+\item{seed}{Optional seed.}
 
-\item{threshold_type}{Character string specifying the threshold type for core genes. Default is 'sd'.
-Other options include 'percentile'.}
+\item{threshold_type}{Core-gene threshold type.}
 
-\item{threshold_value}{Numeric value specifying the threshold level. Default is 1.}
+\item{threshold_value}{Core-gene threshold value.}
 
-\item{pvalueCutoff}{Numeric value specifying the p-value cutoff for significant results. Default is 0.05.}
+\item{pvalueCutoff}{Non-parametric p-value cutoff.}
 
-\item{pAdjustMethod}{Character string specifying the method ("fdr","holm", "hochberg", "hommel", "bonferroni", "BH", "BY",  "none") for p-value adjustment. Default is 'fdr'. see p.adjust for more details.}
+\item{pAdjustMethod}{P-value adjustment method.}
 
-\item{padjCutoff}{Numeric value specifying the adjusted p-value cutoff for significant results. Default is NULL.}
+\item{padjCutoff}{Optional adjusted p-value cutoff.}
 
-\item{matchcoexp_tol}{Numeric value specifying the tolerance for matched coexpression. Default is 0.05.}
+\item{matchcoexp_tol}{Co-expression matching tolerance.}
 
-\item{matchcoexp_max_iter}{Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.}
+\item{matchcoexp_max_iter}{Co-expression matching max iterations.}
 
-\item{gsea_obj}{Logical specifying whether to return a GSEA object otherwise only a table will be returned. Default is TRUE.}
+\item{gsea_obj}{Logical; if TRUE return \code{EnrichRes}, else return filtered table.}
 }
 \value{
-A data frame containing the results of the linear model test, including p-values, adjusted p-values,
-q-values, descriptions, and core genes.
+An \code{EnrichRes} object when \code{gsea_obj = TRUE}, otherwise a data frame.
 }
 \description{
-This function performs a linear model test on brain score data with the option to use various null models for comparison.
-It calculates gene set scores, performs linear modeling, calculates p-values, and identifies core genes.
+This function computes empirical and null-model brain gene-set scores, runs
+linear models at the term level, and performs non-parametric significance
+testing using permutation-derived null statistics.
 }

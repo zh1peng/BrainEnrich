@@ -33,7 +33,6 @@ For demonstration purposes, we have used a small number of iterations (sim_n = 5
 ```{r setup, echo=TRUE, message=FALSE, warning=FALSE}
 library(BrainEnrich)
 library(dplyr)
-library(enrichplot)
 library(ggplot2)
 ```
 
@@ -97,6 +96,7 @@ res <- brainscore.simulate(
   sim_type = "randomize_pred",
   cor_method = "pearson",
   aggre_method = "mean",
+  n_cores = 1,
   minGSSize = 20,
   maxGSSize = 200
 )
@@ -122,6 +122,7 @@ res <- brainscore.simulate(
   sim_type = "spin_brain",
   cor_method = "pearson",
   aggre_method = "mean",
+  n_cores = 1,
   n_perm = 10,
   perm_id = perm_id_dk_lh_5000,
   minGSSize = 20,
@@ -141,6 +142,7 @@ gsScore.spin_brain <- brainscore(
   gene_data = gene_data,
   annoData = annoData,
   null_model = "spin_brain",
+  n_cores = 1,
   n_perm = 10,
   perm_id = perm_id_dk_lh_5000,
   minGSSize = 20,
@@ -162,6 +164,7 @@ res <- brainscore.simulate(
   sim_type = "spin_brain",
   cor_method = "pearson",
   aggre_method = "mean",
+  n_cores = 1,
   n_perm = 10,
   perm_id = perm_id_dk_lh_5000,
   minGSSize = 20,
@@ -191,6 +194,7 @@ res <- brainscore.simulate(
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",
+  n_cores = 1,
   n_perm = 10,
   minGSSize = 20,
   maxGSSize = 200
@@ -210,6 +214,7 @@ gsScore.resample_gene <- brainscore(
   gene_data = gene_data,
   annoData = annoData,
   null_model = "resample_gene",
+  n_cores = 1,
   n_perm = 10,
   minGSSize = 20,
   maxGSSize = 200
@@ -230,6 +235,7 @@ res <- brainscore.simulate(
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",
+  n_cores = 1,
   n_perm = 10,
   minGSSize = 20,
   maxGSSize = 200
@@ -258,6 +264,7 @@ res <- brainscore.simulate(
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",
+  n_cores = 1,
   n_perm = 10,
   minGSSize = 20,
   maxGSSize = 200

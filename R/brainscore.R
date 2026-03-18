@@ -6,7 +6,7 @@
 #'
 #' @param brain_data A data frame of brain data with regions as rows and subjects as columns. The row names (i.e., region names) must match those in gene_data.
 #' @param gene_data A data frame of gene expression data with regions as rows and genes as columns. The row names (i.e., region names) must match those in brain_data.
-#' @param annoData An environment containing annotation data. See `get_annoData` for more details.
+#' @param annoData Annotation object of class `EnrichAnno`.
 #' @param cor_method A character string specifying the correlation method.
 #'                   Default is 'pearson'. Other options include 'spearman', 'pls1c', and 'pls1w'. If a custom function that takes (gene_data, brain_data) as input is provided, the function uses the custom correlation method and sets `cor_method` to 'custom'.
 #' @param aggre_method A character string specifying the aggregation method.
@@ -48,11 +48,20 @@ brainscore <- function(brain_data,
                        matchcoexp_max_iter = 1000000,
                        verbose = TRUE) {
   # Check inputs
-  stopifnot(is.environment(annoData))
+  if (is.environment(annoData)) {
+    annoData <- anno_env_to_EnrichAnno(annoData)
+  }
+  if (!is_EnrichAnno(annoData)) {
+    stop("annoData must be an EnrichAnno object.")
+  }
   stopifnot(identical(rownames(gene_data), rownames(brain_data)))
 
-  cor_method <- match.arg(cor_method)
-  aggre_method <- match.arg(aggre_method)
+  if (!is.function(cor_method)) {
+    cor_method <- match.arg(cor_method)
+  }
+  if (!is.function(aggre_method)) {
+    aggre_method <- match.arg(aggre_method)
+  }
   null_model <- match.arg(null_model)
 
   if (null_model == "spin_brain" && is.null(perm_id) && is.null(coord.l) && is.null(coord.r)) {
@@ -93,11 +102,7 @@ brainscore <- function(brain_data,
   }
 
   if (null_model != "none") {
-    if (n_cores == 0) {
-      n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
-    } else {
-      n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
-    }
+    n_cores <- be_resolve_n_cores(n_cores)
   }
 
   if (null_model == "none") {
@@ -116,40 +121,36 @@ brainscore <- function(brain_data,
       message("Aggregating gene set scores in spin_brain mode...")
     }
 
-    # Initialize a cluster of workers
-    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
-    if (!is.null(cl)) {
-      clusterExport(cl, c("brain_data", "gene_data", "n_perm", "perm_id", "aggregate_geneSet", "corr_brain_gene", "aggre_method", "selected.gs", "cor_method"), envir = environment())
-    }
-
-    gs.score <- pblapply(1:n_perm, function(idx) {
+    gs.score <- be_parallel_lapply(1:n_perm, function(idx) {
       null_brain_data <- brain_data[perm_id[, idx], , drop = FALSE]
       rownames(null_brain_data) <- rownames(brain_data)
       geneList.null <- corr_brain_gene(gene_data = gene_data, brain_data = null_brain_data, method = cor_method)
       gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = 1)
       return(gs_score.null)
-    }, cl = cl)
+    },
+    n_cores = n_cores,
+    seed = seed,
+    export = c("brain_data", "gene_data", "perm_id", "aggregate_geneSetList", "corr_brain_gene", "aggre_method", "selected.gs", "cor_method"),
+    envir = environment()
+    )
 
-    if (!is.null(cl)) stopCluster(cl)
   } else if (null_model == "resample_gene") {
     if (verbose) {
       message("Aggregating gene set scores in resample_gene mode...")
     }
 
-    # Initialize a cluster of workers
-    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
-    if (!is.null(cl)) {
-      clusterExport(cl, c("n_perm", "geneList", "aggregate_geneSet", "aggre_method", "selected.gs"), envir = environment())
-    }
-
-    gs.score <- pblapply(1:n_perm, function(idx) {
+    gs.score <- be_parallel_lapply(1:n_perm, function(idx) {
       geneList.null <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
       rownames(geneList.null) <- rownames(geneList)
       gs_score.null <- aggregate_geneSetList(geneList.null, selected.gs, method = aggre_method, n_cores = 1)
       return(gs_score.null)
-    }, cl = cl)
+    },
+    n_cores = n_cores,
+    seed = seed,
+    export = c("geneList", "aggregate_geneSetList", "aggre_method", "selected.gs"),
+    envir = environment()
+    )
 
-    if (!is.null(cl)) stopCluster(cl)
   } else if (null_model == "coexp_matched") {
     if (verbose) {
       message("Generating null gene list with coexp_matched model...")
@@ -163,19 +164,17 @@ brainscore <- function(brain_data,
       message("Aggregating gene set scores in coexp_matched mode...")
     }
 
-    # Initialize a cluster of workers
-    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
-    if (!is.null(cl)) {
-      clusterExport(cl, c("n_perm", "sampled_gs", "aggregate_geneSet", "aggre_method"), envir = environment())
-    }
-
-    gs.score <- pblapply(1:n_perm, function(idx) {
+    gs.score <- be_parallel_lapply(1:n_perm, function(idx) {
       sampled_gs_iter <- lapply(sampled_gs, function(x) x[[idx]])
       gs_score.null <- aggregate_geneSetList(geneList, sampled_gs_iter, method = aggre_method, n_cores = 1)
       return(gs_score.null)
-    }, cl = cl)
+    },
+    n_cores = n_cores,
+    seed = seed,
+    export = c("sampled_gs", "aggregate_geneSetList", "geneList", "aggre_method"),
+    envir = environment()
+    )
 
-    if (!is.null(cl)) stopCluster(cl)
   }
 
   # Add name to the list

@@ -30,7 +30,7 @@ brainscore(
 
 \item{gene_data}{A data frame of gene expression data with regions as rows and genes as columns. The row names (i.e., region names) must match those in brain_data.}
 
-\item{annoData}{An environment containing annotation data. See \code{get_annoData} for more details.}
+\item{annoData}{Annotation object of class \code{EnrichAnno}.}
 
 \item{cor_method}{A character string specifying the correlation method.
 Default is 'pearson'. Other options include 'spearman', 'pls1c', and 'pls1w'. If a custom function that takes (gene_data, brain_data) as input is provided, the function uses the custom correlation method and sets \code{cor_method} to 'custom'.}

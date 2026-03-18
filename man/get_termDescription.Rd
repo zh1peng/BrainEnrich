@@ -2,14 +2,14 @@
 % Please edit documentation in R/get_geneSets.R
 \name{get_termDescription}
 \alias{get_termDescription}
-\title{Get Gene Set Descriptions}
+\title{Get gene set descriptions}
 \usage{
 get_termDescription(term, annoData, strip_prefix = "")
 }
 \arguments{
-\item{term}{term to search from annoData (can be a vector of terms).}
+\item{term}{Term IDs.}
 
-\item{annoData}{An environment containing annotation data.}
+\item{annoData}{An object of class \code{EnrichAnno}.}
 
 \item{strip_prefix}{A character string to remove from the beginning of each term.}
 }
@@ -17,5 +17,5 @@ get_termDescription(term, annoData, strip_prefix = "")
 A character vector of gene set descriptions.
 }
 \description{
-This function retrieves descriptions for gene sets from annotation data.
+Get gene set descriptions
 }

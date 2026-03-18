@@ -2,52 +2,25 @@
 % Please edit documentation in R/get_geneSets.R
 \name{get_annoData}
 \alias{get_annoData}
-\title{Load gene sets annotation data}
+\title{Load gene set annotation data}
 \usage{
 get_annoData(
   type = c("CellTypes_Lake2018", "CellTypes_Martins2021", "CellTypes_Seidlitz2020",
-    "DGN", "GO_BP", "GO_CC", "GO_MF", "KEGG", "Reactome", "SynGO", "WikiPathways",
-    "MeSH_A", "MeSH_B", "MeSH_C", "MeSH_D", "MeSH_E", "MeSH_F", "MeSH_G", "MeSH_H",
-    "MeSH_I", "MeSH_J", "MeSH_K", "MeSH_L", "MeSH_M", "MeSH_N", "MeSH_Z")
+    "DGN", "GO_BP", "GO_CC", "GO_MF", "KEGG", "MKEGG", "Reactome", "SynGO",
+    "WikiPathways", "MeSH_A", "MeSH_B", "MeSH_C", "MeSH_D", "MeSH_E", "MeSH_F", "MeSH_G",
+    "MeSH_H", "MeSH_I", "MeSH_J", "MeSH_K", "MeSH_L", "MeSH_M", "MeSH_N", "MeSH_Z")
 )
 }
 \arguments{
-\item{type}{A character string specifying the type of gene set to load. Options are:
-\describe{
-\item{"CellTypes_Lake2018"}{Cell types data from Lake2018}
-\item{"CellTypes_Martins2021"}{Cell types data from Martins2021}
-\item{"CellTypes_Seidlitz2020"}{Cell types data from Seidlitz2020}
-\item{"DGN"}{DisGeNET gene sets}
-\item{"GO_BP"}{Gene Ontology Biological Process}
-\item{"GO_CC"}{Gene Ontology Cellular Component}
-\item{"GO_MF"}{Gene Ontology Molecular Function}
-\item{"KEGG"}{KEGG gene sets}
-\item{"Reactome"}{Reactome gene sets}
-\item{"SynGO"}{SynGO gene sets}
-\item{"WikiPathways"}{WikiPathways gene sets}
-\item{"MeSH_A"}{MeSH category A gene sets}
-\item{"MeSH_B"}{MeSH category B gene sets}
-\item{"MeSH_C"}{MeSH category C gene sets}
-\item{"MeSH_D"}{MeSH category D gene sets}
-\item{"MeSH_E"}{MeSH category E gene sets}
-\item{"MeSH_F"}{MeSH category F gene sets}
-\item{"MeSH_G"}{MeSH category G gene sets}
-\item{"MeSH_H"}{MeSH category H gene sets}
-\item{"MeSH_I"}{MeSH category I gene sets}
-\item{"MeSH_J"}{MeSH category J gene sets}
-\item{"MeSH_K"}{MeSH category K gene sets}
-\item{"MeSH_L"}{MeSH category L gene sets}
-\item{"MeSH_M"}{MeSH category M gene sets}
-\item{"MeSH_N"}{MeSH category N gene sets}
-\item{"MeSH_Z"}{MeSH category Z gene sets}
-}}
+\item{type}{A character string specifying the type of gene set to load.}
 }
 \value{
-A data frame containing the annotation data.
+An object of class \code{EnrichAnno}.
 }
 \description{
-This function loads annotation data from RDS files located in the \code{inst/extdata/geneSets} directory of the package.
-If the specified file does not exist locally, it will be downloaded from the GitHub repository.
+This function loads annotation data from RDS files in package data resources.
+If data is not found in packaged resources, it attempts to download the file
+to the user cache directory from the BrainEnrichData companion package.
 }
 \examples{
 \dontrun{

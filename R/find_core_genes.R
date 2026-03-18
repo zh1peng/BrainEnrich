@@ -1,134 +1,136 @@
-#' Find Core Genes Influencing Aggregated Score or LM Coefficients between molecular profile and behavioral data
+#' Find core genes influencing aggregated score or LM coefficients
 #'
-#' This function performs a Leave-One-Out (LOO) analysis on gene sets to determine core genes
-#' that influence the aggregated score. It can utilize parallel processing
-#' to enhance computation efficiency and supports two types of analysis: one that considers
-#' only gene sets and another that includes predictor and covariate data frames.
+#' Leave-one-out analysis to identify genes with the largest influence on
+#' enrichment scores or standardized LM coefficients.
 #'
-#' @param geneList A matrix of genes by subs, each column representing a subject / a group-level result.
-#' @param geneSetList A list of gene sets, each containing names of genes.
-#' @param pred_df Optional data frame of a predictor. If NULL, it is perfomred for group-level enrichment.
-#' @param cov_df Optional data frame of covariates. If NULL, it is perfomred for group-level enrichment.
-#' @param aggre_method The aggregation method used to compute the scores.
-#' @param n_cores The number of cores to use for parallel processing; defaults to 1.
-#'                 Uses all available cores minus one if set to 0.
-#' @param threshold_type The method to determine significance ('sd' for standard deviation, 'percentile' for percentile threshold).
-#' @param threshold_value Numeric value specifying the threshold level; meaning depends on `threshold_type`.
+#' @param geneList A matrix of genes by subs/models.
+#' @param geneSetList A named list of gene sets.
+#' @param pred_df Optional predictor data frame. If NULL with `cov_df`, group-level mode is used.
+#' @param cov_df Optional covariate data frame.
+#' @param aggre_method Aggregation method name or custom function.
+#' @param n_cores Number of cores.
+#' @param threshold_type Threshold method (`sd` or `percentile`).
+#' @param threshold_value Threshold value.
 #' @import pbapply parallel
-#' @return A list of core genes for each gene set.
+#' @return A named list of character vectors with directional labels (`driver`/`buffer`).
 #' @export
 find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL, aggre_method, n_cores = 1, threshold_type = c("sd", "percentile"), threshold_value = 1) {
-  if (is.null(pred_df) & is.null(cov_df)) {
-    type1_analysis <- TRUE # find core genes contribute to group enrichment results
-  } else {
-    type1_analysis <- FALSE
-  }
-
-  # Validate the threshold_type argument
+  type1_analysis <- is.null(pred_df) && is.null(cov_df)
   threshold_type <- match.arg(threshold_type)
 
-  if (threshold_type == "sd") {
-    if (threshold_value < 0 || threshold_value > 3) {
-      stop("For 'sd', threshold_value should be between 0 and 3.")
-    }
-  } else if (threshold_type == "percentile") {
-    if (threshold_value < 1 || threshold_value > 99) {
-      stop("For 'percentile', threshold_value should be between 1 and 99.")
-    }
+  if (threshold_type == "sd" && (threshold_value < 0 || threshold_value > 3)) {
+    stop("For 'sd', threshold_value should be between 0 and 3.")
+  }
+  if (threshold_type == "percentile" && (threshold_value < 1 || threshold_value > 99)) {
+    stop("For 'percentile', threshold_value should be between 1 and 99.")
   }
 
-  # Determine the number of cores to use
-  # Determine the number of cores to use
-  if (n_cores == 0) {
-    n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
-  } else {
-    n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
-  }
-
-  # Initialize a cluster of workers
-  cl <- makeCluster(n_cores)
+  n_cores <- be_resolve_n_cores(n_cores)
 
   if (type1_analysis) {
-    # Export necessary variables to the cluster
-    clusterExport(cl, varlist = c("geneList", "aggregate_geneSet", "aggre_method"), envir = environment())
-    # Parallelize the processing using pblapply for progress bar
-    loo_changes <- pblapply(seq_along(geneSetList), function(i) {
+    loo_stats <- be_parallel_lapply(seq_along(geneSetList), function(i) {
       gs <- geneSetList[[i]]
-      full_score <- aggregate_geneSet(geneList, gs, method = aggre_method)
-      # Perform Leave-One-Out Analysis for each gene in the gene set
-      loo_results <- sapply(seq_along(gs), function(gs_i) {
+      full_score <- as.numeric(aggregate_geneSet(geneList, gs, method = aggre_method))
+      changes <- sapply(seq_along(gs), function(gs_i) {
         modified_geneSet <- setdiff(gs, gs[gs_i])
-        loo_score <- aggregate_geneSet(geneList, modified_geneSet, method = aggre_method)
-        adiff <- abs(full_score - loo_score)
-        return(adiff)
+        loo_score <- as.numeric(aggregate_geneSet(geneList, modified_geneSet, method = aggre_method))
+        full_score - loo_score
       })
-      names(loo_results) <- gs
-      loo_results
-    }, cl = cl)
-  } else if (!type1_analysis & is.data.frame(pred_df) & is.data.frame(cov_df)) {
-    # Export necessary variables to the cluster
-    clusterExport(cl, varlist = c("geneList", "aggregate_geneSet", "aggre_method", "pred_df", "cov_df", "simple_lm"), envir = environment())
-
-    loo_changes <- pblapply(seq_along(geneSetList), function(i) {
+      names(changes) <- gs
+      list(changes = changes, reference = full_score)
+    },
+    n_cores = n_cores,
+    export = c("geneList", "geneSetList", "aggregate_geneSet", "aggre_method"),
+    envir = environment()
+    )
+  } else if (is.data.frame(pred_df) && is.data.frame(cov_df)) {
+    loo_stats <- be_parallel_lapply(seq_along(geneSetList), function(i) {
       gs <- geneSetList[[i]]
       gs_name <- names(geneSetList)[i]
       full_score <- aggregate_geneSet(geneList, gs, method = aggre_method)
       dependent_df.full <- data.frame(full_score)
       colnames(dependent_df.full) <- gs_name
       lm_res.full <- simple_lm(dependent_df = dependent_df.full, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
+      ref_coef <- lm_res.full$Standardized_Coefficient
 
-      # Perform Leave-One-Out Analysis for each gene in the gene set
-      loo_results <- sapply(seq_along(gs), function(gs_i) {
+      changes <- sapply(seq_along(gs), function(gs_i) {
         modified_geneSet <- setdiff(gs, gs[gs_i])
         loo_score <- aggregate_geneSet(geneList, modified_geneSet, method = aggre_method)
         dependent_df.loo <- data.frame(loo_score)
         colnames(dependent_df.loo) <- gs_name
         lm_res.loo <- simple_lm(dependent_df = dependent_df.loo, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
-        adiff <- abs(lm_res.full$Standardized_Coefficient - lm_res.loo$Standardized_Coefficient)
-        return(adiff)
+        ref_coef - lm_res.loo$Standardized_Coefficient
       })
-      names(loo_results) <- gs
-      loo_results
-    }, cl = cl)
+      names(changes) <- gs
+      list(changes = changes, reference = ref_coef)
+    },
+    n_cores = n_cores,
+    export = c("geneList", "geneSetList", "aggregate_geneSet", "aggre_method", "pred_df", "cov_df", "simple_lm"),
+    envir = environment()
+    )
+  } else {
+    stop("pred_df and cov_df must both be NULL or both be data.frames.")
   }
 
-  # Stop the cluster after processing
-  stopCluster(cl)
-  core_genes <- lapply(loo_changes, identify_core_genes, threshold_type = threshold_type, threshold_value = threshold_value)
+  core_genes <- lapply(loo_stats, function(x) {
+    identify_core_genes(
+      changes = x$changes,
+      reference_stat = x$reference,
+      threshold_type = threshold_type,
+      threshold_value = threshold_value
+    )
+  })
   names(core_genes) <- names(geneSetList)
-  return(core_genes)
+  core_genes
 }
 
 
-#' Identify core genes based on a specified threshold method
+#' Identify core genes with directional labels
 #'
-#' @param changes Named vector of changes from LOO analysis.
-#' @param threshold_type Character string indicating the method to determine the threshold ("sd" or "percentile").
-#' @param threshold_value Numeric value indicating the percentile (if method is "percentile") or the number of standard deviations (if method is "sd").
+#' @param changes Named vector of signed LOO changes.
+#' @param reference_stat Numeric scalar of full model statistic (score or coef).
+#' @param threshold_type Threshold method.
+#' @param threshold_value Threshold value.
 #' @importFrom stats quantile sd
-#' @return Vector of core genes or NA if no core genes are identified.
-identify_core_genes <- function(changes, threshold_type = c("sd", "percentile"), threshold_value = 1) {
+#' @return Character vector such as `GENE(driver)`/`GENE(buffer)`.
+identify_core_genes <- function(changes, reference_stat, threshold_type = c("sd", "percentile"), threshold_value = 1) {
   threshold_type <- match.arg(threshold_type)
-  # Validate threshold_value based on method
+  impact <- abs(changes)
+
   if (threshold_type == "percentile") {
     if (threshold_value < 1 || threshold_value > 99) {
-      stop("For 'percentile', threshold_value should be  between 1 and 99.")
+      stop("For 'percentile', threshold_value should be between 1 and 99.")
     }
-    threshold <- quantile(changes, probs = threshold_value / 100)
-  } else if (threshold_type == "sd") {
+    threshold <- quantile(impact, probs = threshold_value / 100)
+  } else {
     if (threshold_value < 0 || threshold_value > 4) {
       stop("For 'sd', threshold_value should be between 0 and 4.")
     }
-    mean_change <- mean(changes)
-    sd_change <- sd(changes)
-    threshold <- mean_change + threshold_value * sd_change
+    threshold <- mean(impact) + threshold_value * sd(impact)
   }
-  core_genes <- names(changes[changes > threshold])
-  # Remove core genes with 0 changes
-  core_genes <- core_genes[changes[core_genes] != 0]
-  # If no core genes left, return NA
-  if (length(core_genes) == 0) {
-    core_genes <- "NOT_FOUND"
+
+  keep <- names(impact[impact > threshold & impact != 0])
+  if (length(keep) == 0) {
+    out <- "NOT_FOUND"
+    attr(out, "impact") <- numeric(0)
+    attr(out, "role") <- character(0)
+    return(out)
   }
-  return(core_genes)
+
+  ref_sign <- sign(reference_stat)
+  roles <- vapply(keep, function(g) {
+    delta_sign <- sign(changes[g])
+    if (ref_sign == 0 || delta_sign == 0) {
+      "neutral"
+    } else if (delta_sign == ref_sign) {
+      "driver"
+    } else {
+      "buffer"
+    }
+  }, FUN.VALUE = character(1))
+  labels <- paste0(keep, "(", roles, ")")
+  names(labels) <- keep
+  attr(labels, "impact") <- unname(impact[keep])
+  attr(labels, "role") <- unname(roles)
+  labels
 }

@@ -2,17 +2,16 @@
 % Please edit documentation in R/get_geneSets.R
 \name{get_geneSetList}
 \alias{get_geneSetList}
-\title{Get Gene Set List}
+\title{Get gene set list}
 \usage{
 get_geneSetList(annoData)
 }
 \arguments{
-\item{annoData}{Annotation data to retrieve gene sets from.}
+\item{annoData}{Annotation object of class \code{EnrichAnno}.}
 }
 \value{
-A list of gene sets.
+A named list of gene sets.
 }
 \description{
-This function retrieves a gene set list from annotation data. It optionally converts
-gene identifiers to gene symbols.
+Get gene set list
 }

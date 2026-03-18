@@ -17,30 +17,42 @@ job_cat(
 )
 }
 \arguments{
-\item{input_dir}{A character string specifying the directory containing the RDS files to be combined.}
+\item{input_dir}{A character string specifying the directory containing the
+RDS files to be combined.}
 
-\item{output_dir}{A character string specifying the directory where the RDS files are stored.}
+\item{output_dir}{A character string specifying the directory where the RDS
+files are stored.}
 
-\item{n_rds}{An integer specifying the expected number of RDS files. If provided, the function will check if any files are missing.}
+\item{n_rds}{An integer specifying the expected number of RDS files. If
+provided, the function will check if any files are missing.}
 
-\item{save_name}{A character string specifying the name of the output RDS file for the combined results.
-If not provided, it will default to the name of the output_dir. Must end with .rds.}
+\item{save_name}{A character string specifying the name of the output RDS file
+for the combined results.
+If not provided, it defaults to the name of \code{output_dir}. Must end with .rds.}
 
-\item{file_pattern}{A character string specifying the pattern of the RDS files to be combined.
+\item{file_pattern}{A character string specifying the pattern of the RDS files
+to be combined.
 Default is "res_job_\%d.rds".}
 
-\item{delete_originals}{A logical indicating whether to delete the original RDS files after combining. Default is TRUE.}
+\item{delete_originals}{A logical indicating whether to delete the original
+RDS files after combining. Default is TRUE.}
 
-\item{preserve_attributes}{A logical indicating whether to preserve and update attributes specific to brainscore output. Default is FALSE.}
+\item{preserve_attributes}{A logical indicating whether to preserve and update
+attributes specific to brainscore output. Default is FALSE.}
 
-\item{result_prefix}{A character string specifying the prefix for naming the combined results. Default is "null_".}
+\item{result_prefix}{A character string specifying the prefix for naming the
+combined results. Default is NULL.}
 
-\item{compress}{A character string specifying the compression method to use when saving the combined results. For an efficient download from the HPC, default is set as "xz".}
+\item{compress}{A character string specifying the compression method to use
+when saving the combined results. For an efficient download from the HPC,
+default is set to "xz".}
 }
 \value{
-The combined results, either as a saved RDS file or returned directly if \code{save_combined} is FALSE.
+The combined results, either as a saved RDS file or returned directly
+if \code{save_combined} is FALSE.
 }
 \description{
-This function combines results from multiple saved RDS files into a single data frame or list,
-saves the combined results as an RDS file (optional), and checks for missing files.
+This function combines results from multiple saved RDS files into a single
+data frame or list, saves the combined results as an RDS file (optional), and
+checks for missing files.
 }

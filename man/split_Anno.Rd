@@ -2,27 +2,16 @@
 % Please edit documentation in R/get_geneSets.R
 \name{split_Anno}
 \alias{split_Anno}
-\title{Split Annotation Data}
+\title{Split annotation data}
 \usage{
 split_Anno(AnnoEnv)
 }
 \arguments{
-\item{AnnoEnv}{An environment containing annotation data, including
-\code{PATHID2EXTID} and \code{PATHID2NAME}, created by the \code{build_Anno} function.}
+\item{AnnoEnv}{An \code{EnrichAnno} object or legacy annotation environment.}
 }
 \value{
-A list with two components:
-\describe{
-\item{path2gene}{A data frame with two columns: \code{pathID} and \code{geneID}, representing
-the relationship between pathway IDs and gene IDs.}
-\item{path2name}{A data frame with two columns: \code{pathID} and \code{pathName}, representing
-the mapping between pathway IDs and their corresponding names. If \code{PATHID2NAME} is not
-present in the environment, this component will be \code{NULL}.}
-}
+A list with \code{path2gene} and \code{path2name} data frames.
 }
 \description{
-This function extracts and reconstructs the \code{path2gene} and \code{path2name} data frames
-from an annotation environment created by the \code{build_Anno} function. It retrieves
-and organizes pathway IDs and associated gene IDs, as well as pathway names, into
-two separate data frames.
+Convert an annotation object to path2gene/path2name data frames.
 }

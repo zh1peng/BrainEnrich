@@ -11,12 +11,13 @@
 ^inst/extdata$
 .md$
 ^packageScript.R$
+^packageDevScript\.R$
+^scripts$
 .yml$
 ^vignettes$
 ^.*\.Rmd$
 ^.*\.Rnw$
 .pdf$
-^tests$
 ^images/
 
 

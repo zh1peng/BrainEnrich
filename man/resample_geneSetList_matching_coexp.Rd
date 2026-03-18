@@ -10,7 +10,8 @@ resample_geneSetList_matching_coexp(
   tol = 0.01,
   max_iter = 1e+06,
   n_perm = 5000,
-  n_cores = 1
+  n_cores = 1,
+  seed = NULL
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ resample_geneSetList_matching_coexp(
 \item{n_perm}{An integer indicating the number of permutations to generate (default = 5000).}
 
 \item{n_cores}{An integer indicating the number of cores to use for parallel processing (default = 1).}
+
+\item{seed}{Optional integer seed used for reproducible parallel sampling.}
 }
 \value{
 A list of resampled gene sets based on the specified constraints.

@@ -1,8 +1,8 @@
 ---
-title: "Preparison of gene sets (annoData)"
+title: "Preparation of gene sets (annoData)"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Preparison of gene sets (annoData)}
+  %\VignetteIndexEntry{Preparation of gene sets (annoData)}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,9 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 # Introduction
-The `annoData` object, from DOSE parckage, is a list containing two data frames: TERM2GENE and TERM2NAME. The TERM2GENE data frame contains the mapping of gene IDs to terms, while the TERM2NAME data frame contains the mapping of terms to their descriptions. 
+The native BrainEnrich annotation object is `EnrichAnno`, a list containing two data frames: `term2gene` and `term2name`. The `term2gene` table maps gene IDs to terms, while `term2name` stores human-readable term labels. Data-preparation workflows from external sources should finish by constructing this native object.
 
 The documentation details the preparation of gene sets (annoData) and guides users on generating gene sets from various sources (e.g., gmt, csv). Users can create their own to match their research interests. 
+When saving prepared resources for package distribution, write them into the companion data package at `../BrainEnrichData/inst/extdata/geneSets`.
 ```{r include=T, eval=F}
 # Load required libraries
 library(readxl)
@@ -26,7 +27,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
 }
 
-bioc_packages <- c("org.Hs.eg.db", "clusterProfiler", "DOSE", "ReactomePA", "reactome.db")
+bioc_packages <- c("org.Hs.eg.db", "clusterProfiler", "ReactomePA", "reactome.db")
 for (pkg in bioc_packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     BiocManager::install(pkg)
@@ -34,21 +35,32 @@ for (pkg in bioc_packages) {
 }
 library(org.Hs.eg.db)
 library(clusterProfiler)
-library(DOSE)
 library(ReactomePA)
 library(reactome.db)
 library(BrainEnrich)
-build_Anno <- getFromNamespace("build_Anno", "DOSE")
+
+as_native_anno <- function(annoData, meta = list()) {
+  if (inherits(annoData, "EnrichAnno")) {
+    return(annoData)
+  }
+
+  tmp <- split_Anno(annoData)
+  new_EnrichAnno(
+    term2gene = dplyr::transmute(tmp$path2gene, term_id = pathID, gene_id = geneID),
+    term2name = dplyr::transmute(tmp$path2name, term_id = pathID, term_name = pathName),
+    meta = meta
+  )
+}
 ```
 
 Since we may need to convert geneID to symbols, we first define helper functions for it.
 ```{r, eval=FALSE}
 symbol_annoData <- function(annoData) {
   require(org.Hs.eg.db)
-  tmp <- split_Anno(annoData)
-  path2gene <- tmp$path2gene
-  path2name <- tmp$path2name
-  geneIDs <- path2gene$geneID
+  annoData <- as_native_anno(annoData)
+  term2gene <- annoData$term2gene
+  term2name <- annoData$term2name
+  geneIDs <- term2gene$gene_id
   entrez_ids <- AnnotationDbi::keys(org.Hs.eg.db, keytype = "ENTREZID")
   matching_ids <- geneIDs %in% entrez_ids
   percentage_match <- sum(matching_ids) / length(geneIDs) * 100
@@ -62,11 +74,9 @@ symbol_annoData <- function(annoData) {
   if (length(gene_symbols) != length(geneIDs)) {
     stop("Failed to convert gene IDs in the data frame to SYMBOL.")
   }
-  path2gene$geneID <- gene_symbols
-  path2gene <- path2gene[!(is.na(path2gene$geneID) | path2gene$geneID == ""), ]
-  build_Anno <- getFromNamespace("build_Anno", "DOSE")
-  annoData <- build_Anno(path2gene, path2name)
-  return(annoData)
+  term2gene$gene_id <- unname(gene_symbols)
+  term2gene <- term2gene[!(is.na(term2gene$gene_id) | term2gene$gene_id == ""), ]
+  new_EnrichAnno(term2gene, term2name, meta = c(annoData$meta, list(id_type = "SYMBOL")))
 }
 
 # Alternative approach to convert gene IDs to symbols
@@ -103,21 +113,23 @@ symbol_annoData <- function(annoData) {
 ```{r include=T, eval=F}
 get_GO_data <- getFromNamespace("get_GO_data", "clusterProfiler")
 annoData <- get_GO_data("org.Hs.eg.db", ont = "BP", keytype = "SYMBOL")
-# saveRDS(annoData, file = "extdata/geneSets/GO_BP.rds", compress = "xz")
+annoData <- as_native_anno(annoData, meta = list(source = "GO_BP"))
+# saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/GO_BP.rds", compress = "xz")
 annoData <- get_GO_data("org.Hs.eg.db", ont = "MF", keytype = "SYMBOL")
-# saveRDS(annoData, file = "extdata/geneSets/GO_MF.rds", compress = "xz")
+annoData <- as_native_anno(annoData, meta = list(source = "GO_MF"))
+# saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/GO_MF.rds", compress = "xz")
 annoData <- get_GO_data("org.Hs.eg.db", ont = "CC", keytype = "SYMBOL")
-saveRDS(annoData, file = "inst/extdata/geneSets/GO_CC.rds", compress = "xz")
+annoData <- as_native_anno(annoData, meta = list(source = "GO_CC"))
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/GO_CC.rds", compress = "xz")
 
 # check version of org.Hs.eg.db
 packageVersion("clusterProfiler") # '4.12.0'
 packageVersion("org.Hs.eg.db") # '3.19.1'
 ```
 
-# DisGeNET gene sets using get_DGN_data from DOSE package
+# DisGeNET gene sets from packaged BrainEnrich resources
 ```{r include=T, eval=F}
-get_DGN_data <- getFromNamespace("get_DGN_data", "DOSE")
-annoData <- get_DGN_data()
+annoData <- get_annoData("DGN")
 test1 <- get_geneSetList(annoData)
 str(head(test1))
 get_termDescription("C0001546", annoData)
@@ -125,8 +137,7 @@ annoData <- symbol_annoData(annoData)
 test2 <- get_geneSetList(annoData)
 str(head(test2))
 
-saveRDS(annoData, file = "inst/extdata/geneSets/DGN.rds", compress = "xz")
-packageVersion("DOSE") # '3.30.1'
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/DGN.rds", compress = "xz")
 packageVersion("AnnotationDbi") # '1.66.0'
 ```
 
@@ -134,6 +145,7 @@ packageVersion("AnnotationDbi") # '1.66.0'
 ```{r include=T, eval=F}
 prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
 annoData <- prepare_KEGG("hsa", "MKEGG", "ncbi-geneid")
+annoData <- as_native_anno(annoData, meta = list(source = "MKEGG"))
 test1 <- get_geneSetList(annoData)
 str(head(test1))
 
@@ -141,7 +153,7 @@ annoData <- symbol_annoData(annoData)
 test2 <- get_geneSetList(annoData)
 str(head(test2))
 get_termDescription("M00124", annoData)
-saveRDS(annoData, file = "inst/extdata/geneSets/MKEGG.rds", compress = "xz")
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/MKEGG.rds", compress = "xz")
 
 packageVersion("clusterProfiler") # '4.12.0'
 ```
@@ -151,6 +163,7 @@ packageVersion("clusterProfiler") # '4.12.0'
 ```{r include=T, eval=F}
 prepare_KEGG <- getFromNamespace("prepare_KEGG", "clusterProfiler")
 annoData <- prepare_KEGG("hsa", "KEGG", "ncbi-geneid")
+annoData <- as_native_anno(annoData, meta = list(source = "KEGG"))
 test1 <- get_geneSetList(annoData)
 str(head(test1))
 
@@ -158,7 +171,7 @@ annoData <- symbol_annoData(annoData)
 test2 <- get_geneSetList(annoData)
 str(head(test2))
 get_termDescription("hsa03008", annoData)
-saveRDS(annoData, file = "inst/extdata/geneSets/KEGG.rds", compress = "xz")
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/KEGG.rds", compress = "xz")
 packageVersion("clusterProfiler") # '4.12.0'
 ```
 
@@ -167,10 +180,13 @@ packageVersion("clusterProfiler") # '4.12.0'
 ```{r include=T, eval=F}
 prepare_WP_data <- getFromNamespace("prepare_WP_data", "clusterProfiler")
 wpdata <- prepare_WP_data("Homo sapiens")
-TERM2GENE <- wpdata$WPID2GENE
-TERM2NAME <- wpdata$WPID2NAME
-build_Anno <- getFromNamespace("build_Anno", "DOSE")
-annoData <- build_Anno(TERM2GENE, TERM2NAME)
+TERM2GENE <- wpdata$WPID2GENE %>%
+  dplyr::select(1:2) %>%
+  stats::setNames(c("term_id", "gene_id"))
+TERM2NAME <- wpdata$WPID2NAME %>%
+  dplyr::select(1:2) %>%
+  stats::setNames(c("term_id", "term_name"))
+annoData <- new_EnrichAnno(TERM2GENE, TERM2NAME, meta = list(source = "WikiPathways"))
 
 test1 <- get_geneSetList(annoData)
 str(head(test1))
@@ -179,7 +195,7 @@ annoData <- symbol_annoData(annoData)
 test2 <- get_geneSetList(annoData)
 str(head(test2))
 get_termDescription("WP2338", annoData)
-saveRDS(annoData, file = "inst/extdata/geneSets/WikiPathways.rds", compress = "xz")
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/WikiPathways.rds", compress = "xz")
 packageVersion("clusterProfiler") # '4.12.0'
 ```
 
@@ -187,6 +203,7 @@ packageVersion("clusterProfiler") # '4.12.0'
 ```{r include=T, eval=F}
 get_Reactome_DATA <- getFromNamespace("get_Reactome_DATA", "ReactomePA")
 annoData <- get_Reactome_DATA("human")
+annoData <- as_native_anno(annoData, meta = list(source = "Reactome"))
 test1 <- get_geneSetList(annoData)
 str(head(test1))
 
@@ -194,7 +211,7 @@ annoData <- symbol_annoData(annoData)
 test2 <- get_geneSetList(annoData)
 str(head(test2))
 get_termDescription("R-HSA-1059683", annoData)
-saveRDS(annoData, file = "inst/extdata/geneSets/Reactome.rds", compress = "xz")
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/Reactome.rds", compress = "xz")
 packageVersion("ReactomePA") # '1.48.0'
 ```
 
@@ -233,9 +250,11 @@ TERM2NAME <- data %>%
   dplyr::select(id, name) %>%
   dplyr::rename(term = id, description = name)
 
-# Use build_Anno function from DOSE package
-build_Anno <- getFromNamespace("build_Anno", "DOSE")
-annoData <- build_Anno(TERM2GENE, TERM2NAME)
+annoData <- new_EnrichAnno(
+  term2gene = dplyr::rename(TERM2GENE, term_id = term, gene_id = gene),
+  term2name = dplyr::rename(TERM2NAME, term_id = term, term_name = description),
+  meta = list(source = "SynGO")
+)
 # saveRDS(annoData, file = "extdata/geneSets/SynGO.rds",compress='xz')
 ```
 
@@ -278,12 +297,16 @@ key_dict <- c(
 TERM2NAME <- TERM2GENE %>%
   dplyr::mutate(description = dplyr::recode(term, !!!key_dict)) %>%
   dplyr::select(term, description)
-annoData <- build_Anno(TERM2GENE, TERM2NAME)
+annoData <- new_EnrichAnno(
+  term2gene = dplyr::rename(TERM2GENE, term_id = term, gene_id = gene),
+  term2name = dplyr::rename(TERM2NAME, term_id = term, term_name = description),
+  meta = list(source = "CellTypes_Seidlitz2020")
+)
 test1 <- get_geneSetList(annoData)
 str(head(test1))
 get_termDescription(term = "Astro", annoData)
 
-saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Seidlitz2020.rds", compress = "xz")
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/CellTypes_Seidlitz2020.rds", compress = "xz")
 ```
 
 
@@ -363,12 +386,16 @@ TERM2NAME <- TERM2GENE %>%
   dplyr::select(term, description)
 unique(TERM2NAME)
 
-annoData <- build_Anno(TERM2GENE, TERM2NAME)
+annoData <- new_EnrichAnno(
+  term2gene = dplyr::rename(TERM2GENE, term_id = term, gene_id = gene),
+  term2name = dplyr::rename(TERM2NAME, term_id = term, term_name = description),
+  meta = list(source = "CellTypes_Lake2018")
+)
 test1 <- get_geneSetList(annoData)
 str(head(test1))
 get_termDescription(term = "Ast", annoData)
 
-saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Lake2018.rds", compress = "xz")
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/CellTypes_Lake2018.rds", compress = "xz")
 ```
 
 # CellTypes_Martins2021 from a gmt file downloaded from github
@@ -407,11 +434,15 @@ TERM2NAME <- TERM2GENE %>%
   dplyr::mutate(description = dplyr::recode(term, !!!key_dict)) %>%
   dplyr::select(term, description)
 unique(TERM2NAME)
-annoData <- build_Anno(TERM2GENE, TERM2NAME)
+annoData <- new_EnrichAnno(
+  term2gene = dplyr::rename(TERM2GENE, term_id = term, gene_id = gene),
+  term2name = dplyr::rename(TERM2NAME, term_id = term, term_name = description),
+  meta = list(source = "CellTypes_Martins2021")
+)
 test1 <- get_geneSetList(annoData)
 str(head(test1))
 get_termDescription(term = "Astro", annoData)
-saveRDS(annoData, file = "inst/extdata/geneSets/CellTypes_Martins2021.rds", compress = "xz")
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/CellTypes_Martins2021.rds", compress = "xz")
 ```
 
 
@@ -437,7 +468,11 @@ get_MeSH_data <- function(MeSH.hsa.db, MeSH.db, database, category) {
   mesh <- mesh[mesh[, 3] %in% category, ]
   mesh2gene <- mesh[, c(2, 1)]
   mesh2name <- AnnotationDbi::select(MeSH.db, keys = unique(mesh2gene[, 1]), columns = c("MESHID", "MESHTERM"), keytype = "MESHID")
-  build_Anno(mesh2gene, mesh2name)
+  new_EnrichAnno(
+    term2gene = dplyr::rename(mesh2gene, term_id = MESHID, gene_id = GENEID),
+    term2name = dplyr::rename(mesh2name, term_id = MESHID, term_name = MESHTERM),
+    meta = list(source = paste0("MeSH_", category))
+  )
 }
 ```
 
@@ -469,7 +504,7 @@ annoData <- symbol_annoData(annoData)
 test2 <- get_geneSetList(annoData)
 str(head(test2))
 length(test2)
-saveRDS(annoData, file = "inst/extdata/geneSets/test.rds", compress = "xz")
+saveRDS(annoData, file = "../BrainEnrichData/inst/extdata/geneSets/test.rds", compress = "xz")
 ```
 After figure out for one category, we can make it a loop for gene2pubmed
 ```{r, include = TRUE, eval=FALSE}
@@ -484,7 +519,7 @@ for (cat_i in c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
     message("Converting gene IDs to gene symbols for category: ", cat_i)
     annoData <- symbol_annoData(annoData)
     message("Saving annoData for category: ", cat_i)
-    saveRDS(annoData, file = paste0("inst/extdata/geneSets/MeSH_", cat_i, ".rds"), compress = "xz")
+    saveRDS(annoData, file = paste0("../BrainEnrichData/inst/extdata/geneSets/MeSH_", cat_i, ".rds"), compress = "xz")
   }
 }
 ```

@@ -220,7 +220,7 @@ rotate_parcellation <- function(coord.l = NULL,
     rot.lr.sort <- rot.lr[b$ix]
 
     if (!all(sort(rot.lr.sort, decreasing = FALSE) == seq_len(nroi))) {
-      browser("permutation error")
+      stop("permutation error")
     }
 
     if (!all(rot.lr.sort == seq_len(nroi))) {

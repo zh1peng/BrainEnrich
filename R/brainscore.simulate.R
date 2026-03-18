@@ -70,19 +70,9 @@ brainscore.simulate <- function(pred_df,
       verbose = FALSE
     )
     dependent_df <- data.frame(gsScore, check.names = FALSE)
-
-    if (n_cores == 0) {
-      n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
-    } else {
-      n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
-    }
-
-    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
-    if (!is.null(cl)) {
-      clusterExport(cl, c("subsample_size", "pred_df", "dependent_df", "cov_df", "simple_lm", "sim_n", "sim_setting"), envir = environment())
-    }
+    n_cores <- be_resolve_n_cores(n_cores)
     message("Simulation with randomize_pred model...")
-    results_list <- pblapply(1:sim_n, function(sim_i) {
+    results_list <- be_parallel_lapply(1:sim_n, function(sim_i) {
       pred_df.sim <- pred_df # Explicitly define pred_df.sim for parallel processing
       if (sim_setting == "type1") {
         pred_df.sim[[1]] <- sample(pred_df[[1]])
@@ -105,7 +95,11 @@ brainscore.simulate <- function(pred_df,
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
       return(sim_results)
-    }, cl = cl)
+    },
+    n_cores = n_cores,
+    export = c("subsample_size", "pred_df", "dependent_df", "cov_df", "simple_lm", "sim_setting"),
+    envir = environment()
+    )
     results_list <- do.call(c, results_list)
   } else if (sim_type == "spin_brain") {
     message("Running spin_brain simulation.")
@@ -158,21 +152,8 @@ brainscore.simulate <- function(pred_df,
     }
 
     message("Simulation with spin_brain model...")
-    if (n_cores == 0) {
-      n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
-    } else {
-      n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
-    }
-
-    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
-    if (!is.null(cl)) {
-      clusterExport(cl, c(
-        "sim_n", "subsample_size", "brain_data", "gene_data", "perm_id", "annoData",
-        "cor_method", "aggre_method", "minGSSize", "maxGSSize", "gsScoreList.null",
-        "pred_df", "cov_df", "simple_lm", "brainscore", "sim_setting"
-      ), envir = environment())
-    }
-    results_list <- pblapply(1:sim_n, function(sim_i) {
+    n_cores <- be_resolve_n_cores(n_cores)
+    results_list <- be_parallel_lapply(1:sim_n, function(sim_i) {
       sim.brain_data <- brain_data # power setting
       if (sim_setting == "type1") {
         sim.brain_data <- brain_data[perm_id[, sim_i], , drop = FALSE]
@@ -248,7 +229,16 @@ brainscore.simulate <- function(pred_df,
       }
 
       return(sim_results)
-    }, cl = cl)
+    },
+    n_cores = n_cores,
+    export = c(
+      "subsample_size", "brain_data", "gene_data", "perm_id", "annoData",
+      "cor_method", "aggre_method", "minGSSize", "maxGSSize", "gsScoreList.null",
+      "pred_df", "cov_df", "simple_lm", "brainscore", "sim_setting",
+      "calculate_pvals", "list_transpose"
+    ),
+    envir = environment()
+    )
 
     # Flatten the results_list
     results_list <- do.call(c, results_list)
@@ -295,21 +285,8 @@ brainscore.simulate <- function(pred_df,
       }
     }
     message("Simulation with resample_gene model...")
-    if (n_cores == 0) {
-      n_cores <- max(detectCores() - 1, 1) # Use all cores minus one, but ensure at least 1 core is used
-    } else {
-      n_cores <- min(n_cores, detectCores()) # Ensure n_cores does not exceed the number of available cores
-    }
-
-    cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
-    if (!is.null(cl)) {
-      clusterExport(cl, c(
-        "sim_n", "subsample_size", "geneList", "selected.gs", "gsScoreList.null",
-        "aggre_method", "pred_df", "cov_df", "aggregate_geneSetList", "sim_setting"
-      ), envir = environment())
-    }
-
-    results_list <- pblapply(1:sim_n, function(sim_i) {
+    n_cores <- be_resolve_n_cores(n_cores)
+    results_list <- be_parallel_lapply(1:sim_n, function(sim_i) {
       sim.geneList <- geneList # power setting
       if (sim_setting == "type1") {
         sim.geneList <- geneList[sample(1:nrow(geneList), size = nrow(geneList), replace = FALSE), ]
@@ -365,13 +342,20 @@ brainscore.simulate <- function(pred_df,
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
       return(sim_results)
-    }, cl = cl)
+    },
+    n_cores = n_cores,
+    export = c(
+      "subsample_size", "geneList", "selected.gs", "gsScoreList.null",
+      "aggre_method", "pred_df", "cov_df", "aggregate_geneSetList", "sim_setting",
+      "simple_lm", "calculate_pvals", "list_transpose"
+    ),
+    envir = environment()
+    )
 
     # Flatten the results_list
     results_list <- do.call(c, results_list)
   }
 
-  if (!is.null(cl)) stopCluster(cl)
   message("Simulation completed.")
   return(results_list)
 }

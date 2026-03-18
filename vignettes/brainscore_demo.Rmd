@@ -23,7 +23,6 @@ This tutorial demonstrates how to perform enrichment analysis of individual-leve
 library(BrainEnrich)
 library(kableExtra)
 library(dplyr)
-library(enrichplot)
 library(ggplot2)
 ```
 
@@ -81,7 +80,7 @@ gsScore.raw <- brainscore(
   annoData = annoData,
   cor_method = "pearson",
   aggre_method = "mean",
-  n_cores = 0,
+  n_cores = 1,
   minGSSize = 20,
   maxGSSize = 200,
   null_model = "none"
@@ -99,11 +98,11 @@ gsScore.spin <- brainscore(
   annoData = annoData,
   cor_method = "pearson",
   aggre_method = "mean",
-  n_cores = 0,
+  n_cores = 1,
   minGSSize = 20,
   maxGSSize = 200,
   null_model = "spin_brain",
-  n_perm = 5,
+  n_perm = 10,
   perm_id = perm_id_dk_lh_5000
 )
 str(head(gsScore.spin, 5), 1)
@@ -118,11 +117,11 @@ gsScore.resample <- brainscore(
   annoData = annoData,
   cor_method = "pearson",
   aggre_method = "mean",
-  n_cores = 0,
+  n_cores = 1,
   minGSSize = 20,
   maxGSSize = 200,
   null_model = "resample_gene",
-  n_perm = 5
+  n_perm = 10
 )
 str(head(gsScore.resample, 5), 1)
 ```
@@ -146,11 +145,11 @@ res <- brainscore.lm_test(
   annoData = annoData,
   cor_method = "pearson",
   aggre_method = "mean",
-  n_cores = 0,
+  n_cores = 1,
   minGSSize = 50,
   maxGSSize = 200,
   null_model = "spin_brain",
-  n_perm = 5,
+  n_perm = 10,
   perm_id = perm_id_dk_lh_5000,
   pvalueCutoff = 0.8
 )
@@ -170,18 +169,17 @@ res1 <- brainscore.lm_test(
   gsScoreList.null = gsScore.spin,
   cor_method = "pearson",
   aggre_method = "mean",
-  n_cores = 0,
+  n_cores = 1,
   minGSSize = 20,
   maxGSSize = 200,
   null_model = "spin_brain",
-  n_perm = 5,
+  n_perm = 10,
   pvalueCutoff = 0.8
 )
 ```
-The attribute of the gsScoreList.null should be the same as your input of the function for these variables:
-cor_method, aggre_method, minGSSize, maxGSSize, null_model, n_perm, if not, that means the gsScoreList.null is not usable for the currrent setup.
+The attributes of `gsScoreList.null` should match the current analysis settings (`cor_method`, `aggre_method`, `minGSSize`, `maxGSSize`, `null_model`, and `n_perm`). Otherwise the precomputed null scores are not reusable for the current setup.
 
-Note that the output of the brainscore.lm_test function is gseaResult object. Some methods and functions are available for this object. For example, you can convert it to dataframe easily and visualize the results (see section below).
+`brainscore.lm_test()` returns an `EnrichRes` object, so you can convert it to a data frame directly and use the native BrainEnrich plotting helpers shown below.
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
 res.df <- as.data.frame(res)
 # make scollable table
@@ -191,36 +189,23 @@ kable(res.df, format = "html", escape = FALSE) %>%
 ```
 
 ## 4. Visualization
-This section covers the visualization of the results.
-Note: the upsetplot, heatplot available for brainenrich resutls are not applicable for these results.
+This section covers native visualization of `EnrichRes` results.
 
-### 4.1. Gene-Concept Network
-We will visualize the gene-concept network.
+### 4.1. Dot plot
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
-geneList <- res@geneList
-showCategory <- 10
-showID <- res@result$ID[1:showCategory]
-show.geneList <- geneList[showID]
-color_palette <- colorRampPalette(c("#0197b2", "white", "orange"))(100)
-breaks <- seq(-5, 5, length.out = 101)
-geneList_colors <- color_palette[cut(show.geneList, breaks = breaks, labels = FALSE)]
-named_colors <- setNames(geneList_colors, names(show.geneList))
-cnetplot(res,
-  layout = "kk",
-  color.params = list(category = named_colors),
-  showCategory = showCategory, cex.params = list(
-    category_node = 1, gene_node = 0.75,
-    category_label = 1.2, gene_label = 0.6
-  ),
-) + scale_color_gradientn(colors = color_palette, limits = c(-5, 5), name = "t value")
+plot_terms(res, type = "dot", top_n = 15)
 ```
 
-### 4.2. Dot Plot
-We will create a dot plot to visualize the results.
+### 4.2. Volcano plot
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=8, fig.width=8}
-dotplot(res, x = "t_Value", label_format = 50, showCategory = 30) +
-  xlab("Correlation") + scale_fill_gradient(
-    high = "#0197b2", low = "orange",
-    space = "Lab", name = "pval"
-  )
+plot_terms(res, type = "volcano")
+```
+
+### 4.3. Core genes for the top term
+
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=6, fig.width=8}
+top_term <- res$table$ID[[1]]
+plot_core_genes(res, term_id = top_term, mode = "direction")
 ```

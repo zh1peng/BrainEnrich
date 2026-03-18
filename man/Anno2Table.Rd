@@ -2,26 +2,16 @@
 % Please edit documentation in R/get_geneSets.R
 \name{Anno2Table}
 \alias{Anno2Table}
-\title{Convert Annotation Data to Pathway Table}
+\title{Convert annotation object to pathway table}
 \usage{
 Anno2Table(AnnoEnv)
 }
 \arguments{
-\item{AnnoEnv}{An environment or list containing annotation data.
-This environment is expected to contain pathway-to-gene (\code{path2gene}) and pathway-to-name
-(\code{path2name}) mappings.}
+\item{AnnoEnv}{An \code{EnrichAnno} object or legacy annotation environment.}
 }
 \value{
-A data frame with four columns:
-\describe{
-\item{pathID}{Pathway identifier}
-\item{pathName}{Pathway name}
-\item{geneSetSize}{Size of the gene set for each pathway}
-\item{geneID}{Concatenated string of gene IDs for each pathway, separated by ";"}
-}
+Data frame with pathway metadata and concatenated genes.
 }
 \description{
-This function takes an annotation environment, typically from \code{clusterProfiler},
-and converts it into a pathway table. Each pathway will have its associated genes
-concatenated into a single string, along with the pathway name and the size of the gene set.
+Convert annotation object to pathway table
 }

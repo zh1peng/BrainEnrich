@@ -2,29 +2,18 @@
 % Please edit documentation in R/get_geneSets.R
 \name{Table2Anno}
 \alias{Table2Anno}
-\title{Convert a Dataframe to Annotation Environment
-This function converts a dataframe containing annotation information back to an annotation environment
-using the \code{build_Anno} function from the \code{DOSE} package. The resulting environment can be used for
-enrichment analysis or other annotation-related tasks.}
+\title{Convert a data frame to EnrichAnno}
 \usage{
 Table2Anno(df, sep = ";")
 }
 \arguments{
-\item{df}{A dataframe containing the annotation information with columns:
-\itemize{
-\item \code{pathID}: The ID of the pathway/term.
-\item \code{pathName}: The descriptive name of the pathway/term.
-\item \code{geneID}: A string of gene identifiers associated with the pathway/term, separated by a delimiter.
-}}
+\item{df}{A data frame with columns \code{pathID}, \code{pathName}, and \code{geneID}.}
 
-\item{sep}{A character string that defines the delimiter for splitting the \code{geneID} column. Defaults to \code{";"}.}
+\item{sep}{Gene ID separator in \code{geneID}.}
 }
 \value{
-An annotation environment containing the term-to-gene mapping and term descriptions.
+An object of class \code{EnrichAnno}.
 }
 \description{
-Convert a Dataframe to Annotation Environment
-This function converts a dataframe containing annotation information back to an annotation environment
-using the \code{build_Anno} function from the \code{DOSE} package. The resulting environment can be used for
-enrichment analysis or other annotation-related tasks.
+Convert a data frame to EnrichAnno
 }

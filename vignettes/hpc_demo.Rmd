@@ -30,8 +30,9 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager")
 }
-BiocManager::install("DOSE")
-# Install brainEnrich from GitHub
+# Install BrainEnrichData first so compute nodes share the same local resources
+remotes::install_github("zh1peng/BrainEnrichData")
+# Install BrainEnrich from GitHub
 remotes::install_github("zh1peng/BrainEnrich")
 ```
 
@@ -408,8 +409,8 @@ for (null_model in null_models) {
 ```
 
 setup slurm job file to run the brainscore.lm_test
-Note that if setting `n_cores=0` to auto detect the number of cores, it will cause error.
-In the Rscript, we set `n_cores=63` to use 63 cores, which is the maximum number of cores on the node.
+For shared HPC nodes, prefer setting `n_cores` explicitly instead of relying on auto-detection.
+In the Rscript, we set `n_cores=63` to use 63 cores, which is one less than the 64-core node maximum.
 ```{bash,eval=FALSE}
 #!/bin/bash
 #SBATCH --job-name=lm              # Job name

@@ -2,7 +2,7 @@
 % Please edit documentation in R/find_core_genes.R
 \name{find_core_genes}
 \alias{find_core_genes}
-\title{Find Core Genes Influencing Aggregated Score or LM Coefficients between molecular profile and behavioral data}
+\title{Find core genes influencing aggregated score or LM coefficients}
 \usage{
 find_core_genes(
   geneList,
@@ -16,29 +16,26 @@ find_core_genes(
 )
 }
 \arguments{
-\item{geneList}{A matrix of genes by subs, each column representing a subject / a group-level result.}
+\item{geneList}{A matrix of genes by subs/models.}
 
-\item{geneSetList}{A list of gene sets, each containing names of genes.}
+\item{geneSetList}{A named list of gene sets.}
 
-\item{pred_df}{Optional data frame of a predictor. If NULL, it is perfomred for group-level enrichment.}
+\item{pred_df}{Optional predictor data frame. If NULL with \code{cov_df}, group-level mode is used.}
 
-\item{cov_df}{Optional data frame of covariates. If NULL, it is perfomred for group-level enrichment.}
+\item{cov_df}{Optional covariate data frame.}
 
-\item{aggre_method}{The aggregation method used to compute the scores.}
+\item{aggre_method}{Aggregation method name or custom function.}
 
-\item{n_cores}{The number of cores to use for parallel processing; defaults to 1.
-Uses all available cores minus one if set to 0.}
+\item{n_cores}{Number of cores.}
 
-\item{threshold_type}{The method to determine significance ('sd' for standard deviation, 'percentile' for percentile threshold).}
+\item{threshold_type}{Threshold method (\code{sd} or \code{percentile}).}
 
-\item{threshold_value}{Numeric value specifying the threshold level; meaning depends on \code{threshold_type}.}
+\item{threshold_value}{Threshold value.}
 }
 \value{
-A list of core genes for each gene set.
+A named list of character vectors with directional labels (\code{driver}/\code{buffer}).
 }
 \description{
-This function performs a Leave-One-Out (LOO) analysis on gene sets to determine core genes
-that influence the aggregated score. It can utilize parallel processing
-to enhance computation efficiency and supports two types of analysis: one that considers
-only gene sets and another that includes predictor and covariate data frames.
+Leave-one-out analysis to identify genes with the largest influence on
+enrichment scores or standardized LM coefficients.
 }

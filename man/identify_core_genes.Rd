@@ -2,24 +2,27 @@
 % Please edit documentation in R/find_core_genes.R
 \name{identify_core_genes}
 \alias{identify_core_genes}
-\title{Identify core genes based on a specified threshold method}
+\title{Identify core genes with directional labels}
 \usage{
 identify_core_genes(
   changes,
+  reference_stat,
   threshold_type = c("sd", "percentile"),
   threshold_value = 1
 )
 }
 \arguments{
-\item{changes}{Named vector of changes from LOO analysis.}
+\item{changes}{Named vector of signed LOO changes.}
 
-\item{threshold_type}{Character string indicating the method to determine the threshold ("sd" or "percentile").}
+\item{reference_stat}{Numeric scalar of full model statistic (score or coef).}
 
-\item{threshold_value}{Numeric value indicating the percentile (if method is "percentile") or the number of standard deviations (if method is "sd").}
+\item{threshold_type}{Threshold method.}
+
+\item{threshold_value}{Threshold value.}
 }
 \value{
-Vector of core genes or NA if no core genes are identified.
+Character vector such as \code{GENE(driver)}/\code{GENE(buffer)}.
 }
 \description{
-Identify core genes based on a specified threshold method
+Identify core genes with directional labels
 }

@@ -12,5 +12,5 @@ test_that("get_geneSetList retrieves gene sets correctly", {
   expect_true(length(geneSetList) > 0)
   # Test that each element in the list has the expected structure (assuming they are vectors or data frames)
   expect_true(all(sapply(geneSetList, is.vector) | sapply(geneSetList, is.data.frame)))
-  expect_error(get_geneSetList(NULL), "not supported")
+  expect_error(get_geneSetList(NULL), "EnrichAnno")
 })

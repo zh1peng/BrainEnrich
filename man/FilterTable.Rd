@@ -2,38 +2,24 @@
 % Please edit documentation in R/get_geneSets.R
 \name{FilterTable}
 \alias{FilterTable}
-\title{Filter and Intersect Genes in Annotation Data}
+\title{Filter and intersect genes in annotation table}
 \usage{
 FilterTable(df, bg_genes, sep = ";", minGSSize = 0, maxGSSize = Inf)
 }
 \arguments{
-\item{df}{A dataframe containing the annotation information with columns:
-\itemize{
-\item \code{pathID}: The ID of the pathway/term.
-\item \code{pathName}: The descriptive name of the pathway/term.
-\item \code{geneID}: A string of gene identifiers associated with the pathway/term, separated by a delimiter.
-}}
+\item{df}{Data frame with \code{pathID}, \code{pathName}, \code{geneID}.}
 
-\item{sep}{A character string that defines the delimiter for splitting the \code{geneID} column. Defaults to \code{";"}.}
+\item{bg_genes}{Character vector of background genes.}
 
-\item{minGSSize}{An integer specifying the minimum gene set size to retain. Defaults to \code{0}.}
+\item{sep}{Gene separator in \code{geneID}.}
 
-\item{maxGSSize}{An integer specifying the maximum gene set size to retain. Defaults to \code{Inf}.}
+\item{minGSSize}{Minimum retained gene set size.}
 
-\item{background}{A character vector of background gene names.}
+\item{maxGSSize}{Maximum retained gene set size.}
 }
 \value{
-A dataframe with columns:
-\itemize{
-\item \code{pathID}: The ID of the pathway/term.
-\item \code{pathName}: The descriptive name of the pathway/term.
-\item \code{geneSetSize}: The size of the filtered gene set.
-\item \code{geneID}: The filtered and concatenated gene identifiers.
-}
+Filtered annotation table.
 }
 \description{
-This function filters the genes in the \code{geneID} column of an annotation dataframe
-based on a given list of background genes. Only genes present in the background list
-are retained in the resulting dataframe. It also calculates and includes the \code{geneSetSize} column,
-and filters gene sets based on specified size constraints.
+Filter and intersect genes in annotation table
 }
