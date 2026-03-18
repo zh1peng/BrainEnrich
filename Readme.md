@@ -94,7 +94,7 @@ BrainEnrich now keeps the full curated expression and gene-set resources in the 
 
 1. An installed `BrainEnrichData` package
 2. A sibling development checkout at `../BrainEnrichData`
-3. Local BrainEnrich package resources, when present
+3. Local BrainEnrich packaged fixtures for tests/examples/vignettes
 4. A user cache download from the matching `BrainEnrichData` release
 
 ## License

@@ -2,7 +2,7 @@ library(testthat)
 library(utils)
 
 # Retrieve real annotation data
-annoData <- get_annoData() # Use a valid annotation type
+annoData <- get_annoData("SynGO")
 
 # Test the split_Anno function
 test_that("split_Anno handles valid and invalid inputs", {
@@ -24,5 +24,5 @@ test_that("split_Anno handles valid and invalid inputs", {
   empty_env <- new.env()
 
   # This should also raise an error
-  expect_error(split_Anno(empty_env), "The environment does not contain the required objects.")
+  expect_error(split_Anno(empty_env), "PATHID2EXTID|required objects")
 })

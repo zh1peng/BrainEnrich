@@ -1,6 +1,6 @@
 library(testthat)
 
-annoData <- get_annoData() # Example of annotation type
+annoData <- get_annoData("SynGO")
 # Example test for get_geneSetList()
 test_that("get_geneSetList retrieves gene sets correctly", {
   # Assume that get_annoData is working correctly, so we can retrieve annoData

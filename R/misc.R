@@ -1,3 +1,7 @@
+be_readline <- function(prompt) {
+  readline(prompt = prompt)
+}
+
 #' Prompt User to Continue with Yes/No Input
 #'
 #' This function continuously prompts the user with a message asking whether they want to continue.
@@ -9,7 +13,7 @@
 #' @export
 ask_user_continue <- function(msg) {
   repeat {
-    user_input <- readline(prompt = sprintf("%s. Do you want to continue? (Y/N): ", msg))
+    user_input <- be_readline(sprintf("%s. Do you want to continue? (Y/N): ", msg))
 
     if (toupper(user_input) == "Y") {
       return(TRUE)

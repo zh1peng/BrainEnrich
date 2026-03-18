@@ -5,7 +5,7 @@ test_that("compress_csv_bzip2 compresses CSV file correctly", {
   write.csv(data, temp_input_csv, row.names = FALSE)
 
   # Call compress_csv_bzip2 to compress the file
-  compress_csv_bzip2(temp_input_csv)
+  BrainEnrich:::compress_csv_bzip2(temp_input_csv)
 
   # Check if the compressed file exists
   compressed_file <- paste0(temp_input_csv, ".bz2")
@@ -39,27 +39,27 @@ test_that("ask_user_continue works with valid inputs", {
 })
 
 test_that("ask_user_continue returns TRUE for 'Y' input", {
-  # Mock the readline function to simulate 'N' input
+  # Mock the package-local readline wrapper so the installed package sees it.
   local_mocked_bindings(
-    readline = function(prompt) {
-      return("Y") # Simulate user input "N"
-    }, .package = "BrainEnrich" # Mock readline in the base environment
+    be_readline = function(prompt) {
+      return("Y")
+    },
+    .package = "BrainEnrich"
   )
 
-  # Test ask_user_continue
-  expect_true(ask_user_continue("Test message")) # Expect FALSE for "N"
+  expect_true(ask_user_continue("Test message"))
 })
 
 
 
 test_that("ask_user_continue returns FALSE for 'N' input", {
-  # Mock the readline function to simulate 'N' input
+  # Mock the package-local readline wrapper so the installed package sees it.
   local_mocked_bindings(
-    readline = function(prompt) {
-      return("N") # Simulate user input "N"
-    }, .package = "BrainEnrich" # Mock readline in the base environment
+    be_readline = function(prompt) {
+      return("N")
+    },
+    .package = "BrainEnrich"
   )
 
-  # Test ask_user_continue
-  expect_false(ask_user_continue("Test message")) # Expect FALSE for "N"
+  expect_false(ask_user_continue("Test message"))
 })
