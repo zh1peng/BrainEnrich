@@ -65,7 +65,13 @@ test_that("ask_user_continue returns FALSE for 'N' input", {
 })
 
 test_that("be_resolve_n_cores respects R CMD check core limits", {
-  withr::local_envvar(c("_R_CHECK_LIMIT_CORES_" = "true"))
+  old_check_limit <- Sys.getenv("_R_CHECK_LIMIT_CORES_", unset = NA_character_)
+  if (is.na(old_check_limit)) {
+    on.exit(Sys.unsetenv("_R_CHECK_LIMIT_CORES_"), add = TRUE)
+  } else {
+    on.exit(Sys.setenv("_R_CHECK_LIMIT_CORES_" = old_check_limit), add = TRUE)
+  }
+  Sys.setenv("_R_CHECK_LIMIT_CORES_" = "true")
 
   available <- parallel::detectCores()
   if (is.na(available) || available < 1L) {
