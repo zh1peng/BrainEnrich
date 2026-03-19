@@ -317,6 +317,7 @@
 <div class="section level3">
 <h3 id="core-genes-for-the-top-term">3.5. Core genes for the top term<a class="anchor" aria-label="anchor" href="#core-genes-for-the-top-term"></a>
 </h3>
+<p>Core genes are selected with a leave-one-out analysis. A gene is labeled <code>driver</code> when removing it changes the summary statistic in the same direction as the observed effect, and <code>buffer</code> when the sign flips. The size of the bar reflects the absolute leave-one-out impact, so taller bars indicate stronger influence.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">top_term</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">table</span><span class="op">$</span><span class="va">ID</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span><span class="fu"><a href="../reference/plot_core_genes.html">plot_core_genes</a></span><span class="op">(</span><span class="va">res</span>, term_id <span class="op">=</span> <span class="va">top_term</span>, mode <span class="op">=</span> <span class="st">"impact"</span><span class="op">)</span></span></code></pre></div>

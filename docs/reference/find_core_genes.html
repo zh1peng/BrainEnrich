@@ -98,7 +98,10 @@ enrichment scores or standardized LM coefficients.</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A named list of character vectors with directional labels (<code>driver</code>/<code>buffer</code>).</p>
+    <p>A named list of character vectors with directional labels (<code>driver</code>/<code>buffer</code>).
+The label is assigned by comparing the sign of the leave-one-out change with the sign of the
+full statistic: <code>driver</code> means the gene reinforces the observed effect, while <code>buffer</code> means
+the gene attenuates or opposes it.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

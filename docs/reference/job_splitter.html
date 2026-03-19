@@ -128,27 +128,26 @@ to an RDS file in the specified <code>output_dir</code>.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Call job_splitter, which will subset 'perm_id' and pass it to 'FUN'</span></span></span>
-<span class="r-in"><span><span class="fu">job_splitter</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  job_id <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>  n_iter_per_job <span class="op">=</span> <span class="fl">10</span>,</span></span>
-<span class="r-in"><span>  iter_total <span class="op">=</span> <span class="fl">100</span>,</span></span>
-<span class="r-in"><span>  output_dir <span class="op">=</span> <span class="st">"/path/to/output"</span>,</span></span>
-<span class="r-in"><span>  FUN <span class="op">=</span> <span class="va">brainscore</span>,</span></span>
-<span class="r-in"><span>  subset_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>perm_id <span class="op">=</span> <span class="va">perm_id</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  subset_total_var <span class="op">=</span> <span class="st">"n_perm"</span>,</span></span>
-<span class="r-in"><span>  brain_data <span class="op">=</span> <span class="va">brain_data</span>,</span></span>
-<span class="r-in"><span>  gene_data <span class="op">=</span> <span class="va">gene_data</span>,</span></span>
-<span class="r-in"><span>  annoData <span class="op">=</span> <span class="va">annoData</span>,</span></span>
-<span class="r-in"><span>  cor_method <span class="op">=</span> <span class="st">"pearson"</span>,</span></span>
-<span class="r-in"><span>  aggre_method <span class="op">=</span> <span class="st">"mean"</span>,</span></span>
-<span class="r-in"><span>  null_model <span class="op">=</span> <span class="st">"spin_brain"</span>,</span></span>
-<span class="r-in"><span>  minGSSize <span class="op">=</span> <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>  maxGSSize <span class="op">=</span> <span class="fl">200</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span>
+<span><span class="co"># Call job_splitter, which will subset 'perm_id' and pass it to 'FUN'</span></span>
+<span><span class="fu">job_splitter</span><span class="op">(</span></span>
+<span>  job_id <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  n_iter_per_job <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  iter_total <span class="op">=</span> <span class="fl">100</span>,</span>
+<span>  output_dir <span class="op">=</span> <span class="st">"/path/to/output"</span>,</span>
+<span>  FUN <span class="op">=</span> <span class="va">brainscore</span>,</span>
+<span>  subset_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>perm_id <span class="op">=</span> <span class="va">perm_id</span><span class="op">)</span>,</span>
+<span>  subset_total_var <span class="op">=</span> <span class="st">"n_perm"</span>,</span>
+<span>  brain_data <span class="op">=</span> <span class="va">brain_data</span>,</span>
+<span>  gene_data <span class="op">=</span> <span class="va">gene_data</span>,</span>
+<span>  annoData <span class="op">=</span> <span class="va">annoData</span>,</span>
+<span>  cor_method <span class="op">=</span> <span class="st">"pearson"</span>,</span>
+<span>  aggre_method <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>  null_model <span class="op">=</span> <span class="st">"spin_brain"</span>,</span>
+<span>  minGSSize <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  maxGSSize <span class="op">=</span> <span class="fl">200</span></span>
+<span><span class="op">)</span></span>
+<span><span class="op">}</span> <span class="co"># }</span></span></code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
