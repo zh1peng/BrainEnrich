@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">BrainEnrich</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/annoData_demo.html">Preparison of gene sets (annoData)</a></li>
+<li><a class="dropdown-item" href="../articles/annoData_demo.html">Preparation of gene sets (annoData)</a></li>
     <li><a class="dropdown-item" href="../articles/brainenrich_demo.html">Group-level Enrichment Analysis (brainenrich)</a></li>
     <li><a class="dropdown-item" href="../articles/brainscore_demo.html">Individual-level enrichment analysis (brainscore/brainscore.lm_test)</a></li>
     <li><a class="dropdown-item" href="../articles/brainscore.simulate_demo.html">Simulation analysis (brainscore.simulate)</a></li>
@@ -72,10 +72,9 @@
 </h2>
 <p>This tutorial demonstrates how to perform enrichment analysis of individual-level imaging-derived phenotypes (IDPs) using the BrainEnrich package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://zh1peng.github.io/BrainEnrich/" class="external-link">BrainEnrich</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://zh1peng.github.io/BrainEnrich/">BrainEnrich</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/" class="external-link">kableExtra</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://yulab-smu.top/biomedical-knowledge-mining-book/" class="external-link">enrichplot</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -135,7 +134,7 @@
 <p>Next, we’ll prepare the brain data by selecting the relevant columns and transforming the data for scoring.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">brain_data</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">sim_hcp</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"L_"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">brain_data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sub-"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">brain_data</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">brain_data</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sub-"</span>, <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">brain_data</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">brain_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  num [1:34, 1:100] 2.56 2.56 2.52 1.7 3.51 ...</span></span>
 <span><span class="co">#&gt;  - attr(*, "dimnames")=List of 2</span></span>
@@ -145,7 +144,7 @@
 <div class="section level3">
 <h3 id="load-gene-expression-data-for-the-analysis">1.3. Load gene expression data for the Analysis<a class="anchor" aria-label="anchor" href="#load-gene-expression-data-for-the-analysis"></a>
 </h3>
-<p>We will now load gene expression data for the analysis. This data is based on a specific brain atlas (Desikan) and includes gene expression levels (correlation across donnors &gt; 0.4) for the left hemisphere.</p>
+<p>We will now load gene expression data for the analysis. This data is based on a specific brain atlas (Desikan) and includes gene expression levels (correlation across donors &gt; 0.4) for the left hemisphere.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">gene_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_geneExp.html">get_geneExp</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="st">"desikan"</span>, rdonor <span class="op">=</span> <span class="st">"r0.4"</span>, hem <span class="op">=</span> <span class="st">"L"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">gene_data</span><span class="op">)</span></span>
@@ -170,7 +169,7 @@
 </h4>
 <p>Filtering the gene sets by size is optional and is shown here for demonstration purposes. This step is embedded in the brainenrich/brainscore function.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">selected.gs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_geneSetList.html">filter_geneSetList</a></span><span class="op">(</span>bg_genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/row_colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">gene_data</span><span class="op">)</span>, geneSetList <span class="op">=</span> <span class="va">geneSetList</span>, minGSSize <span class="op">=</span> <span class="fl">20</span>, maxGSSize <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">selected.gs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_geneSetList.html">filter_geneSetList</a></span><span class="op">(</span>bg_genes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">gene_data</span><span class="op">)</span>, geneSetList <span class="op">=</span> <span class="va">geneSetList</span>, minGSSize <span class="op">=</span> <span class="fl">20</span>, maxGSSize <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"%d MF terms have gene size ranging between 20 and 200"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">selected.gs</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -190,19 +189,25 @@
 <span>  annoData <span class="op">=</span> <span class="va">annoData</span>,</span>
 <span>  cor_method <span class="op">=</span> <span class="st">"pearson"</span>,</span>
 <span>  aggre_method <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span>  n_cores <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  n_cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  minGSSize <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  maxGSSize <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  null_model <span class="op">=</span> <span class="st">"none"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gsScore.raw</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 6</span></span>
-<span><span class="co">#&gt;  $ GO:0007268: num [1:100] 0.0588 0.0278 -0.013 0.0465 0.0445 ...</span></span>
-<span><span class="co">#&gt;  $ GO:0007416: num [1:100] 0.1185 0.0785 0.0442 0.1009 0.088 ...</span></span>
-<span><span class="co">#&gt;  $ GO:0008021: num [1:100] 0.25 0.216 0.148 0.223 0.216 ...</span></span>
-<span><span class="co">#&gt;  $ GO:0016079: num [1:100] -0.0939 -0.0846 -0.1204 -0.0569 -0.0439 ...</span></span>
-<span><span class="co">#&gt;  $ GO:0030285: num [1:100] 0.1037 0.1043 0.0359 0.1126 0.1658 ...</span></span>
-<span><span class="co">#&gt;  $ GO:0030672: num [1:100] 0.277 0.242 0.174 0.247 0.252 ...</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ GO:0007268: Named num [1:100] 0.0588 0.0278 -0.013 0.0465 0.0445 ...</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:100] "sub-1" "sub-2" "sub-3" "sub-4" ...</span></span>
+<span><span class="co">#&gt;  $ GO:0007416: Named num [1:100] 0.1185 0.0785 0.0442 0.1009 0.088 ...</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:100] "sub-1" "sub-2" "sub-3" "sub-4" ...</span></span>
+<span><span class="co">#&gt;  $ GO:0008021: Named num [1:100] 0.25 0.216 0.148 0.223 0.216 ...</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:100] "sub-1" "sub-2" "sub-3" "sub-4" ...</span></span>
+<span><span class="co">#&gt;  $ GO:0016079: Named num [1:100] -0.0939 -0.0846 -0.1204 -0.0569 -0.0439 ...</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:100] "sub-1" "sub-2" "sub-3" "sub-4" ...</span></span>
+<span><span class="co">#&gt;  $ GO:0030285: Named num [1:100] 0.1037 0.1043 0.0359 0.1126 0.1658 ...</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:100] "sub-1" "sub-2" "sub-3" "sub-4" ...</span></span>
+<span><span class="co">#&gt;  $ GO:0030672: Named num [1:100] 0.277 0.242 0.174 0.247 0.252 ...</span></span>
+<span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:100] "sub-1" "sub-2" "sub-3" "sub-4" ...</span></span></code></pre></div>
 <p>The gsScore.raw is a list of molecular terms. For each molecular term, you can find individual gene set scores and use them for downstream analyses (e.g., correlation analysis, machine learning, clustering etc.).</p>
 </div>
 <div class="section level3">
@@ -216,20 +221,17 @@
 <span>  annoData <span class="op">=</span> <span class="va">annoData</span>,</span>
 <span>  cor_method <span class="op">=</span> <span class="st">"pearson"</span>,</span>
 <span>  aggre_method <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span>  n_cores <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  n_cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  minGSSize <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  maxGSSize <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  null_model <span class="op">=</span> <span class="st">"spin_brain"</span>,</span>
-<span>  n_perm <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  n_perm <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  perm_id <span class="op">=</span> <span class="va">perm_id_dk_lh_5000</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gsScore.spin</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; List of 5</span></span>
+<span><span class="co">#&gt; List of 2</span></span>
 <span><span class="co">#&gt;  $ null_1:List of 55</span></span>
-<span><span class="co">#&gt;  $ null_2:List of 55</span></span>
-<span><span class="co">#&gt;  $ null_3:List of 55</span></span>
-<span><span class="co">#&gt;  $ null_4:List of 55</span></span>
-<span><span class="co">#&gt;  $ null_5:List of 55</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ null_2:List of 55</span></span></code></pre></div>
 <p>The result is a list of lists. Each sublist contains null scores for the molecular terms (i.e. SynGO terms). This is useful for permutation tests, where you compare the observed results (e.g., correlation) with your dependent variable between empirical gsScore and null model gsScore.</p>
 </div>
 <div class="section level3">
@@ -242,19 +244,16 @@
 <span>  annoData <span class="op">=</span> <span class="va">annoData</span>,</span>
 <span>  cor_method <span class="op">=</span> <span class="st">"pearson"</span>,</span>
 <span>  aggre_method <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span>  n_cores <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  n_cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  minGSSize <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  maxGSSize <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  null_model <span class="op">=</span> <span class="st">"resample_gene"</span>,</span>
-<span>  n_perm <span class="op">=</span> <span class="fl">5</span></span>
+<span>  n_perm <span class="op">=</span> <span class="fl">2</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gsScore.resample</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; List of 5</span></span>
+<span><span class="co">#&gt; List of 2</span></span>
 <span><span class="co">#&gt;  $ null_1:List of 55</span></span>
-<span><span class="co">#&gt;  $ null_2:List of 55</span></span>
-<span><span class="co">#&gt;  $ null_3:List of 55</span></span>
-<span><span class="co">#&gt;  $ null_4:List of 55</span></span>
-<span><span class="co">#&gt;  $ null_5:List of 55</span></span></code></pre></div>
+<span><span class="co">#&gt;  $ null_2:List of 55</span></span></code></pre></div>
 <p>The result is also a list of lists. Each sublist contains null scores for the molecular terms (i.e. SynGO terms). This is useful for permutation tests, where you compare the observed results (e.g., correlation) with your dependent variable between empirical gsScore and null model gsScore.</p>
 </div>
 </div>
@@ -276,11 +275,11 @@
 <span>  annoData <span class="op">=</span> <span class="va">annoData</span>,</span>
 <span>  cor_method <span class="op">=</span> <span class="st">"pearson"</span>,</span>
 <span>  aggre_method <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span>  n_cores <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  n_cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  minGSSize <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  maxGSSize <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  null_model <span class="op">=</span> <span class="st">"spin_brain"</span>,</span>
-<span>  n_perm <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  n_perm <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  perm_id <span class="op">=</span> <span class="va">perm_id_dk_lh_5000</span>,</span>
 <span>  pvalueCutoff <span class="op">=</span> <span class="fl">0.8</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -300,15 +299,15 @@
 <span>  gsScoreList.null <span class="op">=</span> <span class="va">gsScore.spin</span>,</span>
 <span>  cor_method <span class="op">=</span> <span class="st">"pearson"</span>,</span>
 <span>  aggre_method <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span>  n_cores <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  n_cores <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  minGSSize <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  maxGSSize <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  null_model <span class="op">=</span> <span class="st">"spin_brain"</span>,</span>
-<span>  n_perm <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  n_perm <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  pvalueCutoff <span class="op">=</span> <span class="fl">0.8</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>The attribute of the gsScoreList.null should be the same as your input of the function for these variables: cor_method, aggre_method, minGSSize, maxGSSize, null_model, n_perm, if not, that means the gsScoreList.null is not usable for the currrent setup.</p>
-<p>Note that the output of the brainscore.lm_test function is gseaResult object. Some methods and functions are available for this object. For example, you can convert it to dataframe easily and visualize the results (see section below).</p>
+<p>The attributes of <code>gsScoreList.null</code> should match the current analysis settings (<code>cor_method</code>, <code>aggre_method</code>, <code>minGSSize</code>, <code>maxGSSize</code>, <code>null_model</code>, and <code>n_perm</code>). Otherwise the precomputed null scores are not reusable for the current setup.</p>
+<p><code><a href="../reference/brainscore.lm_test.html">brainscore.lm_test()</a></code> returns an <code>EnrichRes</code> object, so you can convert it to a data frame directly and use the native BrainEnrich plotting helpers shown below.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
 <span><span class="co"># make scollable table</span></span>
@@ -318,8 +317,6 @@
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
 <table class="table table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <thead><tr>
-<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
-</th>
 <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
 ID
 </th>
@@ -372,9 +369,6 @@ core_enrichment
 <a href="GO:0007268" class="uri">GO:0007268</a>
 </td>
 <td style="text-align:left;">
-<a href="GO:0007268" class="uri">GO:0007268</a>
-</td>
-<td style="text-align:left;">
 chemical synaptic transmission (<a href="GO:0007268" class="uri">GO:0007268</a>)
 </td>
 <td style="text-align:right;">
@@ -402,25 +396,22 @@ BMI
 0.4675503
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-AKAP12/PDE4A/NCAN/PACSIN2/DLGAP3/CAMKV/RPS6KB1/CHRNA4/GRM8/NR3C2/NRN1/SYT12/OPRM1/NRXN2/PLCB1/INA/NEFL/NEFH/ATG5
+AKAP12(driver)/PDE4A(driver)/NCAN(buffer)/PACSIN2(buffer)/DLGAP3(buffer)/CAMKV(buffer)/RPS6KB1(driver)/CHRNA4(driver)/GRM8(driver)/NR3C2(driver)/NRN1(driver)/SYT12(driver)/OPRM1(driver)/NRXN2(buffer)/PLCB1(driver)/INA(driver)/NEFL(driver)/NEFH(driver)/ATG5(driver)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0007416" class="uri">GO:0007416</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0007416" class="uri">GO:0007416</a>
 </td>
@@ -452,25 +443,22 @@ BMI
 0.4116856
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-CADM1/EFNB2/SDC2/LRRTM1/NRG1/FARP1/GRID2/LRRC4B/GPC4/NUMBL/CPEB3/PALM/PDLIM5/SYNDIG1/DCLK1/DOCK4/FLRT2/ASIC1
+CADM1(buffer)/EFNB2(driver)/SDC2(buffer)/LRRTM1(buffer)/NRG1(driver)/FARP1(buffer)/GRID2(buffer)/LRRC4B(buffer)/GPC4(buffer)/NUMBL(buffer)/CPEB3(driver)/PALM(buffer)/PDLIM5(buffer)/SYNDIG1(driver)/DCLK1(driver)/DOCK4(driver)/FLRT2(driver)/ASIC1(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0008021" class="uri">GO:0008021</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0008021" class="uri">GO:0008021</a>
 </td>
@@ -502,25 +490,22 @@ BMI
 0.4477271
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-TRIM9/BRSK1/DTNBP1/SH3GL2/GNAO1/GNB2/VAMP1/MAL2/SLC17A8/OPRK1/SV2B/SYT12/ATP6V0A4
+TRIM9(driver)/BRSK1(buffer)/DTNBP1(buffer)/SH3GL2(driver)/GNAO1(buffer)/GNB2(buffer)/VAMP1(driver)/MAL2(driver)/SLC17A8(buffer)/OPRK1(buffer)/SV2B(driver)/SYT12(driver)/ATP6V0A4(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0016079" class="uri">GO:0016079</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0016079" class="uri">GO:0016079</a>
 </td>
@@ -552,25 +537,22 @@ BMI
 0.4197632
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-UNC13C/STX1B/MCTP1/DOC2A/PRKCG/GIT2/SV2B/NPY1R/BRSK1
+UNC13C(buffer)/STX1B(buffer)/MCTP1(driver)/DOC2A(driver)/PRKCG(driver)/GIT2(buffer)/SV2B(driver)/NPY1R(driver)/BRSK1(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0030672" class="uri">GO:0030672</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0030672" class="uri">GO:0030672</a>
 </td>
@@ -602,25 +584,22 @@ BMI
 0.4478446
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-CLTA/SH3GL2/GNAO1/GNB2/ATP6V1G2/VAMP1/MAL2/SLC17A8/OPRK1/SV2B/SYT9/SYT12/ATP6V0A4
+CLTA(driver)/SH3GL2(driver)/GNAO1(buffer)/GNB2(buffer)/ATP6V1G2(driver)/VAMP1(driver)/MAL2(driver)/SLC17A8(buffer)/OPRK1(buffer)/SV2B(driver)/SYT9(buffer)/SYT12(driver)/ATP6V0A4(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0042734" class="uri">GO:0042734</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0042734" class="uri">GO:0042734</a>
 </td>
@@ -652,25 +631,22 @@ BMI
 0.4456425
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-SNPH/KCTD16/KCTD12/GNAO1/GNB5/RGS7/CTNNA2/EPHB2/ADCY8/EFNB2/CNR1/CACNA1C/NRXN1/CHRNA4/HTR1A/VAPB/DRD1/IGSF8/ABCC8
+SNPH(driver)/KCTD16(buffer)/KCTD12(driver)/GNAO1(buffer)/GNB5(driver)/RGS7(driver)/CTNNA2(driver)/EPHB2(buffer)/ADCY8(driver)/EFNB2(driver)/CNR1(driver)/CACNA1C(buffer)/NRXN1(driver)/CHRNA4(driver)/HTR1A(driver)/VAPB(driver)/DRD1(buffer)/IGSF8(buffer)/ABCC8(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0045211" class="uri">GO:0045211</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0045211" class="uri">GO:0045211</a>
 </td>
@@ -702,25 +678,22 @@ BMI
 0.4380776
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-NTRK2/KCTD12/KCTD16/GNAO1/TENM2/FBXO2/KCNA2/EPHB2/FXYD6/SLC8A1/ADRA2C/GRIA3/ABHD6/KCNN2/HCN1/SDC2/CADM2
+NTRK2(driver)/KCTD12(driver)/KCTD16(buffer)/GNAO1(buffer)/TENM2(buffer)/FBXO2(driver)/KCNA2(driver)/EPHB2(buffer)/FXYD6(driver)/SLC8A1(driver)/ADRA2C(buffer)/GRIA3(driver)/ABHD6(driver)/KCNN2(driver)/HCN1(driver)/SDC2(buffer)/CADM2(driver)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0048786" class="uri">GO:0048786</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0048786" class="uri">GO:0048786</a>
 </td>
@@ -752,25 +725,22 @@ BMI
 0.4533208
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-FLOT1/PI4K2A/ERC1/ERC2/NR3C2/FLOT2/CACNA2D2/SCN8A/GRM7/GRIA1/GABRA2/KCNJ8/GRM8/HCN1/GRIA3/NRXN2
+FLOT1(driver)/PI4K2A(buffer)/ERC1(buffer)/ERC2(buffer)/NR3C2(driver)/FLOT2(driver)/CACNA2D2(driver)/SCN8A(driver)/GRM7(buffer)/GRIA1(buffer)/GABRA2(buffer)/KCNJ8(driver)/GRM8(driver)/HCN1(driver)/GRIA3(driver)/NRXN2(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0050804" class="uri">GO:0050804</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0050804" class="uri">GO:0050804</a>
 </td>
@@ -802,25 +772,22 @@ BMI
 0.4119582
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-ADCY8/AKAP12/PDE4A/PPP1R9A/DGKB/NCAN/SHANK1/CAMKV/RPS6KB1
+ADCY8(buffer)/AKAP12(driver)/PDE4A(driver)/PPP1R9A(driver)/DGKB(driver)/NCAN(buffer)/SHANK1(buffer)/CAMKV(buffer)/RPS6KB1(driver)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0051963" class="uri">GO:0051963</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0051963" class="uri">GO:0051963</a>
 </td>
@@ -852,25 +819,22 @@ BMI
 0.4150492
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-SDC2/LRRC4B/NUMBL/CPEB3/PALM/PDLIM5/DCLK1/DOCK4/ASIC1
+SDC2(buffer)/LRRC4B(buffer)/NUMBL(buffer)/CPEB3(driver)/PALM(buffer)/PDLIM5(buffer)/DCLK1(driver)/DOCK4(driver)/ASIC1(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0098839" class="uri">GO:0098839</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0098839" class="uri">GO:0098839</a>
 </td>
@@ -902,25 +866,22 @@ BMI
 0.4579650
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-RGS9/MDGA1/ADCY1/EFNB2/SCN8A/ADRA2C/DCC/CACNG3/GRID2/LRRC4B/PTPRT/SHISA6/GRIA3/SEMA4F/TMEM108/ASIC1
+RGS9(buffer)/MDGA1(driver)/ADCY1(driver)/EFNB2(driver)/SCN8A(driver)/ADRA2C(buffer)/DCC(driver)/CACNG3(driver)/GRID2(buffer)/LRRC4B(buffer)/PTPRT(buffer)/SHISA6(driver)/GRIA3(driver)/SEMA4F(driver)/TMEM108(driver)/ASIC1(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0099055" class="uri">GO:0099055</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0099055" class="uri">GO:0099055</a>
 </td>
@@ -952,25 +913,22 @@ BMI
 0.4296984
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-EPHB2/CACNA1H/FXYD6/SLC6A6/GRIA3/ITGB1/DRD1/KCNN2/ADGRL3/CADM2/CACNA1A
+EPHB2(buffer)/CACNA1H(driver)/FXYD6(driver)/SLC6A6(buffer)/GRIA3(driver)/ITGB1(buffer)/DRD1(buffer)/KCNN2(driver)/ADGRL3(driver)/CADM2(driver)/CACNA1A(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0099056" class="uri">GO:0099056</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0099056" class="uri">GO:0099056</a>
 </td>
@@ -1002,25 +960,22 @@ BMI
 0.4343584
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-EPHB2/KCNQ5/ADCY8/EFNB2/CNR1/CACNA1C/CHRNA4/HTR1A/VAPB/IGSF8/ABCC8
+EPHB2(buffer)/KCNQ5(buffer)/ADCY8(driver)/EFNB2(driver)/CNR1(driver)/CACNA1C(buffer)/CHRNA4(driver)/HTR1A(driver)/VAPB(driver)/IGSF8(buffer)/ABCC8(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0099061" class="uri">GO:0099061</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0099061" class="uri">GO:0099061</a>
 </td>
@@ -1052,25 +1007,22 @@ BMI
 0.4578898
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-ADCY1/EFNB2/SCN8A/ADRA2C/DCC/GRID2/LRRC4B/LRRC7/SHISA6/GRIA3/SEMA4F/TMEM108/ASIC1
+ADCY1(driver)/EFNB2(driver)/SCN8A(driver)/ADRA2C(buffer)/DCC(driver)/GRID2(buffer)/LRRC4B(buffer)/LRRC7(buffer)/SHISA6(driver)/GRIA3(driver)/SEMA4F(driver)/TMEM108(driver)/ASIC1(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0099072" class="uri">GO:0099072</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0099072" class="uri">GO:0099072</a>
 </td>
@@ -1102,25 +1054,22 @@ BMI
 0.4544088
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-EPS8/CPT1C/CACNG2/ZDHHC5/AGAP3/ATG5/GRID2/ADAM22/TNIK/KALRN/GPC4/CACNA2D2/EPB41L3/GABARAP/NEDD4/OPHN1/RNF220
+EPS8(buffer)/CPT1C(buffer)/CACNG2(driver)/ZDHHC5(driver)/AGAP3(buffer)/ATG5(driver)/GRID2(buffer)/ADAM22(driver)/TNIK(buffer)/KALRN(driver)/GPC4(buffer)/CACNA2D2(driver)/EPB41L3(driver)/GABARAP(buffer)/NEDD4(buffer)/OPHN1(buffer)/RNF220(driver)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0099504" class="uri">GO:0099504</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0099504" class="uri">GO:0099504</a>
 </td>
@@ -1152,25 +1101,22 @@ BMI
 0.4600578
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-ATG7/NRXN1/ARHGDIA/UNC13C/MCTP1/ERC2/FBXL20/STXBP5L/SV2B/SLC4A8/EFR3A/BRSK1/SLC17A8/CLCN3/ATP6V1C1/ATP6V0A4/STON2/AP3M2/OPHN1/CXADR
+ATG7(driver)/NRXN1(driver)/ARHGDIA(buffer)/UNC13C(buffer)/MCTP1(driver)/ERC2(buffer)/FBXL20(buffer)/STXBP5L(driver)/SV2B(driver)/SLC4A8(driver)/EFR3A(driver)/BRSK1(buffer)/SLC17A8(buffer)/CLCN3(driver)/ATP6V1C1(driver)/ATP6V0A4(buffer)/STON2(buffer)/AP3M2(driver)/OPHN1(buffer)/CXADR(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0099536" class="uri">GO:0099536</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0099536" class="uri">GO:0099536</a>
 </td>
@@ -1202,25 +1148,22 @@ BMI
 0.4633247
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-PLCB1/ABHD6/TENM2/CADM1/FARP1/AKAP12/PDE4A/PLPPR4/PTPRA/MAPK3/SHANK1/CAMKV/RPS6KB1/GSK3B/CHRNA4/NR3C2/NRN1/SYT12/NRXN2/KCNK2/INA/NEFL/NEFH/ATG5
+PLCB1(driver)/ABHD6(driver)/TENM2(buffer)/CADM1(buffer)/FARP1(buffer)/AKAP12(driver)/PDE4A(driver)/PLPPR4(buffer)/PTPRA(buffer)/MAPK3(buffer)/SHANK1(buffer)/CAMKV(buffer)/RPS6KB1(driver)/GSK3B(driver)/CHRNA4(driver)/NR3C2(driver)/NRN1(driver)/SYT12(driver)/NRXN2(buffer)/KCNK2(buffer)/INA(driver)/NEFL(driver)/NEFH(driver)/ATG5(driver)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<a href="GO:0099537" class="uri">GO:0099537</a>
-</td>
 <td style="text-align:left;">
 <a href="GO:0099537" class="uri">GO:0099537</a>
 </td>
@@ -1252,25 +1195,22 @@ BMI
 0.4669925
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-PLCB1/ABHD6/CADM1/FARP1/AKAP12/PDE4A/PLPPR4/PTPRA/NCAN/MAPK3/SHANK1/CAMKV/RPS6KB1/HTR1A/CHRNA4/NR3C2/NRN1/SYT12/NRXN2/KCNK2/INA/NEFL/NEFH/ATG5
+PLCB1(driver)/ABHD6(driver)/CADM1(buffer)/FARP1(buffer)/AKAP12(driver)/PDE4A(driver)/PLPPR4(buffer)/PTPRA(buffer)/NCAN(buffer)/MAPK3(buffer)/SHANK1(buffer)/CAMKV(buffer)/RPS6KB1(driver)/HTR1A(buffer)/CHRNA4(driver)/NR3C2(driver)/NRN1(driver)/SYT12(driver)/NRXN2(buffer)/KCNK2(buffer)/INA(driver)/NEFL(driver)/NEFH(driver)/ATG5(driver)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-SYNGO:postsynprocess
-</td>
 <td style="text-align:left;">
 SYNGO:postsynprocess
 </td>
@@ -1302,25 +1242,22 @@ BMI
 0.4485695
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-NR3C2/HCN1/ANO6/GABRA2/GRIN2A/CHRNA3/GRIA1/GABRA1/GABRG2/GRIA3/KCNA2/KCNK1/CACNG4/EFNB2/CPT1C/AGAP3/CAMK2G/ATG5/GRID2/NSG2/ADAM22/KALRN/GPC4/GABARAP/NEDD4/OPHN1/RNF220/SYT6
+NR3C2(driver)/HCN1(driver)/ANO6(buffer)/GABRA2(buffer)/GRIN2A(driver)/CHRNA3(buffer)/GRIA1(buffer)/GABRA1(driver)/GABRG2(driver)/GRIA3(driver)/KCNA2(driver)/KCNK1(driver)/CACNG4(buffer)/EFNB2(driver)/CPT1C(buffer)/AGAP3(buffer)/CAMK2G(driver)/ATG5(driver)/GRID2(buffer)/NSG2(buffer)/ADAM22(driver)/KALRN(driver)/GPC4(buffer)/GABARAP(buffer)/NEDD4(buffer)/OPHN1(buffer)/RNF220(driver)/SYT6(buffer)
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-SYNGO:presynprocess
-</td>
 <td style="text-align:left;">
 SYNGO:presynprocess
 </td>
@@ -1352,19 +1289,19 @@ BMI
 0.4648240
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:right;">
-0.1666667
+0.3333333
 </td>
 <td style="text-align:left;">
 spin_brain
 </td>
 <td style="text-align:left;">
-SV2B/ERC2/NPY/TSPOAP1/CACNA1A/CACNB2/CACNB4/GRIA3/GABRA2/GABRB1/KCTD12/KCTD16/NRXN1/TBC1D24/UNC13C/STX1B/MCTP1/RELN/PRKCA/STXBP5L/EFR3A/BRSK1/SLC17A8/CLCN3/ATP6V1C1/ATP6V1G2/ATP6V0A4/RAB27B/AP3M2/LRRK2/SYT10/RAB10/SIPA1L2
+SV2B(driver)/ERC2(buffer)/NPY(buffer)/TSPOAP1(buffer)/CACNA1A(buffer)/CACNB2(driver)/CACNB4(buffer)/GRIA3(driver)/GABRA2(buffer)/GABRB1(driver)/KCTD12(driver)/KCTD16(buffer)/NRXN1(driver)/TBC1D24(driver)/UNC13C(buffer)/STX1B(buffer)/MCTP1(driver)/RELN(driver)/PRKCA(driver)/STXBP5L(driver)/EFR3A(driver)/BRSK1(buffer)/SLC17A8(buffer)/CLCN3(driver)/ATP6V1C1(driver)/ATP6V1G2(driver)/ATP6V0A4(buffer)/RAB27B(driver)/AP3M2(driver)/LRRK2(buffer)/SYT10(buffer)/RAB10(driver)/SIPA1L2(buffer)
 </td>
 </tr>
 </tbody>
@@ -1375,41 +1312,28 @@ SV2B/ERC2/NPY/TSPOAP1/CACNA1A/CACNB2/CACNB4/GRIA3/GABRA2/GABRB1/KCTD12/KCTD16/NR
 <div class="section level2">
 <h2 id="visualization">4. Visualization<a class="anchor" aria-label="anchor" href="#visualization"></a>
 </h2>
-<p>This section covers the visualization of the results. Note: the upsetplot, heatplot available for brainenrich resutls are not applicable for these results.</p>
+<p>This section covers native visualization of <code>EnrichRes</code> results.</p>
 <div class="section level3">
-<h3 id="gene-concept-network">4.1. Gene-Concept Network<a class="anchor" aria-label="anchor" href="#gene-concept-network"></a>
+<h3 id="dot-plot">4.1. Dot plot<a class="anchor" aria-label="anchor" href="#dot-plot"></a>
 </h3>
-<p>We will visualize the gene-concept network.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">geneList</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">@</span><span class="va">geneList</span></span>
-<span><span class="va">showCategory</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
-<span><span class="va">showID</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">@</span><span class="va">result</span><span class="op">$</span><span class="va">ID</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="va">showCategory</span><span class="op">]</span></span>
-<span><span class="va">show.geneList</span> <span class="op">&lt;-</span> <span class="va">geneList</span><span class="op">[</span><span class="va">showID</span><span class="op">]</span></span>
-<span><span class="va">color_palette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/colorRamp.html" class="external-link">colorRampPalette</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#0197b2"</span>, <span class="st">"white"</span>, <span class="st">"orange"</span><span class="op">)</span><span class="op">)</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span>
-<span><span class="va">breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, length.out <span class="op">=</span> <span class="fl">101</span><span class="op">)</span></span>
-<span><span class="va">geneList_colors</span> <span class="op">&lt;-</span> <span class="va">color_palette</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span><span class="va">show.geneList</span>, breaks <span class="op">=</span> <span class="va">breaks</span>, labels <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">]</span></span>
-<span><span class="va">named_colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="va">geneList_colors</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">show.geneList</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/ggtangle/man/cnetplot.html" class="external-link">cnetplot</a></span><span class="op">(</span><span class="va">res</span>,</span>
-<span>  layout <span class="op">=</span> <span class="st">"kk"</span>,</span>
-<span>  color.params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>category <span class="op">=</span> <span class="va">named_colors</span><span class="op">)</span>,</span>
-<span>  showCategory <span class="op">=</span> <span class="va">showCategory</span>, cex.params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    category_node <span class="op">=</span> <span class="fl">1</span>, gene_node <span class="op">=</span> <span class="fl">0.75</span>,</span>
-<span>    category_label <span class="op">=</span> <span class="fl">1.2</span>, gene_label <span class="op">=</span> <span class="fl">0.6</span></span>
-<span>  <span class="op">)</span>,</span>
-<span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_color_gradientn</a></span><span class="op">(</span>colors <span class="op">=</span> <span class="va">color_palette</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"t value"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="brainscore_demo_files/figure-html/unnamed-chunk-13-1.png" width="768" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_terms.html">plot_terms</a></span><span class="op">(</span><span class="va">res</span>, type <span class="op">=</span> <span class="st">"dot"</span>, top_n <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span></code></pre></div>
+<p><img src="brainscore_demo_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="768" style="display: block; margin: auto;"></p>
 </div>
 <div class="section level3">
-<h3 id="dot-plot">4.2. Dot Plot<a class="anchor" aria-label="anchor" href="#dot-plot"></a>
+<h3 id="volcano-plot">4.2. Volcano plot<a class="anchor" aria-label="anchor" href="#volcano-plot"></a>
 </h3>
-<p>We will create a dot plot to visualize the results.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/enrichplot/man/dotplot.html" class="external-link">dotplot</a></span><span class="op">(</span><span class="va">res</span>, x <span class="op">=</span> <span class="st">"t_Value"</span>, label_format <span class="op">=</span> <span class="fl">50</span>, showCategory <span class="op">=</span> <span class="fl">30</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">xlab</a></span><span class="op">(</span><span class="st">"Correlation"</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient</a></span><span class="op">(</span></span>
-<span>    high <span class="op">=</span> <span class="st">"#0197b2"</span>, low <span class="op">=</span> <span class="st">"orange"</span>,</span>
-<span>    space <span class="op">=</span> <span class="st">"Lab"</span>, name <span class="op">=</span> <span class="st">"pval"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="brainscore_demo_files/figure-html/unnamed-chunk-14-1.png" width="768" style="display: block; margin: auto;"></p>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_terms.html">plot_terms</a></span><span class="op">(</span><span class="va">res</span>, type <span class="op">=</span> <span class="st">"volcano"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="brainscore_demo_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="768" style="display: block; margin: auto;"></p>
+</div>
+<div class="section level3">
+<h3 id="core-genes-for-the-top-term">4.3. Core genes for the top term<a class="anchor" aria-label="anchor" href="#core-genes-for-the-top-term"></a>
+</h3>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">top_term</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">table</span><span class="op">$</span><span class="va">ID</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="fu"><a href="../reference/plot_core_genes.html">plot_core_genes</a></span><span class="op">(</span><span class="va">res</span>, term_id <span class="op">=</span> <span class="va">top_term</span>, mode <span class="op">=</span> <span class="st">"direction"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="brainscore_demo_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="768" style="display: block; margin: auto;"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -1423,7 +1347,7 @@ SV2B/ERC2/NPY/TSPOAP1/CACNA1A/CACNB2/CACNB4/GRIA3/GABRA2/GABRB1/KCTD12/KCTD16/NR
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

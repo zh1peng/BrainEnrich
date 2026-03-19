@@ -8,11 +8,11 @@
 <title>BrainEnrich: Revealing Biological Insights from Imaging-Derived Features Through Transcriptomic Enrichment • BrainEnrich</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="BrainEnrich: Revealing Biological Insights from Imaging-Derived Features Through Transcriptomic Enrichment">
-<meta name="description" content="The BrainEnrich package addresses key challenges in imaging transcriptomics by providing a flexible, comprehensive toolkit for gene set enrichment analysis. It enhances the integration of transcriptomics and neuroimaging data by offering customizable test statistics and null models, helping to reduce false-positive biases that are common in rigid pipelines. BrainEnrich includes standardized predefined gene sets sourced from curated databases, ensuring consistency and reproducibility across studies. The package also facilitates the identification of core genes within gene sets, improving interpretation and visualization of results. Notably, BrainEnrich supports individual-level analysis, enabling a deeper examination of biological variability related to neurological and psychiatric disorders. By overcoming these methodological limitations, BrainEnrich advances the field of imaging transcriptomics, as demonstrated through real-world applications..">
-<meta property="og:description" content="The BrainEnrich package addresses key challenges in imaging transcriptomics by providing a flexible, comprehensive toolkit for gene set enrichment analysis. It enhances the integration of transcriptomics and neuroimaging data by offering customizable test statistics and null models, helping to reduce false-positive biases that are common in rigid pipelines. BrainEnrich includes standardized predefined gene sets sourced from curated databases, ensuring consistency and reproducibility across studies. The package also facilitates the identification of core genes within gene sets, improving interpretation and visualization of results. Notably, BrainEnrich supports individual-level analysis, enabling a deeper examination of biological variability related to neurological and psychiatric disorders. By overcoming these methodological limitations, BrainEnrich advances the field of imaging transcriptomics, as demonstrated through real-world applications..">
+<meta name="description" content="The BrainEnrich package addresses key challenges in imaging transcriptomics by providing a flexible, comprehensive toolkit for gene set enrichment analysis. It enhances the integration of transcriptomics and neuroimaging data by offering customizable test statistics and null models, helping to reduce false-positive biases that are common in rigid pipelines. BrainEnrich includes standardized predefined gene sets sourced from curated databases, distributed through the companion package BrainEnrichData, ensuring consistency and reproducibility across studies. The package also facilitates the identification of core genes within gene sets, improving interpretation and visualization of results. Notably, BrainEnrich supports individual-level analysis, enabling a deeper examination of biological variability related to neurological and psychiatric disorders. By overcoming these methodological limitations, BrainEnrich advances the field of imaging transcriptomics, as demonstrated through real-world applications.">
+<meta property="og:description" content="The BrainEnrich package addresses key challenges in imaging transcriptomics by providing a flexible, comprehensive toolkit for gene set enrichment analysis. It enhances the integration of transcriptomics and neuroimaging data by offering customizable test statistics and null models, helping to reduce false-positive biases that are common in rigid pipelines. BrainEnrich includes standardized predefined gene sets sourced from curated databases, distributed through the companion package BrainEnrichData, ensuring consistency and reproducibility across studies. The package also facilitates the identification of core genes within gene sets, improving interpretation and visualization of results. Notably, BrainEnrich supports individual-level analysis, enabling a deeper examination of biological variability related to neurological and psychiatric disorders. By overcoming these methodological limitations, BrainEnrich advances the field of imaging transcriptomics, as demonstrated through real-world applications.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">BrainEnrich</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,10 +35,11 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="articles/brainenrich_demo.html">Group-level Enrichment Analysis (brainenrich)</a></li>
-<li><a class="dropdown-item" href="articles/brainscore_demo.html">Individual-level enrichment analysis (brainscore/brainscore.lm_test)</a></li>
-<li><a class="dropdown-item" href="articles/brainscore.simulate_demo.html">Simulation analysis (brainscore.simulate)</a></li>
-<li><a class="dropdown-item" href="articles/hpc_demo.html">Computation on HPC with slurm</a></li>
+<li><a class="dropdown-item" href="articles/annoData_demo.html">Preparation of gene sets (annoData)</a></li>
+    <li><a class="dropdown-item" href="articles/brainenrich_demo.html">Group-level Enrichment Analysis (brainenrich)</a></li>
+    <li><a class="dropdown-item" href="articles/brainscore_demo.html">Individual-level enrichment analysis (brainscore/brainscore.lm_test)</a></li>
+    <li><a class="dropdown-item" href="articles/brainscore.simulate_demo.html">Simulation analysis (brainscore.simulate)</a></li>
+    <li><a class="dropdown-item" href="articles/hpc_demo.html">Computation on HPC with slurm</a></li>
   </ul>
 </li>
       </ul>
@@ -54,39 +55,7 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9">
-  <p align="left">
-    <img src="https://raw.githubusercontent.com/zh1peng/BrainEnrich/master/images/sticker.png" alt="R Sticker" style="float: right; margin-left: 15px; margin-bottom: 10px; width: 200px; height: auto;">
-    <span style="vertical-align: top; font-size: 16px; text-align: justify;">
-      <strong>BrainEnrich</strong> is an R package designed to facilitate the integration of brain imaging data with transcriptomic profiles. It enables researchers to explore the molecular underpinnings of brain phenotypes by performing enrichment analysis of predefined gene sets. Whether working at the group or individual level, the package offers a flexible and powerful tool for examining associations between brain imaging phenotypes (e.g., cortical thickness) and gene expression, using a variety of statistical models, null models, and aggregation methods.
-    </span>
-  </p>
-<p align="center">
-<img src="https://raw.githubusercontent.com/zh1peng/BrainEnrich/master/images/workflow1.png" alt="BrainEnrich"><br><em>Overview of the BrainEnrich package and its analysis workflow.</em>
-</p>
-<p>🚀<strong>Features</strong></p>
-<ul>
-  <li><strong>A. Group-Level Enrichment Analysis</strong>: A group-level IDP (e.g., effect size maps) is correlated with AHBA transcriptional profiles, yielding a spatial coupling vector that is aggregated within the predefined gene sets. The resultant “GS score” vector is tested against the null GS scores generated by the null models.</li>
-  <li><strong>B. Individual-Level Enrichment Analysis</strong>: A similar GS scoring approach is applied to individual IDPs, generating a spatial coupling matrix that is aggregated within the predefined gene sets. The resultant participant-specific GS scores are used for downstream analyses, and the results are tested against the null GS scores generated by the null models.</li>
-  <li><strong>C. Predefined Gene Sets</strong>: Predefined gene sets from various sources and user-defined sets aggregate gene-specific associations into GS scores for either group-level or individual-level analyses. The package includes predefined gene sets like: Gene Ontology, DisGeNet, KEGG, WikiPathways, Reactome, MeSH, SynGO, and Cell Type gene sets.</li>
-  <li><strong>D. Null Models</strong>: Includes both self-contained (spinning brain regions) and competitive (resampling genes) null models to assess the significance of GS score or to generate null GS scores at the individual level for downstream analysis.</li>
-  <li><strong>E. Simulation Studies</strong>: Type I error and power simulations to assess the reliability of the analysis methods.</li>
-  <li><strong>F. Core Genes Identification</strong>: A leave-one-out (LOO) procedure identifies genes that substantially influence GS scores (in group-level analysis) or the resultant test statistic (in individual-level analysis), highlighting the primary contributors to enriched terms.</li>
-  <li>🔧<strong>Multiple Association Methods</strong>: Pearson and Spearman correlations, Partial Least Squares (PLS) regression, and user-defined methods for exploring gene-imaging associations.</li>
-  <li>🔧<strong>Aggregation Methods</strong>: Multiple options for aggregating gene set scores, including mean, median, and Kolmogorov-Smirnov (KS)-based statistics.</li>
-</ul>
-<p>💾<strong>Installation</strong></p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Install remotes if you haven't already</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span><span class="op">}</span></span>
-<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"DOSE"</span><span class="op">)</span></span>
-<span><span class="co"># Install brainEnrich from GitHub</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"zh1peng/BrainEnrich"</span><span class="op">)</span></span></code></pre></div>
-
-
+The BrainEnrich package addresses key challenges in imaging transcriptomics by providing a flexible, comprehensive toolkit for gene set enrichment analysis. It enhances the integration of transcriptomics and neuroimaging data by offering customizable test statistics and null models, helping to reduce false-positive biases that are common in rigid pipelines. BrainEnrich includes standardized predefined gene sets sourced from curated databases, distributed through the companion package BrainEnrichData, ensuring consistency and reproducibility across studies. The package also facilitates the identification of core genes within gene sets, improving interpretation and visualization of results. Notably, BrainEnrich supports individual-level analysis, enabling a deeper examination of biological variability related to neurological and psychiatric disorders. By overcoming these methodological limitations, BrainEnrich advances the field of imaging transcriptomics, as demonstrated through real-world applications.
   </main><aside class="col-md-3"><div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
@@ -106,17 +75,11 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Zhipeng Cao <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-2624-2182" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Zhipeng Cao <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0003-2624-2182" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://github.com/zh1peng/BrainEnrich/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/zh1peng/BrainEnrich/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://app.codecov.io/gh/zh1peng/BrainEnrich" class="external-link"><img src="https://codecov.io/gh/zh1peng/BrainEnrich/graph/badge.svg" alt="Codecov test coverage"></a></li>
-</ul>
-</div>
+
 
   </aside>
 </div>
@@ -127,7 +90,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>
