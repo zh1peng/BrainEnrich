@@ -63,3 +63,20 @@ test_that("ask_user_continue returns FALSE for 'N' input", {
 
   expect_false(ask_user_continue("Test message"))
 })
+
+test_that("be_resolve_n_cores respects R CMD check core limits", {
+  withr::local_envvar(c("_R_CHECK_LIMIT_CORES_" = "true"))
+
+  available <- parallel::detectCores()
+  if (is.na(available) || available < 1L) {
+    available <- 1L
+  }
+  expected_default <- max(min(available - 1L, 2L), 1L)
+
+  resolved_default <- BrainEnrich:::be_resolve_n_cores(0)
+  resolved_explicit <- BrainEnrich:::be_resolve_n_cores(4)
+
+  expect_equal(resolved_default, expected_default)
+  expect_gte(resolved_explicit, 1L)
+  expect_lte(resolved_explicit, 2L)
+})

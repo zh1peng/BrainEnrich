@@ -7,7 +7,7 @@
 be_resolve_n_cores(n_cores)
 }
 \arguments{
-\item{n_cores}{Requested number of cores. \code{0} means all detected cores minus one.}
+\item{n_cores}{Requested number of cores. \code{0} means all detected cores minus one. When \code{_R_CHECK_LIMIT_CORES_} is set, the resolved value is capped at 2 to keep \code{R CMD check} compatible with CRAN-style core limits.}
 }
 \value{
 Integer scalar number of cores to use.

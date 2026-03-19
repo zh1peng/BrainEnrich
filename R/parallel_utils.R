@@ -1,6 +1,8 @@
 #' Internal helper: resolve requested cores
 #'
 #' @param n_cores Requested number of cores. `0` means all detected cores minus one.
+#'   When `_R_CHECK_LIMIT_CORES_` is set, the resolved value is capped at 2 to
+#'   keep `R CMD check` compatible with CRAN-style core limits.
 #' @return Integer scalar number of cores to use.
 be_resolve_n_cores <- function(n_cores) {
   if (!is.numeric(n_cores) || length(n_cores) != 1L || is.na(n_cores)) {
@@ -12,11 +14,17 @@ be_resolve_n_cores <- function(n_cores) {
     available <- 1L
   }
 
-  if (n_cores == 0) {
-    return(max(available - 1L, 1L))
+  max_allowed <- available
+  check_limit <- tolower(Sys.getenv("_R_CHECK_LIMIT_CORES_", ""))
+  if (nzchar(check_limit) && check_limit != "false") {
+    max_allowed <- min(max_allowed, 2L)
   }
 
-  max(min(as.integer(n_cores), available), 1L)
+  if (n_cores == 0) {
+    return(max(min(available - 1L, max_allowed), 1L))
+  }
+
+  max(min(as.integer(n_cores), max_allowed), 1L)
 }
 
 #' Internal helper: apply a function with a safe parallel backend
