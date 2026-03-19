@@ -6,11 +6,11 @@
 #' @return A `ggplot2` object.
 #' @export
 plot_terms <- function(x, type = c("dot", "bar", "volcano", "ridge"), top_n = 20) {
-  be_require_ggplot2()
-  be_validate_enrichres(x)
+  require_ggplot2()
+  validate_enrichres(x)
 
   type <- match.arg(type)
-  term_df <- be_term_plot_data(x)
+  term_df <- term_plot_data(x)
 
   if (type == "volcano") {
     pvals <- if ("pvalue" %in% names(term_df)) term_df$pvalue else rep(NA_real_, nrow(term_df))
@@ -24,60 +24,96 @@ plot_terms <- function(x, type = c("dot", "bar", "volcano", "ridge"), top_n = 20
     }
 
     return(
-      ggplot2::ggplot(term_df, ggplot2::aes(x = .data$effect, y = .data$neg_log10_p, color = .data$significant)) +
-        ggplot2::geom_point(alpha = 0.8, size = 2.5) +
-        ggplot2::scale_color_manual(values = c(`TRUE` = "#d95f02", `FALSE` = "#7570b3")) +
+      ggplot2::ggplot(term_df, ggplot2::aes(x = .data$effect, y = .data$neg_log10_p)) +
+        ggplot2::geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "#8c8c8c", linewidth = 0.35) +
+        ggplot2::geom_vline(xintercept = 0, linetype = "dotted", color = "#8c8c8c", linewidth = 0.35) +
+        ggplot2::geom_point(
+          ggplot2::aes(fill = .data$significant),
+          shape = 21,
+          color = "white",
+          stroke = 0.35,
+          alpha = 0.95,
+          size = 3
+        ) +
+        ggplot2::scale_fill_manual(values = c(`TRUE` = "#c0392b", `FALSE` = "#2c7fb8"), name = "FDR <= 0.05") +
+        ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(0.05, 0.05))) +
+        ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0.03, 0.08))) +
         ggplot2::labs(
           x = term_df$effect_label[[1]],
           y = expression(-log[10](pvalue)),
-          color = "Significant",
-          title = "Term Volcano Plot"
+          title = "Term Volcano Plot",
+          subtitle = "Observed effect against permutation p-values"
         ) +
-        ggplot2::theme_minimal(base_size = 11)
+        plot_theme() +
+        ggplot2::theme(legend.position = "top")
     )
   }
 
-  term_df <- be_top_terms(term_df, top_n = top_n)
+  term_df <- top_terms(term_df, top_n = top_n)
+  term_df$label_display <- wrap_label(term_df$label, width = 34)
   term_df$label <- stats::reorder(term_df$label, term_df$effect)
 
   if (type == "dot") {
     size_col <- if ("setSize" %in% names(term_df)) term_df$setSize else rep(3, nrow(term_df))
-    color_col <- if ("pvalue" %in% names(term_df)) {
+    fill_col <- if ("pvalue" %in% names(term_df)) {
       -log10(pmax(term_df$pvalue, .Machine$double.xmin))
     } else {
       term_df$effect
     }
     term_df$plot_size <- size_col
-    term_df$plot_color <- color_col
+    term_df$plot_fill <- fill_col
+    fill_lab <- if ("pvalue" %in% names(term_df)) {
+      expression(-log[10](pvalue))
+    } else {
+      term_df$effect_label[[1]]
+    }
+    fill_scale <- if ("pvalue" %in% names(term_df)) {
+      ggplot2::scale_fill_gradient(low = "#eaf2fb", high = "#08306b")
+    } else {
+      ggplot2::scale_fill_gradient2(low = "#2c7fb8", mid = "#f7f7f7", high = "#c0392b", midpoint = 0)
+    }
 
     return(
-      ggplot2::ggplot(term_df, ggplot2::aes(x = .data$effect, y = .data$label)) +
-        ggplot2::geom_point(ggplot2::aes(size = .data$plot_size, color = .data$plot_color), alpha = 0.9) +
+      ggplot2::ggplot(term_df, ggplot2::aes(x = .data$effect, y = .data$label_display)) +
+        ggplot2::geom_point(
+          ggplot2::aes(size = .data$plot_size, fill = .data$plot_fill),
+          shape = 21,
+          color = "white",
+          stroke = 0.35,
+          alpha = 0.95
+        ) +
+        fill_scale +
+        ggplot2::scale_size_continuous(range = c(2.8, 8.5)) +
         ggplot2::labs(
           x = term_df$effect_label[[1]],
           y = NULL,
           size = "Set size",
-          color = if ("pvalue" %in% names(term_df)) expression(-log[10](pvalue)) else term_df$effect_label[[1]],
-          title = "Top Enriched Terms"
+          fill = fill_lab,
+          title = "Top Enriched Terms",
+          subtitle = "Larger points indicate larger gene sets"
         ) +
-        ggplot2::theme_minimal(base_size = 11)
+        plot_theme() +
+        ggplot2::theme(axis.text.y = ggplot2::element_text(size = 9))
     )
   }
 
   if (type == "bar") {
     return(
-      ggplot2::ggplot(term_df, ggplot2::aes(x = .data$effect, y = .data$label, fill = .data$effect)) +
-        ggplot2::geom_col(show.legend = FALSE) +
+      ggplot2::ggplot(term_df, ggplot2::aes(x = .data$effect, y = .data$label_display, fill = .data$effect)) +
+        ggplot2::geom_col(width = 0.72, color = "white", linewidth = 0.25, show.legend = FALSE) +
+        ggplot2::scale_fill_gradient2(low = "#2c7fb8", mid = "#f7f7f7", high = "#c0392b", midpoint = 0) +
         ggplot2::labs(
           x = term_df$effect_label[[1]],
           y = NULL,
-          title = "Top Enriched Terms"
+          title = "Top Enriched Terms",
+          subtitle = "Ranked by effect size"
         ) +
-        ggplot2::theme_minimal(base_size = 11)
+        plot_theme() +
+        ggplot2::theme(axis.text.y = ggplot2::element_text(size = 9))
     )
   }
 
-  ridge_df <- be_ridge_data(x, top_n = top_n)
+  ridge_df <- ridge_data(x, top_n = top_n)
   ggplot2::ggplot(ridge_df$density_df, ggplot2::aes(x = .data$x)) +
     ggplot2::geom_ribbon(
       ggplot2::aes(
@@ -85,8 +121,16 @@ plot_terms <- function(x, type = c("dot", "bar", "volcano", "ridge"), top_n = 20
         ymax = .data$baseline + .data$scaled_density,
         group = .data$term
       ),
-      fill = "#9ecae1",
-      alpha = 0.8
+      fill = "#2c7fb8",
+      alpha = 0.28
+    ) +
+    ggplot2::geom_line(
+      ggplot2::aes(
+        y = .data$baseline + .data$scaled_density,
+        group = .data$term
+      ),
+      color = "#08306b",
+      linewidth = 0.35
     ) +
     ggplot2::geom_segment(
       data = ridge_df$obs_df,
@@ -96,20 +140,25 @@ plot_terms <- function(x, type = c("dot", "bar", "volcano", "ridge"), top_n = 20
         y = .data$baseline,
         yend = .data$baseline + 0.85
       ),
-      color = "#d95f02",
-      linewidth = 0.5,
+      color = "#c0392b",
+      linewidth = 0.65,
       inherit.aes = FALSE
     ) +
     ggplot2::scale_y_continuous(
       breaks = ridge_df$obs_df$baseline + 0.4,
-      labels = ridge_df$obs_df$label
+      labels = wrap_label(ridge_df$obs_df$label, width = 30)
     ) +
     ggplot2::labs(
       x = ridge_df$effect_label,
       y = NULL,
-      title = "Observed Scores Against Null Densities"
+      title = "Observed Scores Against Null Densities",
+      subtitle = paste0("Top ", nrow(ridge_df$obs_df), " terms and the first ", ncol(perm_score_matrix(x)), " permutations")
     ) +
-    ggplot2::theme_minimal(base_size = 11)
+    plot_theme() +
+    ggplot2::theme(
+      legend.position = "none",
+      axis.text.y = ggplot2::element_text(size = 9)
+    )
 }
 
 #' Plot core genes for a term
@@ -120,11 +169,11 @@ plot_terms <- function(x, type = c("dot", "bar", "volcano", "ridge"), top_n = 20
 #' @return A `ggplot2` object.
 #' @export
 plot_core_genes <- function(x, term_id, mode = c("impact", "direction")) {
-  be_require_ggplot2()
-  be_validate_enrichres(x)
+  require_ggplot2()
+  validate_enrichres(x)
 
   mode <- match.arg(mode)
-  core_df <- be_core_gene_details(x, term_id)
+  core_df <- core_gene_details(x, term_id)
 
   if (nrow(core_df) == 0L) {
     stop("No core genes available for term: ", term_id)
@@ -134,27 +183,36 @@ plot_core_genes <- function(x, term_id, mode = c("impact", "direction")) {
     core_df$gene_id <- stats::reorder(core_df$gene_id, core_df$impact)
     return(
       ggplot2::ggplot(core_df, ggplot2::aes(x = .data$impact, y = .data$gene_id, fill = .data$role)) +
-        ggplot2::geom_col() +
+        ggplot2::geom_col(width = 0.72, color = "white", linewidth = 0.25) +
+        ggplot2::scale_fill_manual(values = role_palette(), drop = FALSE) +
         ggplot2::labs(
           x = "Leave-one-out impact",
           y = NULL,
           fill = "Role",
-          title = paste("Core Genes for", term_id)
+          title = paste("Core Genes for", term_id),
+          subtitle = "Driver genes reinforce the observed statistic; buffer genes oppose it"
         ) +
-        ggplot2::theme_minimal(base_size = 11)
+        plot_theme(legend_position = "bottom") +
+        ggplot2::theme(axis.text.y = ggplot2::element_text(size = 9))
     )
   }
 
   role_df <- as.data.frame(table(core_df$role), stringsAsFactors = FALSE)
   names(role_df) <- c("role", "count")
+  role_df$role <- factor(role_df$role, levels = names(role_palette()))
+
   ggplot2::ggplot(role_df, ggplot2::aes(x = .data$role, y = .data$count, fill = .data$role)) +
-    ggplot2::geom_col(show.legend = FALSE) +
+    ggplot2::geom_col(width = 0.68, color = "white", linewidth = 0.25, show.legend = FALSE) +
+    ggplot2::geom_text(ggplot2::aes(label = .data$count), vjust = -0.45, fontface = "bold", size = 3.5) +
+    ggplot2::scale_fill_manual(values = role_palette(), drop = FALSE) +
     ggplot2::labs(
       x = NULL,
       y = "Gene count",
-      title = paste("Core Gene Directionality for", term_id)
+      title = paste("Core Gene Directionality for", term_id),
+      subtitle = "Counts of directional core-gene roles"
     ) +
-    ggplot2::theme_minimal(base_size = 11)
+    plot_theme(legend_position = "none") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 20, hjust = 1))
 }
 
 #' Plot a permutation heatmap for top terms
@@ -165,11 +223,11 @@ plot_core_genes <- function(x, term_id, mode = c("impact", "direction")) {
 #' @return A `ggplot2` object.
 #' @export
 plot_heatmap_terms <- function(x, top_n = 20, max_perm = 100) {
-  be_require_ggplot2()
-  be_validate_enrichres(x)
+  require_ggplot2()
+  validate_enrichres(x)
 
-  perm_scores <- be_perm_score_matrix(x)
-  term_df <- be_top_terms(be_term_plot_data(x), top_n = top_n)
+  perm_scores <- perm_score_matrix(x)
+  term_df <- top_terms(term_plot_data(x), top_n = top_n)
   term_ids <- intersect(term_df$ID, rownames(perm_scores))
 
   if (length(term_ids) == 0L) {
@@ -179,18 +237,25 @@ plot_heatmap_terms <- function(x, top_n = 20, max_perm = 100) {
   perm_scores <- perm_scores[term_ids, seq_len(min(ncol(perm_scores), max_perm)), drop = FALSE]
   heat_df <- as.data.frame(as.table(perm_scores), stringsAsFactors = FALSE)
   names(heat_df) <- c("term_id", "perm_idx", "score")
-  heat_df$term_id <- factor(heat_df$term_id, levels = rev(term_ids))
+  heat_df$perm_idx <- as.integer(as.character(heat_df$perm_idx))
+  term_labels <- wrap_label(term_df$label[match(term_ids, term_df$ID)], width = 28)
+  heat_df$term_label <- factor(term_labels[match(heat_df$term_id, term_ids)], levels = rev(unique(term_labels)))
 
-  ggplot2::ggplot(heat_df, ggplot2::aes(x = .data$perm_idx, y = .data$term_id, fill = .data$score)) +
-    ggplot2::geom_tile() +
+  ggplot2::ggplot(heat_df, ggplot2::aes(x = .data$perm_idx, y = .data$term_label, fill = .data$score)) +
+    ggplot2::geom_tile(color = "white", linewidth = 0.12) +
+    ggplot2::scale_fill_gradient2(low = "#2c7fb8", mid = "#f7f7f7", high = "#c0392b", midpoint = 0, name = "Score") +
     ggplot2::labs(
       x = "Permutation",
       y = NULL,
-      fill = "Score",
-      title = "Null Score Heatmap"
+      title = "Null Score Heatmap",
+      subtitle = paste0("Top ", length(term_ids), " terms across ", ncol(perm_scores), " permutations")
     ) +
-    ggplot2::theme_minimal(base_size = 11) +
-    ggplot2::theme(axis.text.x = ggplot2::element_blank(), axis.ticks.x = ggplot2::element_blank())
+    plot_theme() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(angle = 45, hjust = 1),
+      axis.text.y = ggplot2::element_text(size = 9)
+    )
 }
 
 #' Plot a lightweight term overlap network
@@ -201,10 +266,10 @@ plot_heatmap_terms <- function(x, top_n = 20, max_perm = 100) {
 #' @return A `ggplot2` object.
 #' @export
 plot_term_network <- function(x, top_n = 15, min_overlap = 0.1) {
-  be_require_ggplot2()
-  be_validate_enrichres(x)
+  require_ggplot2()
+  validate_enrichres(x)
 
-  term_df <- be_top_terms(be_term_plot_data(x), top_n = top_n)
+  term_df <- top_terms(term_plot_data(x), top_n = top_n)
   gene_sets <- x$gene_sets[term_df$ID]
   gene_sets <- gene_sets[lengths(gene_sets) > 0L]
 
@@ -222,6 +287,9 @@ plot_term_network <- function(x, top_n = 15, min_overlap = 0.1) {
     stringsAsFactors = FALSE
   )
   node_df <- merge(node_df, term_df[, c("ID", "label", "effect")], by = "ID", all.x = TRUE, sort = FALSE)
+  node_df$label_display <- wrap_label(node_df$label, width = 18)
+  node_df$label_x <- node_df$x * 1.12
+  node_df$label_y <- node_df$y * 1.12
 
   edge_list <- vector("list", 0L)
   edge_idx <- 0L
@@ -262,7 +330,7 @@ plot_term_network <- function(x, top_n = 15, min_overlap = 0.1) {
         linewidth = .data$overlap,
         alpha = .data$overlap
       ),
-      color = "#636363",
+      color = "#7a7a7a",
       show.legend = FALSE
     )
   }
@@ -270,27 +338,81 @@ plot_term_network <- function(x, top_n = 15, min_overlap = 0.1) {
   p +
     ggplot2::geom_point(
       data = node_df,
-      ggplot2::aes(x = .data$x, y = .data$y, size = abs(.data$effect), color = .data$effect)
+      ggplot2::aes(x = .data$x, y = .data$y, size = abs(.data$effect), fill = .data$effect),
+      shape = 21,
+      color = "white",
+      stroke = 0.65
     ) +
-    ggplot2::geom_text(
+    ggplot2::geom_label(
       data = node_df,
-      ggplot2::aes(x = .data$x, y = .data$y, label = .data$label),
-      vjust = -1,
-      size = 3
+      ggplot2::aes(x = .data$label_x, y = .data$label_y, label = .data$label_display),
+      size = 3,
+      label.size = 0.2,
+      label.padding = grid::unit(0.12, "lines"),
+      fill = "#ffffffe6",
+      color = "#2b2b2b",
+      fontface = "bold"
     ) +
-    ggplot2::coord_equal() +
+    ggplot2::scale_fill_gradient2(low = "#2c7fb8", mid = "#f7f7f7", high = "#c0392b", midpoint = 0) +
+    ggplot2::scale_size_continuous(range = c(4, 11)) +
+    ggplot2::coord_equal(xlim = c(-1.3, 1.3), ylim = c(-1.3, 1.3), clip = "off") +
     ggplot2::labs(
       x = NULL,
       y = NULL,
-      color = effect_label,
       size = paste0("|", effect_label, "|"),
-      title = "Term Overlap Network"
+      fill = effect_label,
+      title = "Term Overlap Network",
+      subtitle = "Node size reflects effect magnitude; edge thickness reflects Jaccard overlap"
     ) +
-    ggplot2::theme_void() +
-    ggplot2::theme(legend.position = "right")
+    ggplot2::theme_void(base_size = 12) +
+    ggplot2::theme(
+      legend.position = "bottom",
+      plot.title = ggplot2::element_text(face = "bold", hjust = 0.5),
+      plot.subtitle = ggplot2::element_text(hjust = 0.5, margin = ggplot2::margin(b = 8)),
+      plot.margin = ggplot2::margin(8, 8, 8, 8)
+    )
 }
 
-be_validate_enrichres <- function(x) {
+plot_theme <- function(base_size = 12, legend_position = "right") {
+  ggplot2::theme_minimal(base_size = base_size) +
+    ggplot2::theme(
+      text = ggplot2::element_text(color = "#1f1f1f"),
+      plot.title = ggplot2::element_text(face = "bold", margin = ggplot2::margin(b = 6)),
+      plot.subtitle = ggplot2::element_text(color = "#4f4f4f", margin = ggplot2::margin(b = 8)),
+      axis.title = ggplot2::element_text(face = "bold"),
+      axis.text = ggplot2::element_text(color = "#2b2b2b"),
+      legend.title = ggplot2::element_text(face = "bold"),
+      legend.position = legend_position,
+      panel.grid.major = ggplot2::element_line(color = "#e6e6e6", linewidth = 0.3),
+      panel.grid.minor = ggplot2::element_blank(),
+      plot.margin = ggplot2::margin(10, 12, 10, 12)
+    )
+}
+
+wrap_label <- function(x, width = 32) {
+  vapply(
+    x,
+    function(label) {
+      if (is.na(label) || !nzchar(label)) {
+        return("")
+      }
+      paste(strwrap(as.character(label), width = width), collapse = "\n")
+    },
+    character(1),
+    USE.NAMES = FALSE
+  )
+}
+
+role_palette <- function() {
+  c(
+    driver = "#c0392b",
+    buffer = "#2c7fb8",
+    neutral = "#7f7f7f",
+    unknown = "#7f7f7f"
+  )
+}
+
+validate_enrichres <- function(x) {
   if (!is_EnrichRes(x)) {
     stop("`x` must be an EnrichRes object.")
   }
@@ -299,13 +421,13 @@ be_validate_enrichres <- function(x) {
   }
 }
 
-be_require_ggplot2 <- function() {
+require_ggplot2 <- function() {
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("Package `ggplot2` is required for plotting. Please install it first.")
   }
 }
 
-be_term_plot_data <- function(x) {
+term_plot_data <- function(x) {
   tbl <- x$table
   effect_candidates <- c("gsScore", "Standardized_Coefficient", "Estimate", "t_Value", "Statistic")
   effect_col <- effect_candidates[effect_candidates %in% names(tbl)][1]
@@ -325,7 +447,7 @@ be_term_plot_data <- function(x) {
   out
 }
 
-be_top_terms <- function(term_df, top_n = 20) {
+top_terms <- function(term_df, top_n = 20) {
   top_n <- max(as.integer(top_n), 1L)
   order_idx <- if ("pvalue" %in% names(term_df)) {
     order(term_df$pvalue, -abs(term_df$effect), na.last = TRUE)
@@ -335,7 +457,7 @@ be_top_terms <- function(term_df, top_n = 20) {
   term_df[utils::head(order_idx, top_n), , drop = FALSE]
 }
 
-be_perm_score_matrix <- function(x) {
+perm_score_matrix <- function(x) {
   if (is.null(x$perm_scores)) {
     stop("`x$perm_scores` is required for this plot.")
   }
@@ -350,9 +472,9 @@ be_perm_score_matrix <- function(x) {
   perm_scores
 }
 
-be_ridge_data <- function(x, top_n = 10) {
-  perm_scores <- be_perm_score_matrix(x)
-  term_df <- be_top_terms(be_term_plot_data(x), top_n = top_n)
+ridge_data <- function(x, top_n = 10) {
+  perm_scores <- perm_score_matrix(x)
+  term_df <- top_terms(term_plot_data(x), top_n = top_n)
   term_ids <- intersect(term_df$ID, rownames(perm_scores))
 
   if (length(term_ids) == 0L) {
@@ -388,7 +510,7 @@ be_ridge_data <- function(x, top_n = 10) {
   )
 }
 
-be_core_gene_details <- function(x, term_id) {
+core_gene_details <- function(x, term_id) {
   labels <- NULL
   if (is.list(x$core_genes) && term_id %in% names(x$core_genes)) {
     labels <- x$core_genes[[term_id]]

@@ -186,12 +186,12 @@ Table2Anno <- function(df, sep = ";") {
   }
 
   term2gene <- df %>%
-    dplyr::select(term_id = .data$pathID, gene_id = .data$geneID) %>%
+    dplyr::select(term_id = pathID, gene_id = geneID) %>%
     dplyr::mutate(gene_id = strsplit(as.character(.data$gene_id), sep)) %>%
     tidyr::unnest(cols = .data$gene_id)
 
   term2name <- df %>%
-    dplyr::select(term_id = .data$pathID, term_name = .data$pathName) %>%
+    dplyr::select(term_id = pathID, term_name = pathName) %>%
     dplyr::distinct()
 
   new_EnrichAnno(term2gene = term2gene, term2name = term2name, meta = list(source = "Table2Anno"))
@@ -233,7 +233,7 @@ FilterTable <- function(df, bg_genes, sep = ";", minGSSize = 0, maxGSSize = Inf)
       .groups = "drop"
     ) %>%
     dplyr::filter(.data$geneSetSize >= minGSSize & .data$geneSetSize <= maxGSSize) %>%
-    dplyr::select(.data$pathID, .data$pathName, .data$geneSetSize, .data$geneID)
+    dplyr::select(pathID, pathName, geneSetSize, geneID)
 
   filtered_df
 }

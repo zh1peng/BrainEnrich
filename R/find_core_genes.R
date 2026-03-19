@@ -13,6 +13,9 @@
 #' @param threshold_value Threshold value.
 #' @import pbapply parallel
 #' @return A named list of character vectors with directional labels (`driver`/`buffer`).
+#' The label is assigned by comparing the sign of the leave-one-out change with the sign of the
+#' full statistic: `driver` means the gene reinforces the observed effect, while `buffer` means
+#' the gene attenuates or opposes it.
 #' @export
 find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL, aggre_method, n_cores = 1, threshold_type = c("sd", "percentile"), threshold_value = 1) {
   type1_analysis <- is.null(pred_df) && is.null(cov_df)
@@ -93,6 +96,8 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
 #' @param threshold_value Threshold value.
 #' @importFrom stats quantile sd
 #' @return Character vector such as `GENE(driver)`/`GENE(buffer)`.
+#' The role is `driver` when the leave-one-out change has the same sign as the reference statistic
+#' and `buffer` when it has the opposite sign. `neutral` is used when either sign is zero.
 identify_core_genes <- function(changes, reference_stat, threshold_type = c("sd", "percentile"), threshold_value = 1) {
   threshold_type <- match.arg(threshold_type)
   impact <- abs(changes)

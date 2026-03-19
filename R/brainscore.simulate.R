@@ -88,9 +88,9 @@ brainscore.simulate <- function(pred_df,
           stat2return = "pval"
         )
         sampled_res <- sampled_res %>%
-          dplyr::select(.data$Dependent_vars, .data$pval) %>%
+          dplyr::select(Dependent_vars, pval) %>%
           dplyr::rename(
-            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$pval
+            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := pval
           )
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }
@@ -219,10 +219,10 @@ brainscore.simulate <- function(pred_df,
         }
 
         sampled_res <- res %>%
-          dplyr::select(.data$Dependent_vars, .data$pval, .data$np_pval) %>%
+          dplyr::select(Dependent_vars, pval, np_pval) %>%
           dplyr::rename(
-            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$pval,
-            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_pval
+            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := pval,
+            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := np_pval
           )
 
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
@@ -334,10 +334,10 @@ brainscore.simulate <- function(pred_df,
           res$np_pval <- unname(np_pval)
         }
         sampled_res <- res %>%
-          dplyr::select(.data$Dependent_vars, .data$pval, .data$np_pval) %>%
+          dplyr::select(Dependent_vars, pval, np_pval) %>%
           dplyr::rename(
-            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$pval,
-            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := .data$np_pval
+            !!paste0("pval_nofdr_sim_", sim_i, "_subsample_", size2use) := pval,
+            !!paste0("np_pval_nofdr_sim_", sim_i, "_subsample_", size2use) := np_pval
           )
         sim_results[[paste0("sim_", sim_i, "_subsample_", size2use)]] <- sampled_res
       }

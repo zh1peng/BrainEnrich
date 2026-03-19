@@ -1,4 +1,5 @@
 url: https://zh1peng.github.io/BrainEnrich
+llm-docs: false
 template:
   bootstrap: 5
 

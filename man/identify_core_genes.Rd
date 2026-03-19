@@ -22,6 +22,8 @@ identify_core_genes(
 }
 \value{
 Character vector such as \code{GENE(driver)}/\code{GENE(buffer)}.
+The role is \code{driver} when the leave-one-out change has the same sign as the reference statistic
+and \code{buffer} when it has the opposite sign. \code{neutral} is used when either sign is zero.
 }
 \description{
 Identify core genes with directional labels

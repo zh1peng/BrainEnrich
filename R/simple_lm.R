@@ -76,16 +76,16 @@ simple_lm <- function(dependent_df,
         #   TRUE ~ "n.s."
         # )
       ) %>%
-      dplyr::select(.data$Dependent_vars, .data$term, .data$estimate, .data$std.error, .data$statistic, .data$Std_Coefficient, .data$CI_low, .data$CI_high, .data$p.value, .data$p.adj) %>%
+      dplyr::select(Dependent_vars, term, estimate, std.error, statistic, Std_Coefficient, CI_low, CI_high, p.value, p.adj) %>%
       dplyr::rename(
-        Predictor = .data$term,
-        Unstandardized_Coefficient = .data$estimate,
-        Standard_Error = .data$std.error,
-        t_Value = .data$statistic,
-        Standardized_Coefficient = .data$Std_Coefficient,
-        CI_95_Lower = .data$CI_low,
-        CI_95_Upper = .data$CI_high,
-        p.val = .data$p.value
+        Predictor = term,
+        Unstandardized_Coefficient = estimate,
+        Standard_Error = std.error,
+        t_Value = statistic,
+        Standardized_Coefficient = Std_Coefficient,
+        CI_95_Lower = CI_low,
+        CI_95_Upper = CI_high,
+        p.val = p.value
       )
   } else if (stat2return == "tval") {
     res <- df %>%
@@ -98,8 +98,8 @@ simple_lm <- function(dependent_df,
       ) %>%
       tidyr::unnest(cols = c("tidy_model")) %>%
       dplyr::filter(.data$term == var2extract) %>%
-      dplyr::select(.data$Dependent_vars, .data$term, .data$statistic) %>%
-      dplyr::rename(Predictor = .data$term, tval = .data$statistic) %>%
+      dplyr::select(Dependent_vars, term, statistic) %>%
+      dplyr::rename(Predictor = term, tval = statistic) %>%
       dplyr::ungroup()
   } else if (stat2return == "tval_list") {
     res <- df %>%
@@ -112,7 +112,7 @@ simple_lm <- function(dependent_df,
       ) %>%
       tidyr::unnest(cols = c("tidy_model")) %>%
       dplyr::filter(.data$term == var2extract) %>%
-      dplyr::select(.data$Dependent_vars, .data$statistic) %>%
+      dplyr::select(Dependent_vars, statistic) %>%
       tibble::deframe() %>%
       as.list()
   } else if (stat2return == "pval") {
@@ -126,8 +126,8 @@ simple_lm <- function(dependent_df,
       ) %>%
       tidyr::unnest(cols = c("tidy_model")) %>%
       dplyr::filter(.data$term == var2extract) %>%
-      dplyr::select(.data$Dependent_vars, .data$term, .data$p.value) %>%
-      dplyr::rename(Predictor = .data$term, pval = .data$p.value) %>%
+      dplyr::select(Dependent_vars, term, p.value) %>%
+      dplyr::rename(Predictor = term, pval = p.value) %>%
       dplyr::ungroup()
   }
   return(res)

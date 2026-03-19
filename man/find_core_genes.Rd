@@ -34,6 +34,9 @@ find_core_genes(
 }
 \value{
 A named list of character vectors with directional labels (\code{driver}/\code{buffer}).
+The label is assigned by comparing the sign of the leave-one-out change with the sign of the
+full statistic: \code{driver} means the gene reinforces the observed effect, while \code{buffer} means
+the gene attenuates or opposes it.
 }
 \description{
 Leave-one-out analysis to identify genes with the largest influence on

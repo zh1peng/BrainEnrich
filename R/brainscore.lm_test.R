@@ -230,26 +230,26 @@ brainscore.lm_test <- function(pred_df,
   }
 
   # Keep table naming aligned with enrichment output conventions.
-  out_table <- res
-  if (nrow(out_table) > 0) {
-    out_table <- out_table %>%
-      dplyr::rename(ID = .data$Dependent_vars) %>%
-      dplyr::select(.data$ID, .data$Description, .data$setSize, dplyr::everything()) %>%
-      dplyr::select(-.data$p.val, -.data$p.adj)
+    out_table <- res
+    if (nrow(out_table) > 0) {
+      out_table <- out_table %>%
+      dplyr::rename(ID = Dependent_vars) %>%
+      dplyr::select(ID, Description, setSize, dplyr::everything()) %>%
+      dplyr::select(-p.val, -p.adj)
     if ("core_genes" %in% names(out_table)) {
       out_table <- out_table %>%
         dplyr::rename(
-          pvalue = .data$np.pval,
-          p.adjust = .data$np.padj,
-          qvalue = .data$np.qval,
-          core_enrichment = .data$core_genes
+          pvalue = np.pval,
+          p.adjust = np.padj,
+          qvalue = np.qval,
+          core_enrichment = core_genes
         )
     } else {
       out_table <- out_table %>%
         dplyr::rename(
-          pvalue = .data$np.pval,
-          p.adjust = .data$np.padj,
-          qvalue = .data$np.qval
+          pvalue = np.pval,
+          p.adjust = np.padj,
+          qvalue = np.qval
         )
     }
   } else {

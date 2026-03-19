@@ -250,6 +250,10 @@ plot_term_network(res, top_n = 10, min_overlap = 0.05)
 
 ### 3.5. Core genes for the top term
 
+Core genes are selected with a leave-one-out analysis. A gene is labeled `driver` when removing it changes
+the summary statistic in the same direction as the observed effect, and `buffer` when the sign flips.
+The size of the bar reflects the absolute leave-one-out impact, so taller bars indicate stronger influence.
+
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE, fig.align='center', fig.height=6, fig.width=8}
 top_term <- res$table$ID[[1]]
 plot_core_genes(res, term_id = top_term, mode = "impact")
