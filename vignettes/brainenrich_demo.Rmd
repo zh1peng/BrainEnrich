@@ -95,8 +95,9 @@ plot_brain <- function(df2plot,
 
   # Modify labels and join data based on anatomical terms
   if (ats == "dx" || ats == "dk") {
-    atlas <- ifelse(ats == "dx", "desterieux", "dk")
-    atlas_data <- getExportedValue("ggseg", atlas)
+    # ggseg exports atlas constructors as functions; call them to get atlas data.
+    atlas <- "dk"
+    atlas_data <- getExportedValue("ggseg", atlas)()
     df2plot <- df2plot %>%
       mutate(
         label = sub(".*L_", "lh_", .data$label),
@@ -104,9 +105,9 @@ plot_brain <- function(df2plot,
         label = sub(sufix2remove, "", .data$label)
       ) %>%
       brain_join(atlas_data) %>%
-      reposition_brain(as.formula(". ~ hemi + side"))
+      reposition_brain(as.formula(". ~ hemi + view"))
   } else if (ats == "aseg") {
-    atlas_data <- getExportedValue("ggseg", "aseg") # ggseg::aseg
+    atlas_data <- getExportedValue("ggseg", "aseg")()
     df2plot <- df2plot %>%
       mutate(
         label = sub("SV_L_", "Left-", .data$label), # Replace "SV_L_" with "Left-"
@@ -122,7 +123,7 @@ plot_brain <- function(df2plot,
       ) %>%
       filter(!grepl("Accumben-area", .data$label)) %>%
       brain_join(atlas_data) %>%
-      filter(.data$side == "coronal")
+      filter(.data$view == "coronal")
   }
 
   # Apply conditional filtering based on hemisphere

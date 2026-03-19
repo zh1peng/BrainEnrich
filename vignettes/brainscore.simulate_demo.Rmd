@@ -28,7 +28,7 @@ The simulation analysis is performed by
 (3) resampling the gene data (`sim_type ='resampling_gene'`). 
 
 The simulation analysis is performed to assess the false positive rate (Type1 error; `sim_setting ='type1'`) of the analysis, as when the above elements are permuted, we expect no the correlation between the gene set scores and the predictor variable.
-For demonstration purposes, we have used a small number of iterations (sim_n = 5) and one subsample size (subsample_size = 100). In practice, we recommend using a larger number of iterations (i.e. 1000), various subsample sizes (e.g., 50, 100, 150, 200) and larger size of null models for a more robust analysis.
+For demonstration purposes, we have used a small number of iterations (sim_n = 2) and one subsample size (subsample_size = 100). In practice, we recommend using a larger number of iterations (i.e. 1000), various subsample sizes (e.g., 50, 100, 150, 200) and larger size of null models for a more robust analysis.
 
 ```{r setup, echo=TRUE, message=FALSE, warning=FALSE}
 library(BrainEnrich)
@@ -90,7 +90,7 @@ res <- brainscore.simulate(
   brain_data = brain_data,
   gene_data = gene_data,
   annoData = annoData,
-  sim_n = 5,
+  sim_n = 2,
   subsample_size = 100,
   sim_setting = "type1",
   sim_type = "randomize_pred",
@@ -116,14 +116,14 @@ res <- brainscore.simulate(
   brain_data = brain_data,
   gene_data = gene_data,
   annoData = annoData,
-  sim_n = 5,
+  sim_n = 2,
   subsample_size = 100,
   sim_setting = "type1",
   sim_type = "spin_brain",
   cor_method = "pearson",
   aggre_method = "mean",
   n_cores = 1,
-  n_perm = 10,
+  n_perm = 2,
   perm_id = perm_id_dk_lh_5000,
   minGSSize = 20,
   maxGSSize = 200
@@ -143,7 +143,7 @@ gsScore.spin_brain <- brainscore(
   annoData = annoData,
   null_model = "spin_brain",
   n_cores = 1,
-  n_perm = 10,
+  n_perm = 2,
   perm_id = perm_id_dk_lh_5000,
   minGSSize = 20,
   maxGSSize = 200
@@ -158,14 +158,14 @@ res <- brainscore.simulate(
   gene_data = gene_data,
   annoData = annoData,
   gsScoreList.null = gsScore.spin_brain,
-  sim_n = 5,
+  sim_n = 2,
   subsample_size = 100,
   sim_setting = "type1",
   sim_type = "spin_brain",
   cor_method = "pearson",
   aggre_method = "mean",
   n_cores = 1,
-  n_perm = 10,
+  n_perm = 2,
   perm_id = perm_id_dk_lh_5000,
   minGSSize = 20,
   maxGSSize = 200
@@ -188,14 +188,14 @@ res <- brainscore.simulate(
   brain_data = brain_data,
   gene_data = gene_data,
   annoData = annoData,
-  sim_n = 5,
+  sim_n = 2,
   subsample_size = 100,
   sim_setting = "type1",
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",
   n_cores = 1,
-  n_perm = 10,
+  n_perm = 2,
   minGSSize = 20,
   maxGSSize = 200
 )
@@ -215,7 +215,7 @@ gsScore.resample_gene <- brainscore(
   annoData = annoData,
   null_model = "resample_gene",
   n_cores = 1,
-  n_perm = 10,
+  n_perm = 2,
   minGSSize = 20,
   maxGSSize = 200
 )
@@ -229,14 +229,14 @@ res <- brainscore.simulate(
   gene_data = gene_data,
   annoData = annoData,
   gsScoreList.null = gsScore.resample_gene,
-  sim_n = 5,
+  sim_n = 2,
   subsample_size = 100,
   sim_setting = "type1",
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",
   n_cores = 1,
-  n_perm = 10,
+  n_perm = 2,
   minGSSize = 20,
   maxGSSize = 200
 )
@@ -258,14 +258,14 @@ res <- brainscore.simulate(
   gene_data = gene_data,
   annoData = annoData,
   gsScoreList.null = gsScore.resample_gene,
-  sim_n = 5,
+  sim_n = 2,
   subsample_size = 100,
   sim_setting = "power",
   sim_type = "resample_gene",
   cor_method = "pearson",
   aggre_method = "mean",
   n_cores = 1,
-  n_perm = 10,
+  n_perm = 2,
   minGSSize = 20,
   maxGSSize = 200
 )

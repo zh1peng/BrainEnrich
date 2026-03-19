@@ -3,14 +3,14 @@
 ![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/zh1peng/BrainEnrich/total?logo=plume&label=Download&color=%23328da8)
 
 <p align="left">
-  <img src="images/sticker.png" alt="BrainEnrich sticker" align="right" height="160" style="margin-right: 15px;">
+  <img src="https://raw.githubusercontent.com/zh1peng/BrainEnrich/master/images/sticker.png" alt="BrainEnrich sticker" align="right" height="160" style="margin-right: 15px;">
   <span style="vertical-align: top; font-size: 16px; text-align: justify;">
     <strong>BrainEnrich</strong> is an R package for transcriptomic enrichment analysis of brain imaging phenotypes. It supports group-level enrichment, individual-level gene-set scoring, null-model based inference, and simulation workflows with native BrainEnrich result objects and plotting utilities.
   </span>
 </p>
 
 <p align="center">
-  <img src="images/workflow1.png" alt="BrainEnrich workflow">
+  <img src="https://raw.githubusercontent.com/zh1peng/BrainEnrich/master/images/workflow1.png" alt="BrainEnrich workflow">
   <br>
   <em>Overview of the BrainEnrich analysis workflow.</em>
 </p>
