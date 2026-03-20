@@ -42,4 +42,4 @@ Suggests:
     ggseg,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://zh1peng.github.io/BrainEnrich/
+URL: https://zh1peng.github.io/BrainEnrich/dev

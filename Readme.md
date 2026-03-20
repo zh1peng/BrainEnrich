@@ -80,7 +80,7 @@ plot_terms(res, type = "dot")
 
 ## Documentation
 
-Tutorials are available at [github-pages](https://zh1peng.github.io/BrainEnrich/).
+Tutorials are available at [github-pages](https://zh1peng.github.io/BrainEnrich/dev/).
 
 - Group-level enrichment: `vignettes/brainenrich_demo.Rmd`
 - Individual-level enrichment: `vignettes/brainscore_demo.Rmd`
