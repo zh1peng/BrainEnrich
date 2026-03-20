@@ -53,7 +53,7 @@
 
 
 <dl><dt id="arg-n-cores">n_cores<a class="anchor" aria-label="anchor" href="#arg-n-cores"></a></dt>
-<dd><p>Requested number of cores. <code>0</code> means all detected cores minus one.</p></dd>
+<dd><p>Requested number of cores. <code>0</code> means all detected cores minus one. When <code>_R_CHECK_LIMIT_CORES_</code> is set, the resolved value is capped at 2 to keep <code>R CMD check</code> compatible with CRAN-style core limits.</p></dd>
 
 </dl></div>
     <div class="section level2">
