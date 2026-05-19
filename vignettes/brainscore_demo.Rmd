@@ -88,7 +88,11 @@ gsScore.raw <- brainscore(
 )
 str(head(gsScore.raw))
 ```
-The gsScore.raw is a list of molecular terms. For each molecular term, you can find individual gene set scores and use them for downstream analyses (e.g., correlation analysis, machine learning, clustering etc.).
+The gsScore.raw is a list of molecular terms. For each molecular term, you can find individual gene set scores and use them for downstream analyses (e.g., correlation analysis, machine learning, clustering etc.). By default, empirical individual-level GS scores also include KS normality diagnostics:
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+head(attr(gsScore.raw, "normality"))
+```
+These diagnostics are intended to guide downstream model choice and are not used as automatic exclusion criteria.
 
 ### 2.2. Get the null score of the brain_data (`null_model='spin_brain'`)
 Next, we will calculate the null scores using the 'spin_brain' null model.
@@ -189,6 +193,7 @@ kable(res.df, format = "html", escape = FALSE) %>%
   kable_styling("striped", full_width = FALSE) %>%
   scroll_box(width = "100%", height = "400px")
 ```
+The linear regression result table also reports the same individual-level GS score normality diagnostics for each term.
 
 ## 4. Visualization
 This section covers the visualization of the results.

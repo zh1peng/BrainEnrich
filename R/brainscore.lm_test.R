@@ -33,6 +33,12 @@
 #' @param matchcoexp_tol Numeric value specifying the tolerance for matched coexpression. Default is 0.05.
 #' @param matchcoexp_max_iter Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.
 #' @param gsea_obj Logical specifying whether to return a GSEA object otherwise only a table will be returned. Default is TRUE.
+#' @param normality_check Logical indicating whether to report normality diagnostics for empirical individual-level gene set scores. Default is TRUE.
+#' @param normality_method Character string specifying the normality diagnostic method. Default is `"ks"`. Other options are `"shapiro"` and `"both"`.
+#' @param normality_alpha Numeric significance threshold used to flag non-normal score distributions after p-value adjustment. Default is 0.05.
+#' @param normality_p_adjust Character string specifying the method for normality p-value adjustment. Default is `"fdr"`. See [stats::p.adjust()] for details.
+#' @param normality_shapiro_max_n Maximum sample size used for Shapiro-Wilk tests. Default is 5000.
+#' @param normality_seed Optional random seed used when subsampling observations for Shapiro-Wilk tests.
 #' @importFrom stats p.adjust
 #' @importFrom utils getFromNamespace
 #' @importFrom purrr list_transpose
@@ -68,13 +74,20 @@ brainscore.lm_test <- function(pred_df,
                                padjCutoff = NULL,
                                matchcoexp_tol = 0.05,
                                matchcoexp_max_iter = 1000000,
-                               gsea_obj = TRUE) {
+                               gsea_obj = TRUE,
+                               normality_check = TRUE,
+                               normality_method = c("ks", "shapiro", "both"),
+                               normality_alpha = 0.05,
+                               normality_p_adjust = "fdr",
+                               normality_shapiro_max_n = 5000,
+                               normality_seed = NULL) {
   # Validate arguments
   cor_method <- match.arg(cor_method)
   aggre_method <- match.arg(aggre_method)
   null_model <- match.arg(null_model)
   threshold_type <- match.arg(threshold_type)
   pAdjustMethod <- match.arg(pAdjustMethod)
+  normality_method <- match.arg(normality_method)
 
   message("=========Empirical model======")
   # Generate true gene set scores
@@ -87,11 +100,34 @@ brainscore.lm_test <- function(pred_df,
     null_model = "none",
     minGSSize = minGSSize,
     maxGSSize = maxGSSize,
-    n_cores = n_cores
+    n_cores = n_cores,
+    normality_check = normality_check,
+    normality_method = normality_method,
+    normality_alpha = normality_alpha,
+    normality_p_adjust = normality_p_adjust,
+    normality_shapiro_max_n = normality_shapiro_max_n,
+    normality_seed = normality_seed
   )
+  normality_res <- attr(gsScore.true, "normality")
+  if (normality_check && is.null(normality_res)) {
+    normality_res <- brainscore.normality(
+      gsScore.true,
+      method = normality_method,
+      alpha = normality_alpha,
+      p_adjust_method = normality_p_adjust,
+      shapiro_max_n = normality_shapiro_max_n,
+      seed = normality_seed
+    )
+  }
   dependent_df.true <- data.frame(gsScore.true, check.names = FALSE)
   message("Performing linear modeling using empirical gene set scores...")
   res <- simple_lm(dependent_df = dependent_df.true, pred_df = pred_df, cov_df = cov_df, stat2return = "all")
+  if (normality_check && !is.null(normality_res)) {
+    normality_cols <- setdiff(colnames(normality_res), "ID")
+    normality_idx <- match(res$Dependent_vars, normality_res$ID)
+    res <- cbind(res, normality_res[normality_idx, normality_cols, drop = FALSE])
+    rownames(res) <- NULL
+  }
   if (null_model == "none") {
     message("Setting null model to none will return the empirical model results only. This is not recommended and only for quick testing purposes.")
     return(res)

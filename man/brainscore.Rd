@@ -22,6 +22,12 @@ brainscore(
   seed = NULL,
   matchcoexp_tol = 0.05,
   matchcoexp_max_iter = 1e+06,
+  normality_check = TRUE,
+  normality_method = c("ks", "shapiro", "both"),
+  normality_alpha = 0.05,
+  normality_p_adjust = "fdr",
+  normality_shapiro_max_n = 5000,
+  normality_seed = NULL,
   verbose = TRUE
 )
 }
@@ -62,10 +68,22 @@ Default is 'mean'. Other options include 'median', 'meanabs',
 
 \item{matchcoexp_max_iter}{An integer specifying the maximum number of iterations for matched co-expression. Default is 1,000,000. See \code{resample_geneSetList_matching_coexp} for more details.}
 
+\item{normality_check}{Logical indicating whether to attach normality diagnostics for empirical individual-level gene set scores. Default is TRUE. This is only applied when \code{null_model = "none"}.}
+
+\item{normality_method}{Character string specifying the normality diagnostic method. Default is \code{"ks"}. Other options are \code{"shapiro"} and \code{"both"}.}
+
+\item{normality_alpha}{Numeric significance threshold used to flag non-normal score distributions after p-value adjustment. Default is 0.05.}
+
+\item{normality_p_adjust}{Character string specifying the method for normality p-value adjustment. Default is \code{"fdr"}. See \code{\link[stats:p.adjust]{stats::p.adjust()}} for details.}
+
+\item{normality_shapiro_max_n}{Maximum sample size used for Shapiro-Wilk tests. Default is 5000.}
+
+\item{normality_seed}{Optional random seed used when subsampling observations for Shapiro-Wilk tests.}
+
 \item{verbose}{A logical indicating whether to print messages during processing. Default is TRUE.}
 }
 \value{
-A data frame containing the gene set scores with regions as rows and gene sets as columns.
+A data frame containing the gene set scores with subjects as rows and gene sets as columns when \code{null_model = "none"}, or a list of null score data frames when using a null model. Empirical scores include normality diagnostics in \code{attr(result, "normality")} when \code{normality_check = TRUE}.
 }
 \description{
 This function calculates scores for gene sets based on brain data. It supports different null models.

@@ -24,9 +24,15 @@
 #' @param seed An integer specifying the seed for reproducibility when using the 'spin_brain' model. Default is NULL.
 #' @param matchcoexp_tol A numeric value specifying the tolerance for matched co-expression. Lower values result in better matching but require more iterations. Default is 0.05. See `resample_geneSetList_matching_coexp` for more details.
 #' @param matchcoexp_max_iter An integer specifying the maximum number of iterations for matched co-expression. Default is 1,000,000. See `resample_geneSetList_matching_coexp` for more details.
+#' @param normality_check Logical indicating whether to attach normality diagnostics for empirical individual-level gene set scores. Default is TRUE. This is only applied when `null_model = "none"`.
+#' @param normality_method Character string specifying the normality diagnostic method. Default is `"ks"`. Other options are `"shapiro"` and `"both"`.
+#' @param normality_alpha Numeric significance threshold used to flag non-normal score distributions after p-value adjustment. Default is 0.05.
+#' @param normality_p_adjust Character string specifying the method for normality p-value adjustment. Default is `"fdr"`. See [stats::p.adjust()] for details.
+#' @param normality_shapiro_max_n Maximum sample size used for Shapiro-Wilk tests. Default is 5000.
+#' @param normality_seed Optional random seed used when subsampling observations for Shapiro-Wilk tests.
 #' @param verbose A logical indicating whether to print messages during processing. Default is TRUE.
 
-#' @return A data frame containing the gene set scores with regions as rows and gene sets as columns.
+#' @return A data frame containing the gene set scores with subjects as rows and gene sets as columns when `null_model = "none"`, or a list of null score data frames when using a null model. Empirical scores include normality diagnostics in `attr(result, "normality")` when `normality_check = TRUE`.
 #' @import pbapply
 #' @import parallel
 #' @export
@@ -46,6 +52,12 @@ brainscore <- function(brain_data,
                        seed = NULL,
                        matchcoexp_tol = 0.05,
                        matchcoexp_max_iter = 1000000,
+                       normality_check = TRUE,
+                       normality_method = c("ks", "shapiro", "both"),
+                       normality_alpha = 0.05,
+                       normality_p_adjust = "fdr",
+                       normality_shapiro_max_n = 5000,
+                       normality_seed = NULL,
                        verbose = TRUE) {
   # Check inputs
   stopifnot(is.environment(annoData))
@@ -54,6 +66,7 @@ brainscore <- function(brain_data,
   cor_method <- match.arg(cor_method)
   aggre_method <- match.arg(aggre_method)
   null_model <- match.arg(null_model)
+  normality_method <- match.arg(normality_method)
 
   if (null_model == "spin_brain" && is.null(perm_id) && is.null(coord.l) && is.null(coord.r)) {
     stop("For null_model 'spin_brain', 'perm_id' or at least one of 'coord.l' or 'coord.r' must be provided.")
@@ -190,5 +203,15 @@ brainscore <- function(brain_data,
   attr(gs.score, "minGSSize") <- minGSSize
   attr(gs.score, "maxGSSize") <- maxGSSize
   attr(gs.score, "n_perm") <- n_perm
+  if (normality_check && null_model == "none") {
+    attr(gs.score, "normality") <- brainscore.normality(
+      gs.score,
+      method = normality_method,
+      alpha = normality_alpha,
+      p_adjust_method = normality_p_adjust,
+      shapiro_max_n = normality_shapiro_max_n,
+      seed = normality_seed
+    )
+  }
   return(gs.score)
 }

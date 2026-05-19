@@ -46,11 +46,13 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
   }
 
   # Initialize a cluster of workers
-  cl <- makeCluster(n_cores)
+  cl <- if (n_cores > 1) makeCluster(n_cores) else NULL
 
   if (type1_analysis) {
     # Export necessary variables to the cluster
-    clusterExport(cl, varlist = c("geneList", "aggregate_geneSet", "aggre_method"), envir = environment())
+    if (!is.null(cl)) {
+      clusterExport(cl, varlist = c("geneList", "aggregate_geneSet", "aggre_method"), envir = environment())
+    }
     # Parallelize the processing using pblapply for progress bar
     loo_changes <- pblapply(seq_along(geneSetList), function(i) {
       gs <- geneSetList[[i]]
@@ -67,7 +69,9 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
     }, cl = cl)
   } else if (!type1_analysis & is.data.frame(pred_df) & is.data.frame(cov_df)) {
     # Export necessary variables to the cluster
-    clusterExport(cl, varlist = c("geneList", "aggregate_geneSet", "aggre_method", "pred_df", "cov_df", "simple_lm"), envir = environment())
+    if (!is.null(cl)) {
+      clusterExport(cl, varlist = c("geneList", "aggregate_geneSet", "aggre_method", "pred_df", "cov_df", "simple_lm"), envir = environment())
+    }
 
     loo_changes <- pblapply(seq_along(geneSetList), function(i) {
       gs <- geneSetList[[i]]
@@ -93,7 +97,7 @@ find_core_genes <- function(geneList, geneSetList, pred_df = NULL, cov_df = NULL
   }
 
   # Stop the cluster after processing
-  stopCluster(cl)
+  if (!is.null(cl)) stopCluster(cl)
   core_genes <- lapply(loo_changes, identify_core_genes, threshold_type = threshold_type, threshold_value = threshold_value)
   names(core_genes) <- names(geneSetList)
   return(core_genes)

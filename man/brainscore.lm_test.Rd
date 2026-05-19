@@ -31,7 +31,13 @@ brainscore.lm_test(
   padjCutoff = NULL,
   matchcoexp_tol = 0.05,
   matchcoexp_max_iter = 1e+06,
-  gsea_obj = TRUE
+  gsea_obj = TRUE,
+  normality_check = TRUE,
+  normality_method = c("ks", "shapiro", "both"),
+  normality_alpha = 0.05,
+  normality_p_adjust = "fdr",
+  normality_shapiro_max_n = 5000,
+  normality_seed = NULL
 )
 }
 \arguments{
@@ -89,6 +95,18 @@ Other options include 'percentile'.}
 \item{matchcoexp_max_iter}{Integer specifying the maximum number of iterations for matched coexpression. Default is 1000000.}
 
 \item{gsea_obj}{Logical specifying whether to return a GSEA object otherwise only a table will be returned. Default is TRUE.}
+
+\item{normality_check}{Logical indicating whether to report normality diagnostics for empirical individual-level gene set scores. Default is TRUE.}
+
+\item{normality_method}{Character string specifying the normality diagnostic method. Default is \code{"ks"}. Other options are \code{"shapiro"} and \code{"both"}.}
+
+\item{normality_alpha}{Numeric significance threshold used to flag non-normal score distributions after p-value adjustment. Default is 0.05.}
+
+\item{normality_p_adjust}{Character string specifying the method for normality p-value adjustment. Default is \code{"fdr"}. See \code{\link[stats:p.adjust]{stats::p.adjust()}} for details.}
+
+\item{normality_shapiro_max_n}{Maximum sample size used for Shapiro-Wilk tests. Default is 5000.}
+
+\item{normality_seed}{Optional random seed used when subsampling observations for Shapiro-Wilk tests.}
 }
 \value{
 A data frame containing the results of the linear model test, including p-values, adjusted p-values,
