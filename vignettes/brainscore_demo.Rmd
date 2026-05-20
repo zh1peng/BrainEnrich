@@ -88,11 +88,21 @@ gsScore.raw <- brainscore(
 )
 str(head(gsScore.raw))
 ```
-The gsScore.raw is a list of molecular terms. For each molecular term, you can find individual gene set scores and use them for downstream analyses (e.g., correlation analysis, machine learning, clustering etc.). By default, empirical individual-level GS scores also include KS normality diagnostics:
+The gsScore.raw is a list of molecular terms. For each molecular term, you can find individual gene set scores and use them for downstream analyses (e.g., correlation analysis, machine learning, clustering etc.).
+
+#### Normality diagnostics for empirical GS scores
+By default, empirical individual-level GS scores include normality diagnostics based on the Kolmogorov-Smirnov (KS) test. These diagnostics are stored as an attribute of the `brainscore` output:
 ```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
-head(attr(gsScore.raw, "normality"))
+normality_res <- attr(gsScore.raw, "normality")
+head(normality_res)
 ```
-These diagnostics are intended to guide downstream model choice and are not used as automatic exclusion criteria.
+The main columns are `normality_ks_D`, `normality_ks_p`, `normality_ks_padj`, and `normality_flag`. The flag is based on the adjusted KS p-value and is intended to identify terms whose individual GS score distributions may be unsuitable for parametric downstream models. These diagnostics are intended to guide downstream model choice and are not used as automatic exclusion criteria.
+
+The same diagnostics can also be run directly on an existing empirical GS score object:
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+normality_res2 <- brainscore.normality(gsScore.raw)
+head(normality_res2)
+```
 
 ### 2.2. Get the null score of the brain_data (`null_model='spin_brain'`)
 Next, we will calculate the null scores using the 'spin_brain' null model.
@@ -193,7 +203,12 @@ kable(res.df, format = "html", escape = FALSE) %>%
   kable_styling("striped", full_width = FALSE) %>%
   scroll_box(width = "100%", height = "400px")
 ```
-The linear regression result table also reports the same individual-level GS score normality diagnostics for each term.
+The linear regression result table also reports the same individual-level GS score normality diagnostics for each term:
+```{r echo=TRUE, message=FALSE, warning=FALSE, paged.print=FALSE}
+res.df %>%
+  dplyr::select(ID, starts_with("normality_")) %>%
+  head()
+```
 
 ## 4. Visualization
 This section covers the visualization of the results.
