@@ -303,6 +303,7 @@
 <h2 id="perform-linear-regression-between-the-gsscore-and-predictors-using-brainscore-lm_test">3. Perform linear regression between the gsScore and predictors using <code>brainscore.lm_test</code><a class="anchor" aria-label="anchor" href="#perform-linear-regression-between-the-gsscore-and-predictors-using-brainscore-lm_test"></a>
 </h2>
 <p>The function brainscore.lm_test is designed to perform linear regression tests between the gsScore and the brain data as follows: <code>gsScore ~ predictor + covariates</code>. This would cover scenarios where gsScores will be used. The predictor can be either a single numeric variable or a single two-level factor variable. The covariates can be a data frame with multiple numeric variables or factors. The function will first get the emprical statistics (i.e., standardized beta corresponding to the predictor) and then test that against the null model (e.g., spin_brain) to get the p-value.</p>
+<p>For the built-in linear regression workflow, <code><a href="../reference/brainscore.lm_test.html">brainscore.lm_test()</a></code> supports <code>aggre_method = "mean"</code>, <code>"median"</code>, <code>"ks_pos_neg_sum"</code>, or a custom aggregation function. Other aggregation methods remain available through <code><a href="../reference/brainscore.html">brainscore()</a></code> for customized downstream analyses.</p>
 <div class="section level3">
 <h3 id="normal-setup">Normal setup<a class="anchor" aria-label="anchor" href="#normal-setup"></a>
 </h3>

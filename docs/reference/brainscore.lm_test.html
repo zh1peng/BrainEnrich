@@ -56,8 +56,7 @@ It calculates gene set scores, performs linear modeling, calculates p-values, an
 <span>  <span class="va">annoData</span>,</span>
 <span>  gsScoreList.null <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cor_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pearson"</span>, <span class="st">"spearman"</span>, <span class="st">"pls1c"</span>, <span class="st">"pls1w"</span>, <span class="st">"custom"</span><span class="op">)</span>,</span>
-<span>  aggre_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean"</span>, <span class="st">"median"</span>, <span class="st">"meanabs"</span>, <span class="st">"meansqr"</span>, <span class="st">"maxmean"</span>, <span class="st">"ks_orig"</span>,</span>
-<span>    <span class="st">"ks_weighted"</span>, <span class="st">"ks_pos_neg_sum"</span>, <span class="st">"sign_test"</span>, <span class="st">"rank_sum"</span>, <span class="st">"custom"</span><span class="op">)</span>,</span>
+<span>  aggre_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean"</span>, <span class="st">"median"</span>, <span class="st">"ks_pos_neg_sum"</span><span class="op">)</span>,</span>
 <span>  null_model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"spin_brain"</span>, <span class="st">"resample_gene"</span>, <span class="st">"coexp_matched"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
 <span>  minGSSize <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  maxGSSize <span class="op">=</span> <span class="fl">200</span>,</span>
@@ -119,9 +118,9 @@ Other options include 'spearman', 'pls1c', 'pls1w', 'custom'.</p></dd>
 
 
 <dt id="arg-aggre-method">aggre_method<a class="anchor" aria-label="anchor" href="#arg-aggre-method"></a></dt>
-<dd><p>Character string specifying the aggregation method. Default is 'mean'.
-Other options include 'median', 'meanabs', 'meansqr', 'maxmean', 'ks_orig', 'ks_weighted',
-'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.</p></dd>
+<dd><p>Character string or function specifying the aggregation method for the built-in linear regression workflow. Default is 'mean'.
+Supported character options are 'mean', 'median', and 'ks_pos_neg_sum'. A custom aggregation function can also be provided.
+Other aggregation methods remain available through <code><a href="brainscore.html">brainscore()</a></code> for customized downstream analyses.</p></dd>
 
 
 <dt id="arg-null-model">null_model<a class="anchor" aria-label="anchor" href="#arg-null-model"></a></dt>
