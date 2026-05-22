@@ -12,8 +12,7 @@ brainscore.lm_test(
   annoData,
   gsScoreList.null = NULL,
   cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
-  aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig",
-    "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
+  aggre_method = c("mean", "median", "ks_pos_neg_sum"),
   null_model = c("spin_brain", "resample_gene", "coexp_matched", "none"),
   minGSSize = 10,
   maxGSSize = 200,
@@ -56,9 +55,9 @@ brainscore.lm_test(
 \item{cor_method}{Character string specifying the correlation method. Default is 'pearson'.
 Other options include 'spearman', 'pls1c', 'pls1w', 'custom'.}
 
-\item{aggre_method}{Character string specifying the aggregation method. Default is 'mean'.
-Other options include 'median', 'meanabs', 'meansqr', 'maxmean', 'ks_orig', 'ks_weighted',
-'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.}
+\item{aggre_method}{Character string or function specifying the aggregation method for the built-in linear regression workflow. Default is 'mean'.
+Supported character options are 'mean', 'median', and 'ks_pos_neg_sum'. A custom aggregation function can also be provided.
+Other aggregation methods remain available through \code{brainscore()} for customized downstream analyses.}
 
 \item{null_model}{Character string specifying the null model method. Default is 'spin_brain'.
 Other options include 'resample_gene', 'coexp_matched', 'none'.}

@@ -11,9 +11,9 @@
 #' @param gsScoreList.null Precomputed list of gene set scores for the null model by brainscore/brainscore.hpc function. Default is NULL.
 #' @param cor_method Character string specifying the correlation method. Default is 'pearson'.
 #'                   Other options include 'spearman', 'pls1c', 'pls1w', 'custom'.
-#' @param aggre_method Character string specifying the aggregation method. Default is 'mean'.
-#'                     Other options include 'median', 'meanabs', 'meansqr', 'maxmean', 'ks_orig', 'ks_weighted',
-#'                     'ks_pos_neg_sum', 'sign_test', 'rank_sum', 'custom'.
+#' @param aggre_method Character string or function specifying the aggregation method for the built-in linear regression workflow. Default is 'mean'.
+#'                     Supported character options are 'mean', 'median', and 'ks_pos_neg_sum'. A custom aggregation function can also be provided.
+#'                     Other aggregation methods remain available through `brainscore()` for customized downstream analyses.
 #' @param null_model Character string specifying the null model method. Default is 'spin_brain'.
 #'                   Other options include 'resample_gene', 'coexp_matched', 'none'.
 #' @param minGSSize Integer specifying the minimum gene set size. Default is 10.
@@ -57,7 +57,7 @@ brainscore.lm_test <- function(pred_df,
                                annoData,
                                gsScoreList.null = NULL,
                                cor_method = c("pearson", "spearman", "pls1c", "pls1w", "custom"),
-                               aggre_method = c("mean", "median", "meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "ks_pos_neg_sum", "sign_test", "rank_sum", "custom"),
+                               aggre_method = c("mean", "median", "ks_pos_neg_sum"),
                                null_model = c("spin_brain", "resample_gene", "coexp_matched", "none"),
                                minGSSize = 10,
                                maxGSSize = 200,
@@ -83,7 +83,20 @@ brainscore.lm_test <- function(pred_df,
                                normality_seed = NULL) {
   # Validate arguments
   cor_method <- match.arg(cor_method)
-  aggre_method <- match.arg(aggre_method)
+  if (is.function(aggre_method)) {
+    aggre_method_label <- "custom"
+  } else {
+    unsupported_lm_aggre_methods <- c("meanabs", "meansqr", "maxmean", "ks_orig", "ks_weighted", "sign_test", "rank_sum")
+    if (length(aggre_method) == 1 && aggre_method %in% unsupported_lm_aggre_methods) {
+      stop(
+        "aggre_method = '", aggre_method, "' is not supported in brainscore.lm_test(). ",
+        "Use aggre_method = 'mean', 'median', or 'ks_pos_neg_sum' for the built-in linear regression workflow, ",
+        "or run brainscore() directly for customized downstream analysis."
+      )
+    }
+    aggre_method <- match.arg(aggre_method)
+    aggre_method_label <- aggre_method
+  }
   null_model <- match.arg(null_model)
   threshold_type <- match.arg(threshold_type)
   pAdjustMethod <- match.arg(pAdjustMethod)
@@ -168,7 +181,7 @@ brainscore.lm_test <- function(pred_df,
     # Check all attributes at once
     if (!((null_model.precomp == null_model) &&
       (cor_method.precomp == cor_method) &&
-      (aggre_method.precomp == aggre_method) &&
+      (aggre_method.precomp == aggre_method_label) &&
       (minGSSize.precomp == minGSSize) &&
       (maxGSSize.precomp == maxGSSize) &&
       (n_perm.precomp == n_perm))) {
@@ -289,7 +302,7 @@ brainscore.lm_test <- function(pred_df,
       minGSSize = minGSSize,
       maxGSSize = maxGSSize,
       corMethod = cor_method,
-      aggreMethod = aggre_method,
+      aggreMethod = aggre_method_label,
       nullType = null_model,
       thresType = threshold_type,
       thresVal = threshold_value

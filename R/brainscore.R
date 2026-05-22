@@ -64,7 +64,12 @@ brainscore <- function(brain_data,
   stopifnot(identical(rownames(gene_data), rownames(brain_data)))
 
   cor_method <- match.arg(cor_method)
-  aggre_method <- match.arg(aggre_method)
+  if (is.function(aggre_method)) {
+    aggre_method_label <- "custom"
+  } else {
+    aggre_method <- match.arg(aggre_method)
+    aggre_method_label <- aggre_method
+  }
   null_model <- match.arg(null_model)
   normality_method <- match.arg(normality_method)
 
@@ -199,7 +204,7 @@ brainscore <- function(brain_data,
   # Add attributes to geneList
   attr(gs.score, "null_model") <- null_model
   attr(gs.score, "cor_method") <- cor_method
-  attr(gs.score, "aggre_method") <- aggre_method
+  attr(gs.score, "aggre_method") <- aggre_method_label
   attr(gs.score, "minGSSize") <- minGSSize
   attr(gs.score, "maxGSSize") <- maxGSSize
   attr(gs.score, "n_perm") <- n_perm

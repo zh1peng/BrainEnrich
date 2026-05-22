@@ -202,3 +202,48 @@ test_that("brainscore.lm_test returns normality diagnostics in gseaResult output
     "normality_flag"
   ) %in% colnames(res_df)))
 })
+
+test_that("brainscore.lm_test rejects unsupported aggregation methods", {
+  fixture <- make_normality_brainscore_fixture()
+
+  expect_error(
+    brainscore.lm_test(
+      pred_df = fixture$pred_df,
+      cov_df = fixture$cov_df,
+      brain_data = fixture$brain_data,
+      gene_data = fixture$gene_data,
+      annoData = fixture$annoData,
+      aggre_method = "maxmean",
+      null_model = "none",
+      minGSSize = 5,
+      maxGSSize = 10,
+      gsea_obj = FALSE
+    ),
+    "not supported in brainscore.lm_test"
+  )
+})
+
+test_that("brainscore.lm_test accepts custom aggregation functions", {
+  fixture <- make_normality_brainscore_fixture()
+  custom_mean <- function(genelist, geneSet) {
+    geneSet <- intersect(geneSet, names(genelist))
+    mean(genelist[geneSet])
+  }
+
+  res <- suppressWarnings(suppressMessages(brainscore.lm_test(
+    pred_df = fixture$pred_df,
+    cov_df = fixture$cov_df,
+    brain_data = fixture$brain_data,
+    gene_data = fixture$gene_data,
+    annoData = fixture$annoData,
+    aggre_method = custom_mean,
+    null_model = "none",
+    minGSSize = 5,
+    maxGSSize = 10,
+    n_cores = 1,
+    gsea_obj = FALSE
+  )))
+
+  expect_s3_class(res, "data.frame")
+  expect_true(all(c("term_a", "term_b") %in% res$Dependent_vars))
+})
