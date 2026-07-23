@@ -57,6 +57,25 @@ install.packages(
 
 Tutorials are available at [github-pages](https://zh1peng.github.io/BrainEnrich/)
 
+📚**Citation**
+
+If you use BrainEnrich in your research, please cite:
+
+> Cao, Z., Yuan, D., Qin, J., Wu, Y., Li, C., & Zhan, G. (2026). BrainEnrich: Revealing biological insights for imaging-derived phenotypes through transcriptomic enrichment. *Human Brain Mapping, 47*(10), e70605. https://doi.org/10.1002/hbm.70605
+
+```bibtex
+@article{Cao2026BrainEnrich,
+  title = {BrainEnrich: Revealing Biological Insights for Imaging-Derived Phenotypes Through Transcriptomic Enrichment},
+  author = {Cao, Zhipeng and Yuan, Dekang and Qin, Jinmei and Wu, Yujie and Li, Chenhu and Zhan, Guilai},
+  journal = {Human Brain Mapping},
+  year = {2026},
+  volume = {47},
+  number = {10},
+  pages = {e70605},
+  doi = {10.1002/hbm.70605}
+}
+```
+
 👨‍💻**Author**
 
 * **Zhipeng Cao @ Xuhui Mental Health Center, Shanghai** - *Initial work* - [zh1peng](https://github.com/zh1peng)
