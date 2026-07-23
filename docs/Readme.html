@@ -78,11 +78,17 @@
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a>  <span class="dt">pages</span> = {e70605},</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>  <span class="dt">doi</span> = {10.1002/hbm.70605}</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>}</span></code></pre></div>
-<p>👨‍💻<strong>Author</strong></p>
+<div class="section level3">
+<h3 id="important-caveats-and-ongoing-development">Important caveats and ongoing development<a class="anchor" aria-label="anchor" href="#important-caveats-and-ongoing-development"></a></h3>
+<ul><li><p><strong>Core gene definition.</strong> The current core-gene procedure identifies genes whose removal materially changes the absolute magnitude of the enrichment result. Consequently, a gene may be labelled as a core gene even when its contribution is opposite to the overall direction of the GS score. We are investigating direction-aware definitions of core genes that better capture both the magnitude and direction of each gene’s contribution.</p></li>
+<li><p><strong>Brain relevance of gene sets.</strong> The currently available gene sets have not been filtered for brain specificity. As a result, broad collections such as Gene Ontology may include terms with limited relevance to brain biology, increasing the multiple-testing burden and making biological interpretation more challenging. We are developing brain-informed gene set resources and filtering strategies tailored to imaging transcriptomics.</p></li>
+<li><p><strong>Package dependencies.</strong> BrainEnrich currently relies heavily on the clusterProfiler and Bioconductor ecosystems. While these dependencies provide useful functionality, they can make installation resource-intensive and may occasionally lead to compatibility or dependency-resolution issues. In future development, we may explore more modular implementations with fewer external dependencies; however, this is an area for consideration rather than a committed development direction.</p></li>
+</ul><p>👨‍💻<strong>Author</strong></p>
 <ul><li>
 <strong>Zhipeng Cao @ Xuhui Mental Health Center, Shanghai</strong> - <em>Initial work</em> - <a href="https://github.com/zh1peng" class="external-link">zh1peng</a>
 </li></ul><p>📜<strong>License</strong></p>
 <p>This project is licensed under the GNU Affero General Public (AGP) License - see the <a href="LICENSE.html">LICENSE.md</a> file for details. We welcome contributions to <strong>BrainEnrich</strong>! Feel free to fork the repository, and create pull requests.</p>
+</div>
 <div class="section level3">
 <h3 id="troubleshooting-dose--fgsea-installation">Troubleshooting: DOSE / fgsea installation<a class="anchor" aria-label="anchor" href="#troubleshooting-dose--fgsea-installation"></a></h3>
 <p>If you encounter errors when installing <strong>DOSE</strong> or <strong>fgsea</strong> (e.g., messages about <code>fastmatch.so</code> or <code>undefined symbol: match5</code>), the cause is often an old or incompatible system-wide installation of <strong>fastmatch</strong>.</p>
@@ -114,7 +120,8 @@
 </div>
 
 
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">
