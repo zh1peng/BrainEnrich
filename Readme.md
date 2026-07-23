@@ -76,6 +76,14 @@ If you use BrainEnrich in your research, please cite:
 }
 ```
 
+### Important caveats and ongoing development
+
+- **Core gene definition.** The current core-gene procedure identifies genes whose removal materially changes the absolute magnitude of the enrichment result. Consequently, a gene may be labelled as a core gene even when its contribution is opposite to the overall direction of the GS score. We are investigating direction-aware definitions of core genes that better capture both the magnitude and direction of each gene's contribution.
+
+- **Brain relevance of gene sets.** The currently available gene sets have not been filtered for brain specificity. As a result, broad collections such as Gene Ontology may include terms with limited relevance to brain biology, increasing the multiple-testing burden and making biological interpretation more challenging. We are developing brain-informed gene set resources and filtering strategies tailored to imaging transcriptomics.
+
+- **Package dependencies.** BrainEnrich currently relies heavily on the clusterProfiler and Bioconductor ecosystems. While these dependencies provide useful functionality, they can make installation resource-intensive and may occasionally lead to compatibility or dependency-resolution issues. In future development, we may explore more modular implementations with fewer external dependencies; however, this is an area for consideration rather than a committed development direction.
+
 👨‍💻**Author**
 
 * **Zhipeng Cao @ Xuhui Mental Health Center, Shanghai** - *Initial work* - [zh1peng](https://github.com/zh1peng)
