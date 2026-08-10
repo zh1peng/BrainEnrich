@@ -57,6 +57,71 @@ install.packages(
 
 Tutorials are available at [github-pages](https://zh1peng.github.io/BrainEnrich/)
 
+### Spin test and spherical centroid calculation
+
+BrainEnrich's spin-based spatial null model is adapted from the
+[`rotate_parcellation`](https://github.com/frantisekvasa/rotate_parcellation/tree/master)
+method provided by František Váša. The coordinates used by the spin test are
+**parcel centroids on the FreeSurfer sphere**, not centroids in native anatomical
+or MNI space.
+
+#### How the spherical centroids are obtained
+
+We follow the upstream MATLAB
+[`centroid_extraction_sphere.m`](https://github.com/frantisekvasa/rotate_parcellation/blob/master/Matlab/centroid_extraction_sphere.m)
+procedure, written by Rafael Romero-Garcia:
+
+1. Read the vertex coordinates from a hemisphere's FreeSurfer spherical surface
+   file (for example, `lh.sphere`) and the parcel labels from the corresponding
+   annotation file (for example, `lh.aparc.annot`).
+2. Exclude structures whose names contain `unknown` or `corpus` (including the
+   corpus callosum).
+3. For each remaining parcel, identify all vertices assigned to that parcel and
+   calculate the arithmetic mean of their spherical `(x, y, z)` coordinates:
+
+   `centroid_k = colMeans(sphere_vertices[annotation == parcel_k, ])`.
+
+The reference script performs this calculation separately for each hemisphere.
+It does not apply surface-area weighting or renormalize the mean coordinate back
+to the sphere. The bundled Desikan left-hemisphere centroids are available as
+`coord_dk_lh`; their source table is
+[`data-raw/desikan_centroid.csv`](data-raw/desikan_centroid.csv).
+
+#### How BrainEnrich performs the spin test
+
+For each rotation, `rotate_parcellation()` samples a proper three-dimensional
+rotation and applies it to the spherical centroids. When both hemispheres are
+provided, the right-hemisphere transform is reflected from the left-hemisphere
+transform to preserve hemispheric symmetry. BrainEnrich then computes the
+Euclidean distance between the original and rotated centroids and constructs a
+one-to-one parcel assignment. The default `method = "hungarian"` minimizes the
+total assignment distance; `method = "vasa"` uses the greedy matching procedure
+from the upstream implementation. Identity and duplicate permutations are
+removed. The resulting matrix has parcels in rows and rotations in columns and
+is used to permute the regional brain map while retaining its spatial structure
+approximately.
+
+```r
+# Use the bundled Desikan left-hemisphere spherical centroids
+data(coord_dk_lh)
+
+perm_id <- rotate_parcellation(
+  coord.l = coord_dk_lh,
+  nrot = 5000,
+  method = "hungarian",
+  seed = 2024
+)
+```
+
+For a custom parcellation, extract centroids from the same spherical template
+and annotation used to define the parcels. The centroid row order must exactly
+match the regional order of the brain and gene-expression data. Generate left-
+and right-hemisphere centroids separately and pass them through `coord.l` and
+`coord.r`, respectively. If you use this procedure, please cite the relevant
+papers listed in the upstream
+[`rotate_parcellation` repository](https://github.com/frantisekvasa/rotate_parcellation/tree/master#references)
+in addition to BrainEnrich.
+
 📚**Citation**
 
 If you use BrainEnrich in your research, please cite:
